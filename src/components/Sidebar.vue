@@ -40,9 +40,26 @@ export default {
           </RouterLink>
         </li>
         <li class="nav-link p-0" data-bs-toggle="pill">
-          <RouterLink to="/client" class="text-light d-flex align-items-center gap-1" role="button">
-            <ClientsIcon /> Clients
-          </RouterLink>
+          <div class="d-flex justify-content-between">
+            <RouterLink to="/client" class="text-light align-items-center gap-1" role="button">
+              <ClientsIcon /> Clients
+            </RouterLink>
+            <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li class="dropdown-item">
+                <RouterLink to="/triprates" class="text-dark align-items-center gap-1" role="button">
+                  Trip Rates
+                </RouterLink>
+              </li>
+              <li class="dropdown-item">
+                <RouterLink to="/billing" class="text-dark align-items-center gap-1" role="button">
+                  Billing
+                </RouterLink>
+              </li>
+            </ul>
+          </div>
         </li>
         <li class="nav-link p-0" data-bs-toggle="pill">
           <RouterLink to="/payroll" class="text-light d-flex align-items-center gap-1" role="button">
@@ -50,6 +67,7 @@ export default {
           </RouterLink>
         </li>
       </ul>
+      
     </nav>
     <div class="text-light border-top">
       <p class="logout p-2 mt-2 mb-2 rounded d-flex align-items-center gap-1" role="button">
