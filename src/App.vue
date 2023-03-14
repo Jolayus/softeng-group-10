@@ -1,14 +1,23 @@
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Sidebar from './components/Sidebar.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Sidebar
   }
 }
 </script>
 
 <template>
-  <HelloWorld />
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-3">
+        <Sidebar />
+      </div>
+      <div class="col-9">
+
+      </div>
+    </div>
+  </div>
 </template>
