@@ -12,7 +12,7 @@ export default {
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-3">
+      <div class="col-3 p-0">
         <Sidebar />
       </div>
       <div class="col-9">

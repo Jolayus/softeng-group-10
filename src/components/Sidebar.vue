@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template>
-  <aside class="min-vh-100 shadow-lg p-3 bg-dark rounded d-flex flex-column justify-content-between">
+  <aside class="min-vh-100 shadow-lg p-3 bg-dark d-flex flex-column justify-content-between">
     <nav>
       <div class="d-flex flex-column justify-content-center text-center align-items-center p-2 border-bottom mb-2">
         <a class="navbar-brand" href="#">
