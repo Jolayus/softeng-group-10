@@ -3,6 +3,8 @@ import { RouterLink } from 'vue-router';
 import DashboardIcon from './Icons/DashboardIcon.vue';
 import EmployeesIcon from './Icons/EmployeesIcon.vue';
 import ClientsIcon from './Icons/ClientsIcon.vue';
+import TripRatesIcon from './Icons/TripRatesIcon.vue';
+import BillingIcon from './Icons/BillingIcon.vue';
 import PayrollIcon from './Icons/PayrollIcon.vue';
 import LogoutIcon from './Icons/LogoutIcon.vue';
 
@@ -12,6 +14,8 @@ export default {
     DashboardIcon,
     EmployeesIcon,
     ClientsIcon,
+    TripRatesIcon,
+    BillingIcon,
     PayrollIcon,
     LogoutIcon
   }
@@ -40,22 +44,22 @@ export default {
           </RouterLink>
         </li>
         <li class="nav-link p-0" data-bs-toggle="pill">
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between dropend">
             <RouterLink to="/client" class="text-light align-items-center gap-1" role="button">
               <ClientsIcon /> Clients
             </RouterLink>
             <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-dark">
               <li class="dropdown-item">
-                <RouterLink to="/triprates" class="text-dark align-items-center gap-1" role="button">
-                  Trip Rates
+                <RouterLink to="/triprates" class="text-light align-items-center gap-1" role="button">
+                  <TripRatesIcon /> Trip Rates
                 </RouterLink>
               </li>
-              <li class="dropdown-item">
-                <RouterLink to="/billing" class="text-dark align-items-center gap-1" role="button">
-                  Billing
+              <li class="dropdown-item ">
+                <RouterLink to="/billing" class="text-light align-items-center gap-1" role="button">
+                  <BillingIcon /> Billing
                 </RouterLink>
               </li>
             </ul>
