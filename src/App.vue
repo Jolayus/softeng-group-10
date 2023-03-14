@@ -1,14 +1,14 @@
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import AppLayout from './views/AppLayout.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    AppLayout
   }
 }
 </script>
 
 <template>
-  <HelloWorld />
+  <AppLayout />
 </template>
