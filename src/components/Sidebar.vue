@@ -45,7 +45,7 @@ export default {
         </li>
         <li class="nav-link p-0" data-bs-toggle="pill">
           <div class="d-flex justify-content-between dropend">
-            <RouterLink to="/client" class="text-light align-items-center gap-1" role="button">
+            <RouterLink to="/client" class="text-light align-items-center gap-1 flex-grow-1" role="button">
               <ClientsIcon /> Clients
             </RouterLink>
             <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
