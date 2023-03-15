@@ -1,0 +1,14 @@
+$btn-bg-color: #042630;
+$btn-hover-bg-color: #4c7273;
+
+.nav .nav-link.active {
+  background-color: $btn-hover-bg-color
+}
+.tms-btn {
+  background-color: $btn-bg-color;
+  border: none;
+
+  &:hover {
+    background-color: $btn-hover-bg-color
+  }
+}

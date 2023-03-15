@@ -16,7 +16,7 @@ export default {
       <div class="col-3 p-0">
         <Sidebar />
       </div>
-      <div class="col-9">
+      <div class="col-9 p-5 text-center">
         <RouterView />
       </div>
     </div>

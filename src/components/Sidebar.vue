@@ -27,13 +27,13 @@ export default {
     <nav>
       <div class="d-flex flex-column justify-content-center text-center align-items-center p-2 border-bottom mb-2">
         <a class="navbar-brand" href="#">
-          <img src="../assets/company_logo.png" height="50" alt="">
+          <img src="../assets/company_logo.png" height="50" alt="company logo">
         </a>
         <h1 class="m-0 h5 text-light">RO-ED Logistics and Services</h1>
       </div>
       <ul class="nav flex-column justify-content-center nav-pills text-left" id="v-pills-tab" role="tablist"
         aria-orientation="vertical">
-        <li class="nav-link p-0" data-bs-toggle="pill">
+        <li class="nav-link p-0 active" data-bs-toggle="pill">
           <RouterLink to="/dashboard" class="text-light d-flex align-items-center gap-1 active" role="button">
             <DashboardIcon />Dashboard
           </RouterLink>
@@ -45,20 +45,20 @@ export default {
         </li>
         <li class="nav-link p-0" data-bs-toggle="pill">
           <div class="d-flex justify-content-between dropend">
-            <RouterLink to="/client" class="text-light align-items-center gap-1" role="button">
+            <RouterLink to="/client" class="text-light align-items-center gap-1 flex-grow-1" role="button">
               <ClientsIcon /> Clients
             </RouterLink>
-            <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-dark">
+            <ul class="dropdown-menu">
               <li class="dropdown-item">
-                <RouterLink to="/triprates" class="text-light align-items-center gap-1" role="button">
+                <RouterLink to="/triprates" class="text-light d-flex align-items-center gap-1" role="button">
                   <TripRatesIcon /> Trip Rates
                 </RouterLink>
               </li>
               <li class="dropdown-item ">
-                <RouterLink to="/billing" class="text-light align-items-center gap-1" role="button">
+                <RouterLink to="/billing" class="text-light d-flex align-items-center gap-1" role="button">
                   <BillingIcon /> Billing
                 </RouterLink>
               </li>
@@ -71,7 +71,6 @@ export default {
           </RouterLink>
         </li>
       </ul>
-      
     </nav>
     <div class="text-light border-top">
       <p class="logout p-2 mt-2 mb-2 rounded d-flex align-items-center gap-1" role="button">
@@ -87,11 +86,13 @@ a {
   padding: 8px 16px;
 }
 
-aside {
-  background-color: #042630;
+aside,
+.dropdown-menu {
+  background-color: #041421;
 }
 
-.logout:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+.logout:hover,
+.dropdown-item:hover {
+  background-color: #4c7273;
 }
 </style>
