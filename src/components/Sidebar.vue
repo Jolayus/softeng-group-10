@@ -48,17 +48,17 @@ export default {
             <RouterLink to="/client" class="text-light align-items-center gap-1" role="button">
               <ClientsIcon /> Clients
             </RouterLink>
-            <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-dark">
               <li class="dropdown-item">
-                <RouterLink to="/triprates" class="text-light align-items-center gap-1" role="button">
+                <RouterLink to="/triprates" class="text-light d-flex align-items-center gap-1" role="button">
                   <TripRatesIcon /> Trip Rates
                 </RouterLink>
               </li>
               <li class="dropdown-item ">
-                <RouterLink to="/billing" class="text-light align-items-center gap-1" role="button">
+                <RouterLink to="/billing" class="text-light d-flex align-items-center gap-1" role="button">
                   <BillingIcon /> Billing
                 </RouterLink>
               </li>
