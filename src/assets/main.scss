@@ -11,4 +11,12 @@ $btn-hover-bg-color: #4c7273;
   &:hover {
     background-color: $btn-hover-bg-color
   }
+
+  &:active {
+    background-color: $btn-hover-bg-color;
+  }
+}
+
+.tbl-header {
+  background-color: #042630;;
 }
