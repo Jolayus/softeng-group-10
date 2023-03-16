@@ -28,7 +28,7 @@ export default {
 <style scoped>
 .date {
   background: center / cover no-repeat url('../assets/bg.date.jpg');
-  width: 130px;
+  width: 140px;
   top: 0;
   right: 0;
 }
