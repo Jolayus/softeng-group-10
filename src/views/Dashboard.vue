@@ -2,24 +2,30 @@
 import { RouterLink } from 'vue-router';
 
 import CardDashboard from '../components/CardDashboard.vue';
+import Date from '../components/Date.vue';
+
 import cardsData from '../model/CardsData.js';
 
 export default {
   components: {
-    CardDashboard
+    CardDashboard,
+    Date
   },
   data() {
     return {
       cards: cardsData
     };
-  },
+  }
 }
 </script>
 
 <template>
   <div class="d-flex flex-column justify-content-between h-100">
-    <h1>Dashboard</h1>
-    <div class="container-fluid">
+    <header class="position-relative">
+      <h1>Dashboard</h1>
+      <Date />
+    </header>
+    <main class="container-fluid">
       <div class="row justify-content-center gap-4">
         <CardDashboard v-for="card in cards">
           <template v-slot:title>
@@ -33,7 +39,7 @@ export default {
           </template>
         </CardDashboard>
       </div>
-    </div>
+    </main>
     <footer class="d-flex justify-content-between">
       <div>
         <img src="../assets/company_logo.png" height="30" alt="company logo">
@@ -47,5 +53,3 @@ export default {
     </footer>
   </div>
 </template>
-
-<style scoped></style>
