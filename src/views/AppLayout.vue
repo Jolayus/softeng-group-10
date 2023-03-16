@@ -13,10 +13,10 @@ export default {
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-3 p-0">
+      <div class="col-3 p-0 min-vh-100">
         <Sidebar />
       </div>
-      <div class="col-9 p-5 text-center">
+      <div class="col-9 text-center min-vh-100">
         <RouterView />
       </div>
     </div>
