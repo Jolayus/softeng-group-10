@@ -27,7 +27,8 @@ export default {
       <h1>Dashboard</h1>
       <Date />
     </header>
-    <main class="container-fluid">
+    <main class="container-fluid p-5 position-relative">
+      <div class="bg"></div>
       <div class="row justify-content-center gap-4">
         <CardDashboard v-for="card in cards">
           <template v-slot:title>
@@ -55,3 +56,15 @@ export default {
     </Footer>
   </div>
 </template>
+
+<style scoped>
+.bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: center / cover no-repeat url('../assets/bg.dashboard.png');
+  opacity: 0.8;
+}
+</style>
