@@ -3,6 +3,9 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
+import employeesModel from '../model/employees.model';
+
+console.log(employeesModel);
 
 export default {
   name: 'Employee',
@@ -11,6 +14,22 @@ export default {
     EditIcon,
     TrashIcon,
     Footer
+  },
+  data() {
+    return {
+      employeesModel,
+      userInput: ''
+    };
+  },
+  methods: {
+    removeEmployee(id) {
+      this.employeesModel = this.employeesModel.filter(employee => employee.id !== id);
+    }
+  },
+  computed: {
+    employees() {
+      return this.employeesModel.filter(employee => employee.name.includes(this.userInput));
+    }
   }
 }
 </script>
@@ -22,16 +41,10 @@ export default {
     </header>
     <main class="container flex-grow-1">
       <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
-        <div class="input-group mb-3 h-100">
-          <input type="text" class="form-control" placeholder="Employee's name" aria-label="Recipient's username"
-            aria-describedby="basic-addon2">
-          <div class="input-group-append">
-            <span class="input-group-text h-100 p-0" id="basic-addon2">
-              <button class="btn border-0 tms-btn text-light d-flex align-items-center h-100">
-                <SearchIcon />
-              </button>
-            </span>
-          </div>
+        <div class="input-group mb-3 h-100 align-items-center gap-2">
+          <label for="user-input">Search:</label>
+          <input v-model="userInput" type="text" class="form-control" placeholder="Employee's name" aria-label="Recipient's username"
+            id="user-input" aria-describedby="basic-addon2">
         </div>
         <button class="btn tms-btn text-light d-flex align-items-center h-100">Add new employee</button>
       </div>
@@ -46,68 +59,15 @@ export default {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr>
-            <th scope="row">Juan Dela Cruz</th>
-            <td>Driver</td>
-            <td>juandelacruz@gmail.com</td>
-            <td>09215976342</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">John Miguel Alonzo</th>
-            <td>Helper</td>
-            <td>johnmiguelalonzo@gmail.com</td>
-            <td>09542648724</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Kakashe Tarashi</th>
-            <td>Admin</td>
-            <td>kakashetarashi@gmail.com</td>
-            <td>09254823679</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Leanne Graham</th>
-            <td>Admin</td>
-            <td>leannegraham@gmail.com</td>
-            <td>09871254893</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Ervin Howell</th>
-            <td>Helper</td>
-            <td>ervinhowell@gmail.com</td>
-            <td>09148753692</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Clementine Bauch</th>
-            <td>Helper</td>
-            <td>clementine bauch@gmail.com</td>
-            <td>09584195638</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Patricia Lebsack</th>
-            <td>Driver</td>
-            <td>patricialebsack@gmail.com</td>
-            <td>09587452638</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Chelsey Dietrich</th>
-            <td>Driver</td>
-            <td>chelseydietrich@gmail.com</td>
-            <td>09581275892</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th scope="row">Dennis Schulist</th>
-            <td>Admin</td>
-            <td>dennisschulist@gmail.com</td>
-            <td>09587495815</td>
-            <td></td>
+          <tr v-for="employee in employees" :key="employee.id">
+            <th scope="row">{{ employee.name }}</th>
+            <td>{{ employee.role }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.phone }}</td>
+            <td>
+              <EditIcon @click.prevent="" class="mx-2 text-primary" role="button" />
+              <TrashIcon @click.prevent="removeEmployee(employee.id)" class="mx-2 text-danger" role="button" />
+            </td>
           </tr>
         </tbody>
       </table>
