@@ -69,6 +69,26 @@ export default {
               <TrashIcon @click.prevent="removeEmployee(employee.id)" class="mx-2 text-danger" role="button" />
             </td>
           </tr>
+          <tr v-for="employee in employees" :key="employee.id">
+            <th scope="row">{{ employee.name }}</th>
+            <td>{{ employee.role }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.phone }}</td>
+            <td>
+              <EditIcon @click.prevent="" class="mx-2 text-primary" role="button" />
+              <TrashIcon @click.prevent="removeEmployee(employee.id)" class="mx-2 text-danger" role="button" />
+            </td>
+          </tr>
+          <tr v-for="employee in employees" :key="employee.id">
+            <th scope="row">{{ employee.name }}</th>
+            <td>{{ employee.role }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.phone }}</td>
+            <td>
+              <EditIcon @click.prevent="" class="mx-2 text-primary" role="button" />
+              <TrashIcon @click.prevent="removeEmployee(employee.id)" class="mx-2 text-danger" role="button" />
+            </td>
+          </tr>
         </tbody>
       </table>
     </main>
