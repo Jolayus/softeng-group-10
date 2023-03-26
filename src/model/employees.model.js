@@ -20,4 +20,10 @@ async function httpGetEmployees() {
 
 employeesModel = await httpGetEmployees();
 
-export default employeesModel;
+function getEmployeesModel() {
+  return employeesModel;
+}
+
+export {
+  getEmployeesModel,
+};
