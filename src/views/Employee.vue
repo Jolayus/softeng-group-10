@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       employeesModel: getEmployeesModel(),
+      selectedEmployee: null,
       currentEmployeeId: 0,
       searchInput: '',
       employeeNameInput: '',
@@ -38,6 +39,9 @@ export default {
   },
   methods: {
     archiveEmployee(id) {
+
+      console.log(id);
+
       const toBeArchiveEmployee = this.employeesModel.find((employee) => employee.id === id);
       this.employeesModel = this.employeesModel.filter(
         (employee) => employee !== toBeArchiveEmployee
@@ -297,7 +301,9 @@ export default {
 
               />
               <TrashIcon
-                @click.prevent="archiveEmployee(employee.id)"
+                data-bs-toggle="modal"
+                data-bs-target="#archiveEmployeeVerif"
+                @click.prevent="selectedEmployee = employee.id"
                 class="mx-2 text-danger"
                 role="button"
               />
@@ -399,6 +405,36 @@ export default {
           :disabled="isFormInvalid"
         >
           Save changes
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="archiveEmployeeVerif">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="archiveEmployeeVerifLabel">
+          Archive Employee
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to archive this?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+          @click.prevent="archiveEmployee(selectedEmployee)"
+        >
+          Archive
         </button>
       </div>
     </template>
