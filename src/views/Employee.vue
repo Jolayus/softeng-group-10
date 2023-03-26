@@ -5,10 +5,7 @@ import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../model/employees.model';
-import {
-  getEmployeesModelArchive,
-  addEmployeeArchive
-} from '../model/employeesArchive.model';
+import { addEmployeeArchive } from '../model/employeesArchive.model';
 
 export default {
   name: 'Employee',
@@ -39,13 +36,13 @@ export default {
   },
   methods: {
     archiveEmployee(id) {
-
-      console.log(id);
-
-      const toBeArchiveEmployee = this.employeesModel.find((employee) => employee.id === id);
+      const toBeArchiveEmployee = this.employeesModel.find(
+        (employee) => employee.id === id
+      );
       this.employeesModel = this.employeesModel.filter(
         (employee) => employee !== toBeArchiveEmployee
       );
+
       addEmployeeArchive({
         id: toBeArchiveEmployee.id,
         name: toBeArchiveEmployee.name,
@@ -53,7 +50,6 @@ export default {
         email: toBeArchiveEmployee.email,
         phone: toBeArchiveEmployee.phone
       });
-      console.log(getEmployeesModelArchive());
     },
     addNewEmployee() {
       const name = this.employeeNameInput.trim();
@@ -182,98 +178,6 @@ export default {
         >
           Add new employee
         </button>
-        <!-- Modal for adding new employee -->
-        <Modal id="employeeModal">
-          <template v-slot:modal-header>
-            <div class="modal-header justify-content-center border-bottom-0">
-              <h1 class="modal-title fs-5" id="employeeModalLabel">
-                Employee's Information
-              </h1>
-            </div>
-          </template>
-          <template v-slot:modal-body>
-            <div class="modal-body">
-              <form id="employeeForm" @submit.prevent="addNewEmployee">
-                <div class="mb-3">
-                  <label
-                    for="employeeName"
-                    class="form-label d-block text-start"
-                    >Name</label
-                  >
-                  <input
-                    v-model="employeeNameInput"
-                    type="text"
-                    class="form-control"
-                    id="employeeName"
-                    aria-describedby="employeeName"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label
-                    for="employeeRole"
-                    class="form-label d-block text-start"
-                    >Role</label
-                  >
-                  <input
-                    v-model="employeeRoleInput"
-                    type="text"
-                    class="form-control"
-                    id="employeeRole"
-                    aria-describedby="employeeRole"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label
-                    for="employeeEmail"
-                    class="form-label d-block text-start"
-                    >Email address</label
-                  >
-                  <input
-                    v-model="employeeEmailInput"
-                    type="email"
-                    class="form-control"
-                    id="employeeEmail"
-                    aria-describedby="employeeEmail"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label
-                    for="employeeContact"
-                    class="form-label d-block text-start"
-                    >Contact Number</label
-                  >
-                  <input
-                    v-model="employeePhoneInput"
-                    type="text"
-                    class="form-control"
-                    id="employeeContact"
-                    aria-describedby="employeeContact"
-                  />
-                </div>
-              </form>
-            </div>
-          </template>
-          <template v-slot:modal-footer>
-            <div class="modal-footer border-top-0 justify-content-center">
-              <button
-                type="button"
-                class="btn text-light"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="submit"
-                class="btn tms-btn text-light"
-                form="employeeForm"
-                data-bs-dismiss="modal"
-                :disabled="isFormInvalid"
-              >
-                Add Employee
-              </button>
-            </div>
-          </template>
-        </Modal>
       </div>
       <table class="table">
         <thead class="tbl-header text-light rounded">
@@ -298,7 +202,6 @@ export default {
                 @click.prevent="onEdit(employee)"
                 class="mx-2 text-primary"
                 role="button"
-
               />
               <TrashIcon
                 data-bs-toggle="modal"
@@ -327,6 +230,86 @@ export default {
       </div>
     </Footer>
   </div>
+
+  <Modal id="employeeModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="employeeModalLabel">
+          Employee's Information
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form id="employeeForm" @submit.prevent="addNewEmployee">
+          <div class="mb-3">
+            <label for="employeeName" class="form-label d-block text-start"
+              >Name</label
+            >
+            <input
+              v-model="employeeNameInput"
+              type="text"
+              class="form-control"
+              id="employeeName"
+              aria-describedby="employeeName"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="employeeRole" class="form-label d-block text-start"
+              >Role</label
+            >
+            <input
+              v-model="employeeRoleInput"
+              type="text"
+              class="form-control"
+              id="employeeRole"
+              aria-describedby="employeeRole"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="employeeEmail" class="form-label d-block text-start"
+              >Email address</label
+            >
+            <input
+              v-model="employeeEmailInput"
+              type="email"
+              class="form-control"
+              id="employeeEmail"
+              aria-describedby="employeeEmail"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="employeeContact" class="form-label d-block text-start"
+              >Contact Number</label
+            >
+            <input
+              v-model="employeePhoneInput"
+              type="text"
+              class="form-control"
+              id="employeeContact"
+              aria-describedby="employeeContact"
+            />
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer border-top-0 justify-content-center">
+        <button type="button" class="btn text-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="employeeForm"
+          data-bs-dismiss="modal"
+          :disabled="isFormInvalid"
+        >
+          Add Employee
+        </button>
+      </div>
+    </template>
+  </Modal>
 
   <Modal id="editEmployeeModal">
     <template v-slot:modal-header>
