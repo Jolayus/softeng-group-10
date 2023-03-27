@@ -3,15 +3,13 @@ import { RouterLink } from 'vue-router';
 
 import CardDashboard from '../components/CardDashboard.vue';
 import Date from '../components/Date.vue';
-import Footer from '../components/Footer.vue';
 
 import cardsData from '../model/CardsData.js';
 
 export default {
   components: {
     CardDashboard,
-    Date,
-    Footer
+    Date
   },
   data() {
     return {
@@ -22,7 +20,7 @@ export default {
 </script>
 
 <template>
-  <div class="d-flex flex-column justify-content-between h-100">
+  <div class="gap-5 d-flex flex-column justify-content-between">
     <header class="position-relative">
       <h1>Dashboard</h1>
       <Date />
@@ -43,17 +41,6 @@ export default {
         </CardDashboard>
       </div>
     </main>
-    <Footer>
-      <div>
-        <img src="../assets/company_logo.png" height="30" alt="company logo">
-        <span>RO-ED Trucking Management System</span>
-      </div>
-      <div>
-        <em>
-          <small>Introduce opportunities for our Partner Operators and offer solution</small>
-        </em>
-      </div>
-    </Footer>
   </div>
 </template>
 
