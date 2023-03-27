@@ -30,9 +30,6 @@ export default {
     <CompanyTab id="pills-contact-tab" target="#pills-contact">
       Contact
     </CompanyTab>
-    <CompanyTab id="pills-disabled-tab" target="#pills-disabled">
-      Disabled
-    </CompanyTab>
   </ul>
   <div class="tab-content" id="pills-tabContent">
     <TabPane classes="show active" id="pills-home"> ... </TabPane>
