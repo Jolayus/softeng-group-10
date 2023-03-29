@@ -86,20 +86,20 @@ export default {
       const { id, companyName, contactPerson, contactNumber, address } = client;
 
       this.editClientId = id;
-      this.editclientCompanyNameInput = companyName;
-      this.editclientContactPersonInput = contactPerson;
-      this.editclientContactNumberInput = contactNumber;
-      this.editclientAddressInput = address;
+      this.editClientCompanyNameInput = companyName;
+      this.editClientContactPersonInput = contactPerson;
+      this.editClientContactNumberInput = contactNumber;
+      this.editClientAddressInput = address;
     },
     saveChanges() {
       const client = this.clientModel.find(
         (client) => client.id === this.editClientId
       );
 
-      client.companyName = this.editclientCompanyNameInput;
-      client.contactPerson = this.editclientContactPersonInput;
-      client.contactNumber = this.editclientContactNumberInput;
-      client.address = this.editclientAddressInput;
+      client.companyName = this.editClientCompanyNameInput;
+      client.contactPerson = this.editClientContactPersonInput;
+      client.contactNumber = this.editClientContactNumberInput;
+      client.address = this.editClientAddressInput;
     }
   },
   computed: {
@@ -125,9 +125,9 @@ export default {
         }
         return false;
       } else if (this.currentModal === 'EDIT') {
-        const companyName = this.editClienCompanyNameInput.trim();
-        const contactPerson = this.editClienContactPersonInput.trim();
-        const contactNumber = this.editClienContactNumberInput.trim();
+        const companyName = this.editClientCompanyNameInput.trim();
+        const contactPerson = this.editClientContactPersonInput.trim();
+        const contactNumber = this.editClientContactNumberInput.trim();
         const address = this.editClientAddressInput.trim();
 
         if (
@@ -203,7 +203,6 @@ export default {
         </tbody>
       </table>
     </main>
-    <Footer />
   </div>
 
   <Modal id="clientModal">
@@ -256,8 +255,8 @@ export default {
   <Modal id="editClientModal">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
-        <h1 class="modal-title fs-5" id="editEmployeeLabel">
-          Edit Employee's Information
+        <h1 class="modal-title fs-5" id="editClientLabel">
+          Edit Client's Information
         </h1>
       </div>
     </template>
@@ -265,23 +264,39 @@ export default {
       <div class="modal-body">
         <form id="editClientForm" @submit.prevent="saveChanges">
           <div class="mb-3">
-            <label for="newClientCompanyName" class="form-label d-block text-start">Name</label>
-            <input v-model="editClientCompanyNameInput" type="text" class="form-control" id="newClientCompanyName"
+            <label for="newClientCompanyName" class="form-label d-block text-start">Company Name</label>
+            <input 
+              v-model="editClientCompanyNameInput" 
+              type="text" 
+              class="form-control" 
+              id="newClientCompanyName"
               aria-describedby="newClientCompanyName" />
           </div>
           <div class="mb-3">
-            <label for="newClientContactPerson" class="form-label d-block text-start">Role</label>
-            <input v-model="editClientContactPersonInput" type="text" class="form-control" id="newClientContactPerson"
+            <label for="newClientContactPerson" class="form-label d-block text-start">Contact Person</label>
+            <input 
+              v-model="editClientContactPersonInput" 
+              type="text" 
+              class="form-control" 
+              id="newClientContactPerson"
               aria-describedby="newClientContactPerson" />
           </div>
           <div class="mb-3">
-            <label for="newClienContactNumber" class="form-label d-block text-start">Email address</label>
-            <input v-model="editClienContactNumberInput" type="text" class="form-control" id="newClienContactNumber"
+            <label for="newClienContactNumber" class="form-label d-block text-start">Contact Number</label>
+            <input 
+              v-model="editClientContactNumberInput" 
+              type="text" 
+              class="form-control" 
+              id="newClienContactNumber"
               aria-describedby="newClienContactNumber" />
           </div>
           <div class="mb-3">
             <label for="newClientAddress" class="form-label d-block text-start">Address</label>
-            <input v-model="editClientAddressInput" type="text" class="form-control" id="newClientAddress"
+            <input 
+              v-model="editClientAddressInput" 
+              type="text" 
+              class="form-control" 
+              id="newClientAddress"
               aria-describedby="newClientAddress" />
           </div>
         </form>
