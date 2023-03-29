@@ -1,14 +1,23 @@
 <script>
 import MenuIcon from './Icons/MenuIcon.vue';
+import EditIcon from './Icons/EditIcon.vue';
+import TrashIcon from './Icons/TrashIcon.vue';
 
 export default {
     name: "FloatingActionButton",
     components:{
-        MenuIcon
+        MenuIcon,
+        EditIcon,
+        TrashIcon
     },
     data() {
         return {
             showMenu: false,
+            menuItems: [
+                { icon: 'Icon', text: 'Add' },
+                { icon: 'EditIcon', text: 'Edit' },
+                { icon: 'TrashIcon', text: 'Delete' },
+            ],
         };
     },
     methods: {
@@ -21,33 +30,33 @@ export default {
 
 <template>
     <div class="fab-container">
-        <button class="fab" @click="toggleMenu">
+        <button style="list-style-type: none" class="fab" @click="toggleMenu">
             <MenuIcon />
         </button>
         <transition name="fade">
             <div class="menu" v-if="showMenu">
                 <ul>
-                    <li><a href="#">Option 1</a></li>
-                    <li><a href="#">Option 2</a></li>
-                    <li><a href="#">Option 3</a></li>
+                    <li v-for="(item, index) in menuItems" :key="index">
+                        <component :is="item.icon" /> {{ item.text }}
+                    </li>
                 </ul>
             </div>
         </transition>
     </div>
 </template>
 
-<style>
+<style scoped>
 .fab-container {
     position: fixed;
-    bottom: 40px;
-    right: 20px;
+    bottom: 50px;
+    right: 30px;
 }
 
 .fab {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #2196F3;
+    background-color: #041421;
     color: #FFF;
     box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
     border: none;
@@ -56,12 +65,12 @@ export default {
 
 .menu {
     position: absolute;
-    bottom: 80px;
+    bottom: 70px;
     right: 0;
-    background-color: #FFF;
+    background-color: #FFFFFF;
     box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 .fade-enter-active,

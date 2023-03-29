@@ -1,10 +1,10 @@
 <script>
-import LowerRightMenu from '../components/LowerRightMenu.vue';
+import FloatingActionButton from '../components/FloatingActionButton.vue';
 
 export default {
   name: 'Payroll',
   components:{
-    LowerRightMenu
+    FloatingActionButton
   }
 }
 </script>
@@ -12,7 +12,7 @@ export default {
 <template>
   <div class="d-flex flex-column justify-content-between h-100">
     <h1>Payroll</h1>
-    <LowerRightMenu />
+    <FloatingActionButton />
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 <script>
 import CompanyTab from '../components/CompanyTab.vue';
 import TabPane from '../components/TabPane.vue';
+import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Footer from '../components/Footer.vue';
 
 export default {
@@ -8,7 +9,8 @@ export default {
   components: {
     CompanyTab,
     TabPane,
-    Footer
+    Footer,
+    FloatingActionButton
   }
 };
 </script>
@@ -36,5 +38,6 @@ export default {
     <TabPane id="pills-profile"> ... </TabPane>
     <TabPane id="pills-contact"> ... </TabPane>
   </div>
+  <FloatingActionButton />
 </template>
 
