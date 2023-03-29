@@ -215,6 +215,7 @@ export default {
         </tbody>
       </table>
     </main>
+    <Footer />
   </div>
 
   <Modal id="employeeModal">

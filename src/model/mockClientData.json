@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "companyName": "Chaos Company",
+        "contactPerson": "Victor Chaos",
+        "contactNumber": "09123456789",
+        "address": "Address Placeholder"
+    },
+    {
+        "id": 2,
+        "companyName": "Butters Company",
+        "contactPerson": "Leopold Scotch",
+        "contactNumber": "09123456789",
+        "address": "Address Placeholder"
+    }
+]

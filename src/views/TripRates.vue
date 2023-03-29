@@ -37,3 +37,4 @@ export default {
     <TabPane id="pills-contact"> ... </TabPane>
   </div>
 </template>
+

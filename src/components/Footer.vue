@@ -12,10 +12,7 @@ export default {
     </div>
     <div>
       <em>
-        <small
-          >Introduce opportunities for our Partner Operators and offer
-          solution</small
-        >
+        <small>Introduce opportunities for our Partner Operators and offer solution.</small>
       </em>
     </div>
   </footer>
