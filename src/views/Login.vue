@@ -59,7 +59,7 @@ export default {
             />
           </div>
           <button type="submit" class="btn tms-btn text-light">
-            <RouterLink to="/dashboard" class="text-light">Login</RouterLink>
+            <RouterLink to="/dashboard" class="text-light text-decoration-none">Login</RouterLink>
           </button>
         </form>
       </div>
