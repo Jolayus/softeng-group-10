@@ -246,7 +246,7 @@ export default {
         </button>
         <button type="submit" class="btn tms-btn text-light" form="clientForm" data-bs-dismiss="modal"
           :disabled="isFormInvalid">
-          Add Employee
+          Add Client
         </button>
       </div>
     </template>
