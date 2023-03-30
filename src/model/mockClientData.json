@@ -4,13 +4,15 @@
         "companyName": "Chaos Company",
         "contactPerson": "Victor Chaos",
         "contactNumber": "09123456789",
-        "address": "Address Placeholder"
+        "address": "Address Placeholder",
+        "billing": []
     },
     {
         "id": 2,
         "companyName": "Butters Company",
         "contactPerson": "Leopold Scotch",
         "contactNumber": "09123456789",
-        "address": "Address Placeholder"
+        "address": "Address Placeholder",
+        "billing": []
     }
 ]

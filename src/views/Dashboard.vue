@@ -41,7 +41,6 @@ export default {
         </CardDashboard>
       </div>
     </main>
-    <Footer />
   </div>
 </template>
 
