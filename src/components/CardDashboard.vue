@@ -6,7 +6,7 @@ export default {
 </script>
 
 <template>
-  <div class="card w-45 position-relative">
+  <div class="card w-45 position-relative shadow">
     <div class="overlay" :class="classes"></div>
     <div class="card-body text-center d-flex flex-column justify-content-between">
       <slot name="title"></slot>
@@ -17,6 +17,14 @@ export default {
 </template>
 
 <style scoped>
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
 .w-45 {
   width: 45%;
 }
