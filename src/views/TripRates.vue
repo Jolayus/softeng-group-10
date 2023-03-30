@@ -1,43 +1,45 @@
 <script>
 import CompanyTab from '../components/CompanyTab.vue';
 import TabPane from '../components/TabPane.vue';
-import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Footer from '../components/Footer.vue';
+
+import { getClientModel } from '../model/client.model';
 
 export default {
   name: 'Trip Rates',
+  data() {
+    return {
+      clients: getClientModel()
+    }
+  },
   components: {
     CompanyTab,
     TabPane,
-    Footer,
-    FloatingActionButton
+    Footer
   }
 };
 </script>
 
 <template>
-  <h1>Trip Rates</h1>
-  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-    <CompanyTab
-      classes="active"
-      id="pills-home-tab"
-      target="#pills-home"
-      selected="true"
+  <h1>Clients - Trip Rates</h1>
+  <ul class="nav nav-pills mb-3 gap-2" id="pills-tab" role="tablist">
+    <CompanyTab  
+      v-for="client in clients" 
+      :classes="client === clients[0] ? 'active' : ''"
+      :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
+      :target="'#pills-' + client.companyName.split(' ').join('')"
+      :selected="client === clients[0] ? true : false"
     >
-      Home
-    </CompanyTab>
-    <CompanyTab id="pills-profile-tab" target="#pills-profile"
-      >Profile</CompanyTab
-    >
-    <CompanyTab id="pills-contact-tab" target="#pills-contact">
-      Contact
+      {{ client.companyName }}
     </CompanyTab>
   </ul>
   <div class="tab-content" id="pills-tabContent">
-    <TabPane classes="show active" id="pills-home"> ... </TabPane>
-    <TabPane id="pills-profile"> ... </TabPane>
-    <TabPane id="pills-contact"> ... </TabPane>
+    <TabPane 
+      v-for="client in clients"
+      :classes="client === clients[0] ? 'active show' : ''"
+      :id="'pills-' + client.companyName.split(' ').join('')"
+    >
+    {{ client.companyName }}
+    </TabPane>
   </div>
-  <FloatingActionButton />
 </template>
-

@@ -8,7 +8,7 @@ export default {
 <template>
   <li class="nav-item" role="presentation">
     <button
-      class="nav-link"
+      class="nav-link text-light"
       :class="classes"
       :id="id"
       data-bs-toggle="pill"
@@ -16,11 +16,15 @@ export default {
       type="button"
       role="tab"
       :aria-controls="id.slice(0, id.indexOf('-tab'))"
-      :aria-selected="(selected = selected ? false : true)"
+      :aria-selected="(selected ? false : true)"
     >
       <slot></slot>
     </button>
   </li>
 </template>
 
-<style scoped></style>
+<style scoped>
+.nav .nav-link {
+  background-color: #041421;
+}
+</style>
