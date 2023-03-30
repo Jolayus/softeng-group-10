@@ -27,7 +27,7 @@ export default {
       v-for="client in clients" 
       :classes="client === clients[0] ? 'active' : ''"
       :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
-      :target="'#pills-' + client.companyName.split(' ').join('')"
+      :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
     >
       {{ client.companyName }}
@@ -37,7 +37,7 @@ export default {
     <TabPane 
       v-for="client in clients"
       :classes="client === clients[0] ? 'active show' : ''"
-      :id="'pills-' + client.companyName.split(' ').join('')"
+      :id="'pills-' + client.id"
     >
     {{ client.companyName }}
     </TabPane>
