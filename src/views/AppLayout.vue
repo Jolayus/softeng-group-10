@@ -16,7 +16,13 @@ export default {
     Sidebar,
     Footer
   },
-  emits: ['on-login']
+  methods: {
+    onLoginHandler(username, password) {
+      if (username === 'admin' && password === 'admin') {
+        this.isLoggedIn = true;
+      }
+    }
+  }
 }
 </script>
 

@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     onLogin() {
-      this.$emit('on-login');
+      this.$emit('on-login', this.username, this.password);
     }
   }
 };
@@ -44,7 +44,7 @@ export default {
               class="form-control"
               id="loginUsername"
               placeholder="Username"
-              v-model="password"
+              v-model="username"
               required
             />
           </div>
@@ -55,7 +55,7 @@ export default {
               class="form-control"
               id="loginPassword"
               placeholder="Password"
-              v-model="username"
+              v-model="password"
             />
           </div>
           <button type="submit" class="btn tms-btn text-light">
