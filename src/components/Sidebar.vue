@@ -23,7 +23,7 @@ export default {
     onLogout() {
       this.$emit('logout');
     }
-  }
+  },
 }
 </script>
 
@@ -36,19 +36,19 @@ export default {
         </a>
         <h1 class="m-0 h5 text-light">RO-ED Logistics and Services</h1>
       </div>
-      <ul class="nav flex-column justify-content-center nav-pills text-left" id="v-pills-tab" role="tablist"
+      <ul class="nav flex-column justify-content-center nav-pills text-left" 
         aria-orientation="vertical">
-        <li class="nav-link p-0 active" data-bs-toggle="pill">
-          <RouterLink to="/dashboard" class="text-light d-flex align-items-center gap-1 active" role="button">
+        <li class="nav-link p-0">
+          <RouterLink to="/dashboard" class="text-light d-flex align-items-center gap-1" role="button">
             <DashboardIcon />Dashboard
           </RouterLink>
         </li>
-        <li class="nav-link p-0" data-bs-toggle="pill">
+        <li class="nav-link p-0">
           <RouterLink to="/employee" class="text-light d-flex align-items-center gap-1" role="button">
             <EmployeesIcon /> Employees
           </RouterLink>
         </li>
-        <li class="nav-link p-0" data-bs-toggle="pill">
+        <li class="nav-link p-0">
           <div class="d-flex justify-content-between dropend">
             <RouterLink to="/client" class="text-light align-items-center gap-1 flex-grow-1" role="button">
               <ClientsIcon /> Clients
@@ -70,7 +70,7 @@ export default {
             </ul>
           </div>
         </li>
-        <li class="nav-link p-0" data-bs-toggle="pill">
+        <li class="nav-link p-0">
           <RouterLink to="/payroll" class="text-light d-flex align-items-center gap-1" role="button">
             <PayrollIcon /> Payroll
           </RouterLink>
@@ -96,6 +96,7 @@ aside,
   background-color: #041421;
 }
 
+.nav-link:hover,
 .logout:hover,
 .dropdown-item:hover {
   background-color: #4c7273;

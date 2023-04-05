@@ -8,7 +8,8 @@ export default {
   name: 'AppLayout',
   data() {
     return {
-      isLoggedIn: Boolean(localStorage.getItem('authenticated'))
+      isLoggedIn: Boolean(localStorage.getItem('authenticated')),
+      currentPath: this.$route
     };
   },
   components: {
@@ -30,7 +31,7 @@ export default {
       localStorage.clear();
     }
   },
-  emits: ['login', 'logout']
+  emits: ['login', 'logout'],
 };
 </script>
 
