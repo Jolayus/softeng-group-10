@@ -15,7 +15,14 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      if (Boolean(localStorage.getItem('authenticated'))) {
+        next('/dashboard');
+      } else {
+        next();
+      }
+    }
   },
   {
     path: '/dashboard',
