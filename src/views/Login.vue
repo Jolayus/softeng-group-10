@@ -1,6 +1,4 @@
 <script>
-import { RouterLink } from 'vue-router';
-
 export default {
   name: 'Login',
   data() {
@@ -11,7 +9,7 @@ export default {
   },
   methods: {
     onLogin() {
-      this.$emit('on-login', this.username, this.password);
+      this.$emit('login', this.username, this.password);
     }
   }
 };
@@ -59,7 +57,7 @@ export default {
             />
           </div>
           <button type="submit" class="btn tms-btn text-light">
-            <RouterLink to="/dashboard" class="text-light text-decoration-none">Login</RouterLink>
+            Login
           </button>
         </form>
       </div>

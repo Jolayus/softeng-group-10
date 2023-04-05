@@ -18,6 +18,11 @@ export default {
     BillingIcon,
     PayrollIcon,
     LogoutIcon
+  },
+  methods: {
+    onLogout() {
+      this.$emit('logout');
+    }
   }
 }
 </script>
@@ -73,7 +78,7 @@ export default {
       </ul>
     </nav>
     <div class="text-light border-top">
-      <p class="logout p-2 mt-2 mb-2 rounded d-flex align-items-center gap-1" role="button">
+      <p @click="onLogout" class="logout p-2 mt-2 mb-2 rounded d-flex align-items-center gap-1" role="button">
         <LogoutIcon /> Logout
       </p>
     </div>

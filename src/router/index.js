@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
+import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
 import Employee from '../views/Employee.vue';
 import Client from '../views/Client.vue';
@@ -9,7 +10,12 @@ import Payroll from '../views/Payroll.vue';
 const routes = [
   {
     path: '/',
-    redirect: { path: '/dashboard' }
+    redirect: { path: '/login' }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/dashboard',
@@ -41,11 +47,23 @@ const routes = [
     name: 'Payroll',
     component: Payroll
   }
-]
+];
+
+routes.forEach((route) => {
+  if (route.path !== '/' && route.path !== '/login') {
+    route.beforeEnter = function (to, from, next) {
+      if (Boolean(localStorage.getItem('authenticated'))) {
+        next();
+      } else {
+        next('/login');
+      }
+    };
+  }
+});
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
 });
 
-export default router
+export default router;
