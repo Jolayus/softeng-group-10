@@ -10,19 +10,17 @@ export default {
     return {
       isLoggedIn: Boolean(localStorage.getItem('authenticated'))
     };
-  }, 
+  },
   components: {
     Login,
     Sidebar,
     Footer
   },
   methods: {
-    onLoginHandler(username, password) {
-      if (username === 'admin' && password === 'admin') {
-        this.isLoggedIn = true;
-        localStorage.setItem('authenticated', true);
-        this.$router.push({ path: '/dashboard' });
-      }
+    onLoginHandler() {
+      this.isLoggedIn = true;
+      localStorage.setItem('authenticated', true);
+      this.$router.push({ path: '/dashboard' });
     },
 
     onLogoutHandler() {
@@ -33,11 +31,10 @@ export default {
     }
   },
   emits: ['login', 'logout']
-}
+};
 </script>
 
 <template>
-
   <div v-if="!isLoggedIn">
     <Login @login="onLoginHandler" />
   </div>
