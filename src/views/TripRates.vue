@@ -2,6 +2,7 @@
 import CompanyTab from '../components/CompanyTab.vue';
 import TabPane from '../components/TabPane.vue';
 import Footer from '../components/Footer.vue';
+import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 
 import { getClientModel } from '../model/client.model';
 
@@ -15,7 +16,8 @@ export default {
   components: {
     CompanyTab,
     TabPane,
-    Footer
+    Footer,
+    FloatingActionButtonVue
   }
 };
 </script>
@@ -42,4 +44,5 @@ export default {
     {{ client.companyName }}
     </TabPane>
   </div>
+  <FloatingActionButtonVue isForTripRates="true" />
 </template>
