@@ -31,8 +31,9 @@ export default {
   },
   props: ['isForTripRates'],
   mounted() {
-    const uploadObj =  { icon: 'UploadIcon', text: 'Upload' };
+    // If this component is used for trip rates
     if (Boolean(this.isForTripRates)) {
+      const uploadObj =  { icon: 'UploadIcon', text: 'Upload', targetModal: "uploadFileModal" };
       this.menuItems.unshift(uploadObj);
     }
   }
@@ -47,8 +48,10 @@ export default {
     <transition name="fade">
       <div class="menu p-0" v-if="showMenu">
         <ul class="list-style-none mb-0">
-          <li class="list-item px-3 py-2 border" v-for="(item, index) in menuItems" :key="index">
+          <li v-for="(item, index) in menuItems" :key="index">
+            <button type="button" class="list-item px-3 py-2 border w-100" data-bs-toggle="modal" :data-bs-target="`#${item.targetModal}`">
               <component :is="item.icon" /> {{ item.text }}
+            </button>
           </li>
         </ul>
       </div>
@@ -103,6 +106,7 @@ export default {
   display: flex;
   min-width: 80px;
   gap: 10px;
+  cursor: pointer;
 }
 
 .list-item:hover {
@@ -110,13 +114,7 @@ export default {
   color: white;
 }
 
-.list-item:first-child {
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
-}
-
-.list-item:last-child {
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
+button {
+  border-radius: none;
 }
 </style>
