@@ -14,10 +14,9 @@ export default {
   data() {
     return {
       clients: getClientModel(),
-      startRow: undefined,
-      endRow: undefined,
-      startColumn: undefined,
-      endColumn: undefined
+      isInvalidFormat: false,
+      currentTripRates: [],
+      currentTab: getClientModel()[0]?.companyName
     };
   },
   components: {
@@ -28,7 +27,26 @@ export default {
     Modal
   },
   methods: {
-    onFileUpload() {
+    // A method that formats the result from sheet_to_json method
+    formatJson(json) {
+      const result = json.map((row) => {
+        return {
+          province: row['PROVINCE'],
+          city: row['CITY / MUNICIPALITY'],
+          AUV: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
+          '4W': row['4W'] ? Math.ceil(row['4W'] * 100) / 100 : undefined,
+          '6WF': row['6WF'] ? Math.ceil(row['6WF'] * 100) / 100 : undefined,
+          '6W ELF': row['6W ELF']
+            ? Math.ceil(row['6W ELF'] * 100) / 100
+            : undefined,
+          '10W': row['10W'] ? Math.ceil(row['10W'] * 100) / 100 : undefined
+        };
+      });
+
+      return result;
+    },
+
+    onFileChangeHandler() {
       const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
       reader.readAsBinaryString(file);
@@ -36,30 +54,35 @@ export default {
       reader.addEventListener('load', (event) => {
         const data = event.target.result;
         const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[1];
-        const worksheet = workbook.Sheets[sheetName];
 
-        const range = `${this.startColumn}${this.startRow}:${this.endColumn}${this.endRow}`;
-        const json = XLSX.utils.sheet_to_json(worksheet, {
-          range
+        const { SheetNames } = workbook;
+
+        SheetNames.forEach((SheetName) => {
+          const worksheet = workbook.Sheets[SheetName];
+          const range = 'A11:Z500'; // this range is valid if the user follow the given format
+          const json = XLSX.utils.sheet_to_json(worksheet, {
+            range
+          });
+
+          const result = this.formatJson(json);
+
+          const firstRow = result[0];
+          try {
+            if (firstRow === undefined || firstRow.province === undefined || firstRow.city === undefined) {
+              throw new Error('Invalid Format');
+            }
+            this.isInvalidFormat = false;
+            this.currentTripRates.push(result);
+          } catch (err) {
+            this.isInvalidFormat = true;
+          }
         });
-
-        const result = json.map(row => {
-          return {
-            'province': row['PROVINCE'],
-            'city': row['CITY / MUNICIPALITY'],
-            'AUV': row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
-            '4W': row['4W'] ? Math.ceil(row['4W'] * 100) / 100 : undefined,
-            '6WF': row['6WF'] ? Math.ceil(row['6WF'] * 100) / 100 : undefined,
-            '6W ELF': row['6W ELF'] ? Math.ceil(row['6W ELF'] * 100) / 100 : undefined,
-            '10W': row['10W'] ? Math.ceil(row['10W'] * 100) / 100 : undefined
-          };  
-        });
-
-        console.log(json);
-        console.log(result);
-
       });
+    },
+
+    // Used to re-assign the value of currentTripRates to be show
+    tabChangeHandler(id) {
+      console.log(this.currentTab);
     }
   }
 };
@@ -74,6 +97,7 @@ export default {
       :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
       :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
+      @tabChange=tabChangeHandler
     >
       {{ client.companyName }}
     </CompanyTab>
@@ -84,21 +108,29 @@ export default {
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'pills-' + client.id"
     >
-      {{ client.companyName }}
+      {{ currentTripRates }}
+      <!-- {{ client.companyName }} -->
     </TabPane>
   </div>
 
   <Modal id="uploadFileModal">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
-        <h1 class="modal-title fs-5" id="uploadFileLabel">
-          Upload Excel File
-        </h1>
+        <h1 class="modal-title fs-5" id="uploadFileLabel">Upload Excel File</h1>
       </div>
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="uploadFileForm" @submit.prevent="this.onFileUpload">
+        <div>
+          <span>Trip Rates Format: </span>
+          <a
+            href="https://docs.google.com/spreadsheets/d/10RxQvNb0-a24lsKOUYv-1dzZEri5leVD/edit?usp=sharing&ouid=106127419470207496838&rtpof=true&sd=true"
+            class="link-success"
+            target="_blank"
+            >Click here</a
+          >
+        </div>
+        <form id="uploadFileForm">
           <div class="mb-3">
             <label for="file" class="form-label d-block text-start"
               >File:</label
@@ -108,56 +140,15 @@ export default {
               class="form-control"
               id="file"
               ref="fileInput"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="startRow" class="form-label d-block text-start"
-              >Start Row:</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              id="startRow"
-              v-model="startRow"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="endRow" class="form-label d-block text-start"
-              >End Row:</label
-            >
-            <input
-              type="number"
-              class="form-control"
-              id="endRow"
-              v-model="endRow"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="startColumn" class="form-label d-block text-start"
-              >Start Column:</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="startColumn"
-              v-model="startColumn"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="endColumn" class="form-label d-block text-start"
-              >End Column:</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="endColumn"
-              v-model="endColumn"
+              required
+              @change.prevent="onFileChangeHandler"
             />
           </div>
         </form>
       </div>
     </template>
     <template v-slot:modal-footer>
+      <p v-if="isInvalidFormat" class="text-danger">Invalid Format</p>
       <div class="modal-footer justify-content-center border-top-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
@@ -166,11 +157,16 @@ export default {
           type="submit"
           class="btn btn-primary tms-btn"
           form="uploadFileForm"
+          :disabled="isInvalidFormat"
+          data-bs-dismiss="modal"
         >
           Upload
         </button>
       </div>
     </template>
   </Modal>
-  <FloatingActionButtonVue isForTripRates="true" uploadModalId="uploadFileModal" />
+  <FloatingActionButtonVue
+    isForTripRates="true"
+    uploadModalId="uploadFileModal"
+  />
 </template>

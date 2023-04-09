@@ -1,7 +1,12 @@
 <script>
 export default {
   name: 'CompanyTab',
-  props: ['classes', 'id', 'target', 'selected']
+  props: ['classes', 'id', 'target', 'selected', 'onClick'],
+  methods: {
+    clickHandler() {
+      this.$emit('tabChange', this.id);
+    }
+  }
 };
 </script>
 
@@ -17,6 +22,7 @@ export default {
       role="tab"
       :aria-controls="id.slice(0, id.indexOf('-tab'))"
       :aria-selected="(selected ? false : true)"
+      @click="clickHandler"
     >
       <slot></slot>
     </button>
