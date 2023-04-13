@@ -14,7 +14,7 @@ export default {
   data() {
     return {
       clients: getClientModel(),
-      isInvalidFormat: false,
+      isValidFormat: undefined,
       currentTripRates: [],
       currentTab: getClientModel()[0]?.companyName
     };
@@ -46,7 +46,7 @@ export default {
       return result;
     },
 
-    onFileChangeHandler() {
+    onFileSubmitHandler() {
       const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
       reader.readAsBinaryString(file);
@@ -68,13 +68,17 @@ export default {
 
           const firstRow = result[0];
           try {
-            if (firstRow === undefined || firstRow.province === undefined || firstRow.city === undefined) {
+            if (
+              firstRow === undefined ||
+              firstRow.province === undefined ||
+              firstRow.city === undefined
+            ) {
               throw new Error('Invalid Format');
             }
-            this.isInvalidFormat = false;
+            this.isValidFormat = true;
             this.currentTripRates.push(result);
           } catch (err) {
-            this.isInvalidFormat = true;
+            this.isValidFormat = false;
           }
         });
       });
@@ -97,7 +101,7 @@ export default {
       :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
       :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
-      @tabChange=tabChangeHandler
+      @tabChange="tabChangeHandler"
     >
       {{ client.companyName }}
     </CompanyTab>
@@ -108,8 +112,7 @@ export default {
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'pills-' + client.id"
     >
-      {{ currentTripRates }}
-      <!-- {{ client.companyName }} -->
+      {{ currentTripRates.length === 0 ? 'Empty' : currentTripRates }}
     </TabPane>
   </div>
 
@@ -130,7 +133,7 @@ export default {
             >Click here</a
           >
         </div>
-        <form id="uploadFileForm">
+        <form id="uploadFileForm" @submit.prevent="onFileSubmitHandler">
           <div class="mb-3">
             <label for="file" class="form-label d-block text-start"
               >File:</label
@@ -141,27 +144,34 @@ export default {
               id="file"
               ref="fileInput"
               required
-              @change.prevent="onFileChangeHandler"
             />
           </div>
         </form>
       </div>
     </template>
     <template v-slot:modal-footer>
-      <p v-if="isInvalidFormat" class="text-danger">Invalid Format</p>
+      <p v-show="isValidFormat === true" class="text-success">Valid Format</p>
+      <p v-show="isValidFormat === false" class="text-danger">Invalid Format</p>
       <div class="modal-footer justify-content-center border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancel
+        <button v-if="isValidFormat" type="button" class="btn btn-success" data-bs-dismiss="modal">
+          Continue
         </button>
-        <button
-          type="submit"
-          class="btn btn-primary tms-btn"
-          form="uploadFileForm"
-          :disabled="isInvalidFormat"
-          data-bs-dismiss="modal"
-        >
-          Upload
-        </button>
+        <div v-else style="min-width: 170px;" class="d-flex justify-content-around">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary tms-btn"
+            form="uploadFileForm"
+          >
+            Upload
+          </button>
+        </div>
       </div>
     </template>
   </Modal>
