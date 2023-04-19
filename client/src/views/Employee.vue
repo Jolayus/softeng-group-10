@@ -39,10 +39,11 @@ export default {
   },
   methods: {
     archiveEmployee(id) {
-
       httpArchiveEmployee(id)
-        .then(archiveEmployee => {
-          this.employeesModel = this.employeesModel.filter(employee => employee.id !== archiveEmployee);  
+        .then(archivedEmployee => {
+          this.employeesModel = this.employeesModel.filter(employee => {
+            return employee.id !== archivedEmployee.id;
+          });
         });
     },
     addNewEmployee() {

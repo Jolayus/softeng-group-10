@@ -22,8 +22,8 @@ async function httpCreateEmployee(newEmployee) {
 
 // Archive employee
 async function httpArchiveEmployee(id) {
-  const response = await fetch(`${API_URL}/employees/${id}`, {
-    method: 'POST',
+  const response = await fetch(`${API_URL}/employees`, {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
