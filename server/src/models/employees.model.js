@@ -4,15 +4,15 @@ const employees = [];
 
 function loadEmployees() {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.each('SELECT * FROM employees', (err, employee) => {
-        if (err) {
-          reject(err);
-        } else {
-          employees.push(employee);
-          resolve();
-        }
-      });
+    const sql = 'SELECT * FROM employees';
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        rows.forEach(row => employees.push(row));
+        resolve();
+      }
     });
   });
 }
