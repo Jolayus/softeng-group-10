@@ -8,15 +8,17 @@ import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
 import { getClientModel } from '../model/client.model';
+import { getTripRatesModel } from '../model/triprates.model';
 
 export default {
   name: 'Trip Rates',
   data() {
     return {
       clients: getClientModel(),
-      isInvalidFormat: false,
-      currentTripRates: [],
-      currentTab: getClientModel()[0]?.companyName
+      tripRates: getTripRatesModel(),
+      isValidFormat: undefined,
+      currentTripRates: {},
+      currentClient: {}
     };
   },
   components: {
@@ -28,9 +30,11 @@ export default {
   },
   methods: {
     // A method that formats the result from sheet_to_json method
-    formatJson(json) {
+    formatJson(json, branch) {
       const result = json.map((row) => {
         return {
+          branch,
+          client: this.currentClient.companyName,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
           AUV: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
@@ -46,7 +50,7 @@ export default {
       return result;
     },
 
-    onFileChangeHandler() {
+    onFileSubmitHandler() {
       const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
       reader.readAsBinaryString(file);
@@ -64,17 +68,22 @@ export default {
             range
           });
 
-          const result = this.formatJson(json);
+          const result = this.formatJson(json, SheetName);
 
           const firstRow = result[0];
           try {
-            if (firstRow === undefined || firstRow.province === undefined || firstRow.city === undefined) {
+            if (
+              firstRow === undefined ||
+              firstRow.province === undefined ||
+              firstRow.city === undefined
+            ) {
               throw new Error('Invalid Format');
             }
-            this.isInvalidFormat = false;
-            this.currentTripRates.push(result);
+            this.isValidFormat = true;
+            this.tripRates.push(...result);
+            this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
           } catch (err) {
-            this.isInvalidFormat = true;
+            this.isValidFormat = false;
           }
         });
       });
@@ -82,8 +91,13 @@ export default {
 
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
-      console.log(this.currentTab);
+      this.currentClient = this.clients.find((client) => client.id === id);
+      this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
     }
+  },
+  mounted() {
+    this.currentClient = this.clients[0]
+    this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
   }
 };
 </script>
@@ -97,7 +111,9 @@ export default {
       :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
       :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
-      @tabChange=tabChangeHandler
+      @tabChange="tabChangeHandler"
+      :key="client.id"
+      :clientId="client.id"
     >
       {{ client.companyName }}
     </CompanyTab>
@@ -107,9 +123,9 @@ export default {
       v-for="client in clients"
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'pills-' + client.id"
+      :key="client.id"
     >
       {{ currentTripRates }}
-      <!-- {{ client.companyName }} -->
     </TabPane>
   </div>
 
@@ -130,7 +146,7 @@ export default {
             >Click here</a
           >
         </div>
-        <form id="uploadFileForm">
+        <form id="uploadFileForm" @submit.prevent="onFileSubmitHandler">
           <div class="mb-3">
             <label for="file" class="form-label d-block text-start"
               >File:</label
@@ -141,27 +157,34 @@ export default {
               id="file"
               ref="fileInput"
               required
-              @change.prevent="onFileChangeHandler"
             />
           </div>
         </form>
       </div>
     </template>
     <template v-slot:modal-footer>
-      <p v-if="isInvalidFormat" class="text-danger">Invalid Format</p>
+      <p v-show="isValidFormat === true" class="text-success">Valid Format</p>
+      <p v-show="isValidFormat === false" class="text-danger">Invalid Format</p>
       <div class="modal-footer justify-content-center border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancel
+        <button v-if="isValidFormat" type="button" class="btn btn-success" data-bs-dismiss="modal">
+          Continue
         </button>
-        <button
-          type="submit"
-          class="btn btn-primary tms-btn"
-          form="uploadFileForm"
-          :disabled="isInvalidFormat"
-          data-bs-dismiss="modal"
-        >
-          Upload
-        </button>
+        <div v-else style="min-width: 170px;" class="d-flex justify-content-around">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary tms-btn"
+            form="uploadFileForm"
+          >
+            Upload
+          </button>
+        </div>
       </div>
     </template>
   </Modal>

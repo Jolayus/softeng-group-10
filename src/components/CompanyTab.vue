@@ -1,10 +1,11 @@
 <script>
 export default {
   name: 'CompanyTab',
-  props: ['classes', 'id', 'target', 'selected', 'onClick'],
+  props: ['classes', 'id', 'target', 'selected', 'onClick', 'clientId'],
   methods: {
     clickHandler() {
-      this.$emit('tabChange', this.id);
+      this.$emit('tabChange', this.clientId);
+      // clientId is the unique identifier for each client
     }
   }
 };
