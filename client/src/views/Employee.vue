@@ -6,7 +6,7 @@ import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../models/employees.model';
 
-import { httpCreateEmployee, httpArchiveEmployee } from '../requests/requests';
+import { httpCreateEmployee, httpUpdateEmployee, httpArchiveEmployee } from '../requests/requests';
 
 export default {
   name: 'Employee',
@@ -89,6 +89,8 @@ export default {
       employee.role = this.editEmployeeRoleInput;
       employee.email = this.editEmployeeEmailInput;
       employee.contact_number = this.editEmployeeContactNumberInput;
+
+      httpUpdateEmployee(employee);
     }
   },
   computed: {

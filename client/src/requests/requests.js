@@ -53,9 +53,23 @@ async function httpGetClients() {
   return clients;
 }
 
+// Create new client
+async function httpCreateClient(newClient) {
+  const response = await fetch(`${API_URL}/clients`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newClient)
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
+  httpUpdateEmployee,
   httpArchiveEmployee,
-  httpGetClients
+  httpGetClients,
+  httpCreateClient
 };

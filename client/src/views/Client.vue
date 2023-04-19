@@ -5,6 +5,7 @@ import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
+import { httpCreateClient } from '../requests/requests';
 import { addClientArchive } from '../models/clientArchive.model';
 
 export default {
@@ -18,7 +19,7 @@ export default {
   },
   data() {
     return {
-      clientModel: getClientsModel(),
+      clientsModel: getClientsModel(),
       selectedClient: null,
       currentClientId: 0,
       searchInput: '',
@@ -36,10 +37,10 @@ export default {
   },
   methods: {
     archiveClient(id) {
-      const toBeArchiveClient = this.clientModel.find(
+      const toBeArchiveClient = this.clientsModel.find(
         (client) => client.id === id
       );
-      this.clientModel = this.clientModel.filter(
+      this.clientsModel = this.clientsModel.filter(
         (client) => client !== toBeArchiveClient
       );
 
@@ -57,19 +58,17 @@ export default {
       const contact_number = this.clientContactNumberInput.trim();
       const address = this.clientAddressInput.trim();
 
-      // Increment the current id for new employee
-      this.currentClientId++;
-
-      // Creating new employee
       const newClient = {
-        id: this.currentClientId,
         company_name,
         contact_person,
         contact_number,
         address
       };
 
-      this.clientModel.push(newClient);
+      httpCreateClient(newClient).then((client) => {
+        console.log(client);
+        this.clientsModel.push(client);
+      });
 
       // Clear input
       this.clearInput();
@@ -83,7 +82,8 @@ export default {
     onEdit(client) {
       this.currentModal = 'EDIT';
 
-      const { id, company_name, contact_person, contact_number, address } = client;
+      const { id, company_name, contact_person, contact_number, address } =
+        client;
 
       this.editClientId = id;
       this.editClientCompanyNameInput = company_name;
@@ -92,7 +92,7 @@ export default {
       this.editClientAddressInput = address;
     },
     saveChanges() {
-      const client = this.clientModel.find(
+      const client = this.clientsModel.find(
         (client) => client.id === this.editClientId
       );
 
@@ -104,7 +104,7 @@ export default {
   },
   computed: {
     filteredClient() {
-      return this.clientModel.filter((client) =>
+      return this.clientsModel.filter((client) =>
         client.company_name.includes(this.searchInput)
       );
     },
@@ -143,7 +143,7 @@ export default {
     }
   },
   mounted() {
-    this.currentClientId = this.clientModel.length;
+    this.currentClientId = this.clientsModel.length;
   }
 };
 </script>
@@ -157,21 +157,21 @@ export default {
       <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
         <div class="input-group mb-3 h-100 align-items-center gap-2">
           <label for="user-input">Search:</label>
-          <input 
-            v-model="searchInput" 
-            type="text" 
-            class="form-control" 
+          <input
+            v-model="searchInput"
+            type="text"
+            class="form-control"
             placeholder="Client's name"
-            aria-label="Recipient's username" 
-            id="user-input" 
-            aria-describedby="basic-addon2" 
+            aria-label="Recipient's username"
+            id="user-input"
+            aria-describedby="basic-addon2"
           />
         </div>
-        <button 
-          type="button" 
-          data-bs-toggle="modal" 
+        <button
+          type="button"
+          data-bs-toggle="modal"
           data-bs-target="#clientModal"
-          class="btn tms-btn text-light d-flex align-items-center h-100" 
+          class="btn tms-btn text-light d-flex align-items-center h-100"
           @click="currentModal = 'ADD'"
         >
           Add new client
@@ -194,10 +194,20 @@ export default {
             <td>{{ client.contact_number }}</td>
             <td>{{ client.address }}</td>
             <td>
-              <EditIcon data-bs-toggle="modal" data-bs-target="#editClientModal" @click.prevent="onEdit(client)"
-                class="mx-2 text-primary" role="button" />
-              <TrashIcon data-bs-toggle="modal" data-bs-target="#archiveClientVerif"
-                @click.prevent="selectedClient = client.id" class="mx-2 text-danger" role="button" />
+              <EditIcon
+                data-bs-toggle="modal"
+                data-bs-target="#editClientModal"
+                @click.prevent="onEdit(client)"
+                class="mx-2 text-primary"
+                role="button"
+              />
+              <TrashIcon
+                data-bs-toggle="modal"
+                data-bs-target="#archiveClientVerif"
+                @click.prevent="selectedClient = client.id"
+                class="mx-2 text-danger"
+                role="button"
+              />
             </td>
           </tr>
         </tbody>
@@ -217,24 +227,56 @@ export default {
       <div class="modal-body">
         <form id="clientForm" @submit.prevent="addNewClient">
           <div class="mb-3">
-            <label for="clientCompanyName" class="form-label d-block text-start">Company Name</label>
-            <input v-model="clientCompanyNameInput" type="text" class="form-control" id="clientCompanyName"
-              aria-describedby="clientCompanyName" />
+            <label for="clientCompanyName" class="form-label d-block text-start"
+              >Company Name</label
+            >
+            <input
+              v-model="clientCompanyNameInput"
+              type="text"
+              class="form-control"
+              id="clientCompanyName"
+              aria-describedby="clientCompanyName"
+            />
           </div>
           <div class="mb-3">
-            <label for="clientContactPerson" class="form-label d-block text-start">Contact Person</label>
-            <input v-model="clientContactPersonInput" type="text" class="form-control" id="clientContactPerson"
-              aria-describedby="clientContactPerson" />
+            <label
+              for="clientContactPerson"
+              class="form-label d-block text-start"
+              >Contact Person</label
+            >
+            <input
+              v-model="clientContactPersonInput"
+              type="text"
+              class="form-control"
+              id="clientContactPerson"
+              aria-describedby="clientContactPerson"
+            />
           </div>
           <div class="mb-3">
-            <label for="clientContactNumber" class="form-label d-block text-start">Contact Number</label>
-            <input v-model="clientContactNumberInput" type="text" class="form-control" id="clientContactNumber"
-              aria-describedby="clientContactNumber" />
+            <label
+              for="clientContactNumber"
+              class="form-label d-block text-start"
+              >Contact Number</label
+            >
+            <input
+              v-model="clientContactNumberInput"
+              type="text"
+              class="form-control"
+              id="clientContactNumber"
+              aria-describedby="clientContactNumber"
+            />
           </div>
           <div class="mb-3">
-            <label for="clientAddress" class="form-label d-block text-start">Address</label>
-            <input v-model="clientAddressInput" type="text" class="form-control" id="clientAddress"
-              aria-describedby="clientAddress" />
+            <label for="clientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="clientAddressInput"
+              type="text"
+              class="form-control"
+              id="clientAddress"
+              aria-describedby="clientAddress"
+            />
           </div>
         </form>
       </div>
@@ -244,8 +286,13 @@ export default {
         <button type="button" class="btn text-light" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="submit" class="btn tms-btn text-light" form="clientForm" data-bs-dismiss="modal"
-          :disabled="isFormInvalid">
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="clientForm"
+          data-bs-dismiss="modal"
+          :disabled="isFormInvalid"
+        >
           Add Client
         </button>
       </div>
@@ -264,40 +311,58 @@ export default {
       <div class="modal-body">
         <form id="editClientForm" @submit.prevent="saveChanges">
           <div class="mb-3">
-            <label for="newClientCompanyName" class="form-label d-block text-start">Company Name</label>
-            <input 
-              v-model="editClientCompanyNameInput" 
-              type="text" 
-              class="form-control" 
+            <label
+              for="newClientCompanyName"
+              class="form-label d-block text-start"
+              >Company Name</label
+            >
+            <input
+              v-model="editClientCompanyNameInput"
+              type="text"
+              class="form-control"
               id="newClientCompanyName"
-              aria-describedby="newClientCompanyName" />
+              aria-describedby="newClientCompanyName"
+            />
           </div>
           <div class="mb-3">
-            <label for="newClientContactPerson" class="form-label d-block text-start">Contact Person</label>
-            <input 
-              v-model="editClientContactPersonInput" 
-              type="text" 
-              class="form-control" 
+            <label
+              for="newClientContactPerson"
+              class="form-label d-block text-start"
+              >Contact Person</label
+            >
+            <input
+              v-model="editClientContactPersonInput"
+              type="text"
+              class="form-control"
               id="newClientContactPerson"
-              aria-describedby="newClientContactPerson" />
+              aria-describedby="newClientContactPerson"
+            />
           </div>
           <div class="mb-3">
-            <label for="newClienContactNumber" class="form-label d-block text-start">Contact Number</label>
-            <input 
-              v-model="editClientContactNumberInput" 
-              type="text" 
-              class="form-control" 
+            <label
+              for="newClienContactNumber"
+              class="form-label d-block text-start"
+              >Contact Number</label
+            >
+            <input
+              v-model="editClientContactNumberInput"
+              type="text"
+              class="form-control"
               id="newClienContactNumber"
-              aria-describedby="newClienContactNumber" />
+              aria-describedby="newClienContactNumber"
+            />
           </div>
           <div class="mb-3">
-            <label for="newClientAddress" class="form-label d-block text-start">Address</label>
-            <input 
-              v-model="editClientAddressInput" 
-              type="text" 
-              class="form-control" 
+            <label for="newClientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="editClientAddressInput"
+              type="text"
+              class="form-control"
               id="newClientAddress"
-              aria-describedby="newClientAddress" />
+              aria-describedby="newClientAddress"
+            />
           </div>
         </form>
       </div>
@@ -307,10 +372,10 @@ export default {
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Close
         </button>
-        <button 
-          type="submit" 
-          class="btn btn-primary tms-btn" 
-          form="editClientForm" 
+        <button
+          type="submit"
+          class="btn btn-primary tms-btn"
+          form="editClientForm"
           data-bs-dismiss="modal"
           :disabled="isFormInvalid"
         >
@@ -338,9 +403,9 @@ export default {
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
-        <button 
-          type="button" 
-          class="btn btn-primary tms-btn" 
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
           @click.prevent="archiveClient(selectedClient)"
         >
