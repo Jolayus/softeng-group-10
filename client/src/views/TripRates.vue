@@ -7,8 +7,8 @@ import Footer from '../components/Footer.vue';
 import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
-import { getClientModel } from '../model/client.model';
-import { getTripRatesModel } from '../model/triprates.model';
+import { getClientModel } from '../models/client.model';
+import { getTripRatesModel } from '../models/triprates.model';
 
 export default {
   name: 'Trip Rates',

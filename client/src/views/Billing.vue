@@ -4,7 +4,7 @@ import TabPane from '../components/TabPane.vue';
 import Footer from '../components/Footer.vue';
 import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 
-import { getClientModel } from '../model/client.model';
+import { getClientModel } from '../models/client.model';
 
 export default {
   name: 'Billing',

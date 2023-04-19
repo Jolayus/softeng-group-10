@@ -4,8 +4,8 @@ import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
-import { getClientModel } from '../model/client.model';
-import { addClientArchive } from '../model/clientArchive.model';
+import { getClientModel } from '../models/client.model';
+import { addClientArchive } from '../models/clientArchive.model';
 
 export default {
   name: 'Client',

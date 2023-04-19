@@ -4,9 +4,9 @@ import { RouterLink } from 'vue-router';
 import CardDashboard from '../components/CardDashboard.vue';
 import Date from '../components/Date.vue';
 
-import cardsData from '../model/CardsData.js';
-import { getEmployeesModel } from '../model/employees.model';
-import { getClientModel } from '../model/client.model';
+import cardsData from '../models/CardsData.js';
+import { getEmployeesModel } from '../models/employees.model';
+import { getClientModel } from '../models/client.model';
 
 export default {
   components: {

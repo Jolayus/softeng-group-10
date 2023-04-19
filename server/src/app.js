@@ -2,9 +2,13 @@ const path = require('path');
 
 const express = require('express');
 
+const employeesRouter = require('./routes/employees/employees.router');
+
 const app = express();
 
 app.use(express.json());
+
+app.use('/employees', employeesRouter);
 
 // Serve all our client side files
 app.use(express.static(path.join(__dirname, '..', 'public')));

@@ -4,8 +4,8 @@ import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
-import { getEmployeesModel } from '../model/employees.model';
-import { addEmployeeArchive } from '../model/employeesArchive.model';
+import { getEmployeesModel } from '../models/employees.model';
+import { addEmployeeArchive } from '../models/employeesArchive.model';
 
 export default {
   name: 'Employee',
@@ -146,6 +146,7 @@ export default {
   },
   mounted() {
     this.currentEmployeeId = this.employeesModel.length;
+    console.log(this.employeesModel);
   }
 };
 </script>
@@ -194,7 +195,7 @@ export default {
             <th scope="row">{{ employee.name }}</th>
             <td>{{ employee.role }}</td>
             <td>{{ employee.email }}</td>
-            <td>{{ employee.phone }}</td>
+            <td>{{ employee.contact_number }}</td>
             <td>
               <EditIcon
                 data-bs-toggle="modal"
