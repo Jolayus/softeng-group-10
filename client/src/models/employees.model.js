@@ -1,11 +1,8 @@
+import {
+  httpGetEmployees
+} from '../requests/requests';
+
 const employeesModel = [];
-
-async function httpGetEmployees() {
-  const response = await fetch('http://localhost:8000/employees');
-  const employees = await response.json();
-
-  return employees;
-}
 
 employeesModel.push(...(await httpGetEmployees()));
 

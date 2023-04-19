@@ -7,6 +7,8 @@ import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../models/employees.model';
 import { addEmployeeArchive } from '../models/employeesArchive.model';
 
+import { httpCreateEmployee } from '../requests/requests';
+
 export default {
   name: 'Employee',
   components: {
@@ -20,12 +22,11 @@ export default {
     return {
       employeesModel: getEmployeesModel(),
       selectedEmployee: null,
-      currentEmployeeId: 0,
       searchInput: '',
       employeeNameInput: '',
       employeeRoleInput: '',
       employeeEmailInput: '',
-      employeePhoneInput: '',
+      employeeContactNumberInput: '',
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
       editEmployeeEmailInput: '',
@@ -55,21 +56,20 @@ export default {
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
       const email = this.employeeEmailInput.trim();
-      const phone = this.employeePhoneInput.trim();
-
-      // Increment the current id for new employee
-      this.currentEmployeeId++;
+      const contact_number = this.employeeContactNumberInput.trim();
 
       // Creating new employee
       const newEmployee = {
-        id: this.currentEmployeeId,
         name,
         role,
         email,
-        phone
+        contact_number
       };
 
-      this.employeesModel.push(newEmployee);
+      httpCreateEmployee(newEmployee)
+        .then(employee => {
+          this.employeesModel.push(employee);
+        })
 
       // Clear input
       this.clearInput();
@@ -78,7 +78,7 @@ export default {
       this.employeeNameInput = '';
       this.employeeRoleInput = '';
       this.employeeEmailInput = '';
-      this.employeePhoneInput = '';
+      this.employeeContactNumberInput = '';
     },
     onEdit(employee) {
       this.currentModal = 'EDIT';
@@ -113,7 +113,7 @@ export default {
         const name = this.employeeNameInput.trim();
         const role = this.employeeRoleInput.trim();
         const email = this.employeeEmailInput.trim();
-        const phone = this.employeePhoneInput.trim();
+        const phone = this.employeeContactNumberInput.trim();
 
         if (
           name.length === 0 ||
@@ -143,10 +143,6 @@ export default {
         return false;
       }
     }
-  },
-  mounted() {
-    this.currentEmployeeId = this.employeesModel.length;
-    console.log(this.employeesModel);
   }
 };
 </script>
@@ -270,7 +266,7 @@ export default {
               >Contact Number</label
             >
             <input
-              v-model="employeePhoneInput"
+              v-model="employeeContactNumberInput"
               type="text"
               class="form-control"
               id="employeeContact"

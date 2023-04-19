@@ -18,17 +18,17 @@ function httpPostNewEmployee(req, res) {
     }
   });
 
-  res.status(201).json({
+  console.log(req.body);
+
+  // LOAD THE LATEST DATA FROM THE DATABASE
+  loadEmployees();
+
+  return res.status(201).json({
     name,
     role,
     email,
     contact_number
   });
-
-  // LOAD THE LATEST DATA FROM THE DATABASE
-  loadEmployees();
-
-  return;
 }
 
 module.exports = {
