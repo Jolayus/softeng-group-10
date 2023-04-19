@@ -8,15 +8,17 @@ import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
 import { getClientModel } from '../model/client.model';
+import { getTripRatesModel } from '../model/triprates.model';
 
 export default {
   name: 'Trip Rates',
   data() {
     return {
       clients: getClientModel(),
+      tripRates: getTripRatesModel(),
       isValidFormat: undefined,
-      currentTripRates: [],
-      currentTab: getClientModel()[0]?.companyName
+      currentTripRates: {},
+      currentClient: {}
     };
   },
   components: {
@@ -28,9 +30,11 @@ export default {
   },
   methods: {
     // A method that formats the result from sheet_to_json method
-    formatJson(json) {
+    formatJson(json, branch) {
       const result = json.map((row) => {
         return {
+          branch,
+          client: this.currentClient.companyName,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
           AUV: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
@@ -64,7 +68,7 @@ export default {
             range
           });
 
-          const result = this.formatJson(json);
+          const result = this.formatJson(json, SheetName);
 
           const firstRow = result[0];
           try {
@@ -76,7 +80,8 @@ export default {
               throw new Error('Invalid Format');
             }
             this.isValidFormat = true;
-            this.currentTripRates.push(result);
+            this.tripRates.push(...result);
+            this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
           } catch (err) {
             this.isValidFormat = false;
           }
@@ -86,8 +91,13 @@ export default {
 
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
-      console.log(this.currentTab);
+      this.currentClient = this.clients.find((client) => client.id === id);
+      this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
     }
+  },
+  mounted() {
+    this.currentClient = this.clients[0]
+    this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
   }
 };
 </script>
@@ -102,6 +112,8 @@ export default {
       :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
       @tabChange="tabChangeHandler"
+      :key="client.id"
+      :clientId="client.id"
     >
       {{ client.companyName }}
     </CompanyTab>
@@ -111,8 +123,9 @@ export default {
       v-for="client in clients"
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'pills-' + client.id"
+      :key="client.id"
     >
-      {{ currentTripRates.length === 0 ? 'Empty' : currentTripRates }}
+      {{ currentTripRates }}
     </TabPane>
   </div>
 
