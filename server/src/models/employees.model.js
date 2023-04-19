@@ -10,7 +10,7 @@ function loadEmployees() {
       if (err) {
         reject(err);
       } else {
-        rows.forEach(row => employees.push(row));
+        rows.forEach((row) => employees.push(row));
         resolve();
       }
     });
