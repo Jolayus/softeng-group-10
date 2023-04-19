@@ -5,9 +5,11 @@ import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../models/employees.model';
-import { addEmployeeArchive } from '../models/employeesArchive.model';
 
-import { httpCreateEmployee } from '../requests/requests';
+import { 
+  httpCreateEmployee,
+  httpArchiveEmployee
+} from '../requests/requests';
 
 export default {
   name: 'Employee',
@@ -37,20 +39,11 @@ export default {
   },
   methods: {
     archiveEmployee(id) {
-      const toBeArchiveEmployee = this.employeesModel.find(
-        (employee) => employee.id === id
-      );
-      this.employeesModel = this.employeesModel.filter(
-        (employee) => employee !== toBeArchiveEmployee
-      );
 
-      addEmployeeArchive({
-        id: toBeArchiveEmployee.id,
-        name: toBeArchiveEmployee.name,
-        role: toBeArchiveEmployee.role,
-        email: toBeArchiveEmployee.email,
-        phone: toBeArchiveEmployee.phone
-      });
+      httpArchiveEmployee(id)
+        .then(archiveEmployee => {
+          this.employeesModel = this.employeesModel.filter(employee => employee.id !== archiveEmployee);  
+        });
     },
     addNewEmployee() {
       const name = this.employeeNameInput.trim();

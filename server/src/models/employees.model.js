@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const employees = [];
+let employees = [];
 
 function loadEmployees() {
   return new Promise((resolve, reject) => {
@@ -21,7 +21,12 @@ function getAllEmployees() {
   return employees;
 }
 
+function setEmployeesModel(newModel) {
+  employees = newModel;
+}
+
 module.exports = {
   loadEmployees,
-  getAllEmployees
+  getAllEmployees,
+  setEmployeesModel
 };
