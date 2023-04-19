@@ -1,17 +1,11 @@
-import mockClientData from './mockClientData.json';
+import { httpGetClients } from '../requests/requests';
 
-let clientModel = [];
+const clientsModel = [];
 
-// async function getMockData() {
-//     return mockClientData;
-// }
+clientsModel.push(...(await httpGetClients()));
 
-// clientModel = await getMockData();
-
-function getClientModel() {
-    return clientModel;
+function getClientsModel() {
+  return clientsModel;
 }
 
-export {
-    getClientModel,
-};
+export { getClientsModel };

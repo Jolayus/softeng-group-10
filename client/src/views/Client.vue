@@ -4,7 +4,7 @@ import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
-import { getClientModel } from '../models/client.model';
+import { getClientsModel } from '../models/client.model';
 import { addClientArchive } from '../models/clientArchive.model';
 
 export default {
@@ -18,7 +18,7 @@ export default {
   },
   data() {
     return {
-      clientModel: getClientModel(),
+      clientModel: getClientsModel(),
       selectedClient: null,
       currentClientId: 0,
       searchInput: '',
@@ -45,16 +45,16 @@ export default {
 
       addClientArchive({
         id: toBeArchiveClient.id,
-        companyName: toBeArchiveClient.companyName,
-        contactPerson: toBeArchiveClient.contactPerson,
-        contactNumber: toBeArchiveClient.contactNumber,
+        company_name: toBeArchiveClient.company_name,
+        contact_person: toBeArchiveClient.contact_person,
+        contact_number: toBeArchiveClient.contact_number,
         address: toBeArchiveClient.address
       });
     },
     addNewClient() {
-      const companyName = this.clientCompanyNameInput.trim();
-      const contactPerson = this.clientContactPersonInput.trim();
-      const contactNumber = this.clientContactNumberInput.trim();
+      const company_name = this.clientCompanyNameInput.trim();
+      const contact_person = this.clientContactPersonInput.trim();
+      const contact_number = this.clientContactNumberInput.trim();
       const address = this.clientAddressInput.trim();
 
       // Increment the current id for new employee
@@ -63,9 +63,9 @@ export default {
       // Creating new employee
       const newClient = {
         id: this.currentClientId,
-        companyName,
-        contactPerson,
-        contactNumber,
+        company_name,
+        contact_person,
+        contact_number,
         address
       };
 
@@ -83,12 +83,12 @@ export default {
     onEdit(client) {
       this.currentModal = 'EDIT';
 
-      const { id, companyName, contactPerson, contactNumber, address } = client;
+      const { id, company_name, contact_person, contact_number, address } = client;
 
       this.editClientId = id;
-      this.editClientCompanyNameInput = companyName;
-      this.editClientContactPersonInput = contactPerson;
-      this.editClientContactNumberInput = contactNumber;
+      this.editClientCompanyNameInput = company_name;
+      this.editClientContactPersonInput = contact_person;
+      this.editClientContactNumberInput = contact_number;
       this.editClientAddressInput = address;
     },
     saveChanges() {
@@ -96,44 +96,44 @@ export default {
         (client) => client.id === this.editClientId
       );
 
-      client.companyName = this.editClientCompanyNameInput;
-      client.contactPerson = this.editClientContactPersonInput;
-      client.contactNumber = this.editClientContactNumberInput;
+      client.company_name = this.editClientCompanyNameInput;
+      client.contact_person = this.editClientContactPersonInput;
+      client.contact_number = this.editClientContactNumberInput;
       client.address = this.editClientAddressInput;
     }
   },
   computed: {
     filteredClient() {
       return this.clientModel.filter((client) =>
-        client.companyName.includes(this.searchInput)
+        client.company_name.includes(this.searchInput)
       );
     },
     isFormInvalid() {
       if (this.currentModal === 'ADD') {
-        const companyName = this.clientCompanyNameInput.trim();
-        const contactPerson = this.clientContactPersonInput.trim();
-        const contactNumber = this.clientContactNumberInput.trim();
+        const company_name = this.clientCompanyNameInput.trim();
+        const contact_person = this.clientContactPersonInput.trim();
+        const contact_number = this.clientContactNumberInput.trim();
         const address = this.clientAddressInput.trim();
 
         if (
-          companyName.length === 0 ||
-          contactPerson.length === 0 ||
-          contactNumber.length === 0 ||
+          company_name.length === 0 ||
+          contact_person.length === 0 ||
+          contact_number.length === 0 ||
           address.length === 0
         ) {
           return true;
         }
         return false;
       } else if (this.currentModal === 'EDIT') {
-        const companyName = this.editClientCompanyNameInput.trim();
-        const contactPerson = this.editClientContactPersonInput.trim();
-        const contactNumber = this.editClientContactNumberInput.trim();
+        const company_name = this.editClientCompanyNameInput.trim();
+        const contact_person = this.editClientContactPersonInput.trim();
+        const contact_number = this.editClientContactNumberInput.trim();
         const address = this.editClientAddressInput.trim();
 
         if (
-          companyName.length === 0 ||
-          contactPerson.length === 0 ||
-          contactNumber.length === 0 ||
+          company_name.length === 0 ||
+          contact_person.length === 0 ||
+          contact_number.length === 0 ||
           address.length === 0
         ) {
           return true;
@@ -189,9 +189,9 @@ export default {
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="client in filteredClient" :key="client.id">
-            <th scope="row">{{ client.companyName }}</th>
-            <td>{{ client.contactPerson }}</td>
-            <td>{{ client.contactNumber }}</td>
+            <th scope="row">{{ client.company_name }}</th>
+            <td>{{ client.contact_person }}</td>
+            <td>{{ client.contact_number }}</td>
             <td>{{ client.address }}</td>
             <td>
               <EditIcon data-bs-toggle="modal" data-bs-target="#editClientModal" @click.prevent="onEdit(client)"

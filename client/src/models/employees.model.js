@@ -1,6 +1,4 @@
-import {
-  httpGetEmployees
-} from '../requests/requests';
+import { httpGetEmployees } from '../requests/requests';
 
 const employeesModel = [];
 
@@ -10,6 +8,4 @@ function getEmployeesModel() {
   return employeesModel;
 }
 
-export {
-  getEmployeesModel,
-};
+export { getEmployeesModel };

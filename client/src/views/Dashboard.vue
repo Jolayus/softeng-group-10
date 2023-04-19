@@ -6,7 +6,7 @@ import Date from '../components/Date.vue';
 
 import cardsData from '../models/CardsData.js';
 import { getEmployeesModel } from '../models/employees.model';
-import { getClientModel } from '../models/client.model';
+import { getClientsModel } from '../models/client.model';
 
 export default {
   components: {
@@ -24,7 +24,7 @@ export default {
       return getEmployeesModel().length;
     },
     clientsLength() {
-      return getClientModel().length;
+      return getClientsModel().length;
     }
   }
 }

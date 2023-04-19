@@ -44,4 +44,18 @@ async function httpArchiveEmployee(id) {
   return await response.json();
 }
 
-export { httpGetEmployees, httpCreateEmployee, httpArchiveEmployee };
+// CLIENTS
+// Get all clients
+async function httpGetClients() {
+  const response = await fetch(`${API_URL}/clients`);
+  const clients = await response.json();
+
+  return clients;
+}
+
+export {
+  httpGetEmployees,
+  httpCreateEmployee,
+  httpArchiveEmployee,
+  httpGetClients
+};
