@@ -20,6 +20,18 @@ async function httpCreateEmployee(newEmployee) {
   return await response.json();
 }
 
+// Update information of an employee
+async function httpUpdateEmployee(employee) {
+  const response = await fetch(`${API_URL}/employees`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(employee)
+  });
+  return await response.json();
+}
+
 // Archive employee
 async function httpArchiveEmployee(id) {
   const response = await fetch(`${API_URL}/employees`, {
@@ -32,8 +44,4 @@ async function httpArchiveEmployee(id) {
   return await response.json();
 }
 
-export {
-  httpGetEmployees,
-  httpCreateEmployee,
-  httpArchiveEmployee
-};
+export { httpGetEmployees, httpCreateEmployee, httpArchiveEmployee };

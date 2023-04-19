@@ -6,10 +6,7 @@ import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../models/employees.model';
 
-import { 
-  httpCreateEmployee,
-  httpArchiveEmployee
-} from '../requests/requests';
+import { httpCreateEmployee, httpArchiveEmployee } from '../requests/requests';
 
 export default {
   name: 'Employee',
@@ -32,19 +29,18 @@ export default {
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
       editEmployeeEmailInput: '',
-      editEmployeePhoneInput: '',
+      editEmployeeContactNumberInput: '',
       editEmployeeId: '',
       currentModal: ''
     };
   },
   methods: {
     archiveEmployee(id) {
-      httpArchiveEmployee(id)
-        .then(archivedEmployee => {
-          this.employeesModel = this.employeesModel.filter(employee => {
-            return employee.id !== archivedEmployee.id;
-          });
+      httpArchiveEmployee(id).then((archivedEmployee) => {
+        this.employeesModel = this.employeesModel.filter((employee) => {
+          return employee.id !== archivedEmployee.id;
         });
+      });
     },
     addNewEmployee() {
       const name = this.employeeNameInput.trim();
@@ -60,10 +56,9 @@ export default {
         contact_number
       };
 
-      httpCreateEmployee(newEmployee)
-        .then(employee => {
-          this.employeesModel.push(employee);
-        })
+      httpCreateEmployee(newEmployee).then((employee) => {
+        this.employeesModel.push(employee);
+      });
 
       // Clear input
       this.clearInput();
@@ -77,23 +72,23 @@ export default {
     onEdit(employee) {
       this.currentModal = 'EDIT';
 
-      const { id, name, role, email, phone } = employee;
+      const { id, name, role, email, contact_number } = employee;
 
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
       this.editEmployeeRoleInput = role;
       this.editEmployeeEmailInput = email;
-      this.editEmployeePhoneInput = phone;
+      this.editEmployeeContactNumberInput = contact_number;
     },
     saveChanges() {
       const employee = this.employeesModel.find(
         (employee) => employee.id === this.editEmployeeId
       );
 
-      employee.name = this.editEmployeeNameInput;
+      employee.name = 'HELLO WORLD';
       employee.role = this.editEmployeeRoleInput;
       employee.email = this.editEmployeeEmailInput;
-      employee.phone = this.editEmployeePhoneInput;
+      employee.contact_number = this.editEmployeeContactNumberInput;
     }
   },
   computed: {
@@ -123,7 +118,7 @@ export default {
         const name = this.editEmployeeNameInput.trim();
         const role = this.editEmployeeRoleInput.trim();
         const email = this.editEmployeeEmailInput.trim();
-        const phone = this.editEmployeePhoneInput.trim();
+        const phone = this.editEmployeeContactNumberInput.trim();
 
         if (
           name.length === 0 ||
@@ -342,7 +337,7 @@ export default {
               >Contact Number</label
             >
             <input
-              v-model="editEmployeePhoneInput"
+              v-model="editEmployeeContactNumberInput"
               type="text"
               class="form-control"
               id="newEmployeeContact"

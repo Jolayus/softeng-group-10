@@ -37,6 +37,27 @@ function httpPostNewEmployee(req, res) {
   });
 }
 
+function httpEditEmployee(req, res) {
+  const { id, name, role, email, contact_number } = req.body;
+
+  const updatedEmployee = getAllEmployees().find(employee => employee.id === id);
+
+  updatedEmployee.name = name;
+  updatedEmployee.role = role;
+  updatedEmployee.email = email;  
+  updatedEmployee.contact_number = contact_number;
+
+  const sql = `UPDATE employees SET name=?, role=?, email=?, contact_number=? WHERE employees.id=?`;
+
+  db.run(sql, [name, role, email. contact_number, id], (err) => {
+    if (err) {
+      return res.status(500).json({ error: err })
+    }
+  });
+
+  return res.status(200).json(updatedEmployee);
+}
+
 // ARCHIVE EXISTING EMPLOYEE
 function httpArchiveEmployee(req, res) {
   const { id } = req.body;
@@ -98,10 +119,13 @@ function addEmployeeToArchive(employee) {
       console.log(err);
     }
   });
+
+
 }
 
 module.exports = {
   httpGetAllEmployees,
   httpPostNewEmployee,
+  httpEditEmployee,
   httpArchiveEmployee
 };
