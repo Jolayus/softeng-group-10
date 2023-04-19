@@ -1,21 +1,13 @@
 {
-  "name": "softend-group-10",
-  "version": "0.0.0",
-  "private": true,
+  "name": "softeng-group-10",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "server": "npm run watch --prefix server",
+    "deploy": "npm run build --prefix client"
   },
-  "dependencies": {
-    "bootstrap": "^5.2.3",
-    "vue": "^3.2.47",
-    "vue-router": "^4.1.6",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^4.0.0",
-    "sass": "^1.59.3",
-    "vite": "^4.1.4"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
