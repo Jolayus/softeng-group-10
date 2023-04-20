@@ -2,6 +2,7 @@ const db = require('../../../database/db');
 
 const {
   getAllEmployees,
+  getEmployeeById,
   loadEmployees,
   setEmployeesModel
 } = require('../../models/employees.model');
@@ -37,10 +38,11 @@ function httpPostNewEmployee(req, res) {
   });
 }
 
+// UPDATE EMPLOYEE
 function httpEditEmployee(req, res) {
   const { id, name, role, email, contact_number } = req.body;
 
-  const updatedEmployee = getAllEmployees().find(employee => employee.id === id);
+  const updatedEmployee = getEmployeeById(id);
 
   updatedEmployee.name = name;
   updatedEmployee.role = role;
@@ -49,7 +51,7 @@ function httpEditEmployee(req, res) {
 
   const sql = `UPDATE employees SET name=?, role=?, email=?, contact_number=? WHERE employees.id=?`;
 
-  db.run(sql, [name, role, email. contact_number, id], (err) => {
+  db.run(sql, [name, role, email, contact_number, id], (err) => {
     if (err) {
       return res.status(500).json({ error: err })
     }

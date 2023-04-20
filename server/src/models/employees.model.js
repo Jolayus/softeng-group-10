@@ -21,6 +21,10 @@ function getAllEmployees() {
   return employees;
 }
 
+function getEmployeeById(id) {
+  return employees.find((employee) => (employee.id === id));
+}
+
 function setEmployeesModel(newModel) {
   employees = newModel;
 }
@@ -28,5 +32,6 @@ function setEmployeesModel(newModel) {
 module.exports = {
   loadEmployees,
   getAllEmployees,
+  getEmployeeById,
   setEmployeesModel
 };

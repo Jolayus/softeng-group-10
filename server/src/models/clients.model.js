@@ -21,4 +21,8 @@ function getAllClients() {
   return clients;
 }
 
-module.exports = { loadClients, getAllClients };
+function getClientById(id) {
+  return clients.find((client) => (client.id === id));
+}
+
+module.exports = { loadClients, getAllClients, getClientById };
