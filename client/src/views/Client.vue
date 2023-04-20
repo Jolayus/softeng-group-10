@@ -5,7 +5,7 @@ import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
-import { httpCreateClient } from '../requests/requests';
+import { httpCreateClient, httpUpdateClient } from '../requests/requests';
 import { addClientArchive } from '../models/clientArchive.model';
 
 export default {
@@ -100,6 +100,8 @@ export default {
       client.contact_person = this.editClientContactPersonInput;
       client.contact_number = this.editClientContactNumberInput;
       client.address = this.editClientAddressInput;
+
+      httpUpdateClient(client);
     }
   },
   computed: {

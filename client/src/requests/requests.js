@@ -65,11 +65,24 @@ async function httpCreateClient(newClient) {
   return await response.json();
 }
 
+// Update information of a client
+async function httpUpdateClient(client) {
+  const response = await fetch(`${API_URL}/clients`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(client)
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
   httpUpdateEmployee,
   httpArchiveEmployee,
   httpGetClients,
-  httpCreateClient
+  httpCreateClient,
+  httpUpdateClient
 };
