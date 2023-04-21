@@ -1,11 +1,18 @@
 const path = require('path');
 
 const express = require('express');
+const cors = require('cors');
 
 const employeesRouter = require('./routes/employees/employees.router');
 const clientsRouter = require('./routes/clients/clients.router');
 
 const app = express();
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173'
+  })
+);
 
 app.use(express.json());
 
