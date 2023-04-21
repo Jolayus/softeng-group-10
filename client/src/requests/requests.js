@@ -89,6 +89,10 @@ async function httpArchiveClient(id) {
   return await response.json();
 }
 
+// TRIP RATES
+// GET all trip rates
+
+
 export {
   httpGetEmployees,
   httpCreateEmployee,

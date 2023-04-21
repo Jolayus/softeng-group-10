@@ -34,7 +34,7 @@ export default {
       const result = json.map((row) => {
         return {
           branch,
-          client: this.currentClient.companyName,
+          client: this.currentClient.company_name,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
           AUV: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
@@ -81,7 +81,9 @@ export default {
             }
             this.isValidFormat = true;
             this.tripRates.push(...result);
-            this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
+            this.currentTripRates = this.tripRates.filter(
+              (tripRate) => tripRate.client === this.currentClient.company_name
+            );
           } catch (err) {
             this.isValidFormat = false;
           }
@@ -92,12 +94,16 @@ export default {
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
-      this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
+      this.currentTripRates = this.tripRates.filter(
+        (tripRate) => tripRate.client === this.currentClient.company_name
+      );
     }
   },
   mounted() {
-    this.currentClient = this.clients[0]
-    this.currentTripRates = this.tripRates.filter(tripRate => tripRate.client === this.currentClient.companyName);
+    this.currentClient = this.clients[0];
+    this.currentTripRates = this.tripRates.filter(
+      (tripRate) => tripRate.client === this.currentClient.company_name
+    );
   }
 };
 </script>
@@ -108,14 +114,14 @@ export default {
     <CompanyTab
       v-for="client in clients"
       :classes="client === clients[0] ? 'active' : ''"
-      :id="'pills-' + client.companyName.split(' ').join('') + '-tab'"
+      :id="'pills-' + client.company_name.split(' ').join('') + '-tab'"
       :target="'#pills-' + client.id"
       :selected="client === clients[0] ? true : false"
       @tabChange="tabChangeHandler"
       :key="client.id"
       :clientId="client.id"
     >
-      {{ client.companyName }}
+      {{ client.company_name }}
     </CompanyTab>
   </ul>
   <div class="tab-content" id="pills-tabContent">
@@ -166,10 +172,19 @@ export default {
       <p v-show="isValidFormat === true" class="text-success">Valid Format</p>
       <p v-show="isValidFormat === false" class="text-danger">Invalid Format</p>
       <div class="modal-footer justify-content-center border-top-0">
-        <button v-if="isValidFormat" type="button" class="btn btn-success" data-bs-dismiss="modal">
+        <button
+          v-if="isValidFormat"
+          type="button"
+          class="btn btn-success"
+          data-bs-dismiss="modal"
+        >
           Continue
         </button>
-        <div v-else style="min-width: 170px;" class="d-flex justify-content-around">
+        <div
+          v-else
+          style="min-width: 170px"
+          class="d-flex justify-content-around"
+        >
           <button
             type="button"
             class="btn btn-secondary"

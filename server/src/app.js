@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const employeesRouter = require('./routes/employees/employees.router');
 const clientsRouter = require('./routes/clients/clients.router');
+const tripRatesRouter = require('./routes/triprates/triprates.router');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/employees', employeesRouter);
 app.use('/clients', clientsRouter);
+app.use('/rates', tripRatesRouter);
 
 // Serve all our client side files
 app.use(express.static(path.join(__dirname, '..', 'public')));
