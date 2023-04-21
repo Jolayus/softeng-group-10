@@ -1,6 +1,6 @@
 const db = require('../../../database/db');
 
-const { getAllClients, getClientById } = require('../../models/clients.model');
+const { getAllClients, getClientById, setClientsModel } = require('../../models/clients.model');
 
 function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
@@ -71,8 +71,73 @@ function httpEditEmployee(req, res) {
   return res.status(200).json(updatedClient);
 }
 
+// ARCHIVE EXISTING EMPLOYEE
+function httpArchiveClient(req, res) {
+  const { id } = req.body;
+
+  if (id === undefined || id <= 0) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM clients WHERE clients.id=${id}`;
+    let archivedClient;
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        archivedClient = rows.find((row) => row.id === id);
+
+        if (archivedClient === undefined) {
+          return reject('id does not exist');
+        }
+
+        setClientsModel(
+          getAllClients().filter(
+            (client) => client.id !== archivedClient.id
+          )
+        );
+
+        addClientToArchive(archivedClient);
+        removeClientById(id);
+        resolve(archivedClient);
+      }
+    });
+  });
+
+  promise
+    .then((client) => {
+      return res.status(200).json(client);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err });
+    });
+}
+
+// DELETE EMPLOYEE FROM THE DATABASE BY ID
+function removeClientById(id) {
+  const sql = `DELETE FROM clients WHERE clients.id=${id}`;
+  db.run(sql, [], (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
+function addClientToArchive(client) {
+  const { id, company_name, contact_person, contact_number, address } = client;
+  const sql = `INSERT INTO archivedClients (id, company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?, ?)`;
+  db.run(sql, [id, company_name, contact_person, contact_number, address], (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
 module.exports = {
   httpGetAllClients,
   httpPostNewClient,
-  httpEditEmployee
+  httpEditEmployee,
+  httpArchiveClient
 };

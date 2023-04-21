@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const clients = [];
+let clients = [];
 
 function loadClients() {
   return new Promise((resolve, reject) => {
@@ -22,7 +22,11 @@ function getAllClients() {
 }
 
 function getClientById(id) {
-  return clients.find((client) => (client.id === id));
+  return clients.find((client) => client.id === id);
 }
 
-module.exports = { loadClients, getAllClients, getClientById };
+function setClientsModel(newModel) {
+  clients = newModel;
+}
+
+module.exports = { loadClients, getAllClients, getClientById, setClientsModel };

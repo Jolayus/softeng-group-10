@@ -108,7 +108,9 @@ function httpArchiveEmployee(req, res) {
 function removeEmployeeById(id) {
   const sql = `DELETE FROM employees WHERE employees.id=${id}`;
   db.run(sql, [], (err) => {
-    console.log(err);
+    if (err) {
+      console.log(err);
+    }
   });
 }
 
@@ -121,8 +123,6 @@ function addEmployeeToArchive(employee) {
       console.log(err);
     }
   });
-
-
 }
 
 module.exports = {
