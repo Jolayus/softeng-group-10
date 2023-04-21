@@ -1,21 +1,19 @@
 # softend-group-10
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Project Setup
+## Install client and server dependecies
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Compile client side code
 
 ```sh
-npm run dev
+npm run deploy
 ```
 
-### Compile and Minify for Production
+### Run server
 
 ```sh
-npm run build
+npm run server
 ```
