@@ -77,6 +77,18 @@ async function httpUpdateClient(client) {
   return await response.json();
 }
 
+// Archive client
+async function httpArchiveClient(id) {
+  const response = await fetch(`${API_URL}/clients`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -84,5 +96,6 @@ export {
   httpArchiveEmployee,
   httpGetClients,
   httpCreateClient,
-  httpUpdateClient
+  httpUpdateClient,
+  httpArchiveClient
 };

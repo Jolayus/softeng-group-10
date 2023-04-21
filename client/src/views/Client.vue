@@ -5,8 +5,11 @@ import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
-import { httpCreateClient, httpUpdateClient } from '../requests/requests';
-import { addClientArchive } from '../models/clientArchive.model';
+import {
+  httpCreateClient,
+  httpUpdateClient,
+  httpArchiveClient
+} from '../requests/requests';
 
 export default {
   name: 'Client',
@@ -37,19 +40,10 @@ export default {
   },
   methods: {
     archiveClient(id) {
-      const toBeArchiveClient = this.clientsModel.find(
-        (client) => client.id === id
-      );
-      this.clientsModel = this.clientsModel.filter(
-        (client) => client !== toBeArchiveClient
-      );
-
-      addClientArchive({
-        id: toBeArchiveClient.id,
-        company_name: toBeArchiveClient.company_name,
-        contact_person: toBeArchiveClient.contact_person,
-        contact_number: toBeArchiveClient.contact_number,
-        address: toBeArchiveClient.address
+      httpArchiveClient(id).then((archivedClient) => {
+        this.clientsModel = this.clientsModel.filter((client) => {
+          return client.id !== archivedClient.id;
+        });
       });
     },
     addNewClient() {

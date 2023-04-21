@@ -6,7 +6,11 @@ import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getEmployeesModel } from '../models/employees.model';
 
-import { httpCreateEmployee, httpUpdateEmployee, httpArchiveEmployee } from '../requests/requests';
+import {
+  httpCreateEmployee,
+  httpUpdateEmployee,
+  httpArchiveEmployee
+} from '../requests/requests';
 
 export default {
   name: 'Employee',

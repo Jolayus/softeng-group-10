@@ -1,14 +1,7 @@
 const clientModelArchive = [];
 
 function getClientModelArchive() {
-    return clientModelArchive;
+  return clientModelArchive;
 }
 
-function addClientArchive(client) {
-    clientModelArchive.push(client);
-}
-
-export {
-    getClientModelArchive,
-    addClientArchive
-}
+export { getClientModelArchive };
