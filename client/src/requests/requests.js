@@ -98,6 +98,18 @@ async function httpGetAllTripRates() {
   return employees;
 }
 
+// Create new trip rates
+async function httpCreateTripRates(triprates) {
+  const response = await fetch(`${API_URL}/rates`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(triprates)
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -107,5 +119,6 @@ export {
   httpCreateClient,
   httpUpdateClient,
   httpArchiveClient,
-  httpGetAllTripRates
+  httpGetAllTripRates,
+  httpCreateTripRates
 };

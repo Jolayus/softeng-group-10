@@ -13,6 +13,7 @@ function httpPostNewTripRates(req, res) {
     branch,
     province,
     city,
+    auv,
     four_wheeler,
     six_wheeler_elf,
     six_wheeler_forward,
@@ -21,7 +22,7 @@ function httpPostNewTripRates(req, res) {
 
   const promise = new Promise((resolve, reject) => {
     const sql =
-      'INSERT INTO triprates (client_name, branch, province, city, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+      'INSERT INTO triprates (client_name, branch, province, city, auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
     db.run(
       sql,
@@ -30,6 +31,7 @@ function httpPostNewTripRates(req, res) {
         branch,
         province,
         city,
+        auv,
         four_wheeler,
         six_wheeler_elf,
         six_wheeler_forward,

@@ -35,6 +35,9 @@ export default {
     if (Boolean(this.isForTripRates)) {
       const uploadObj =  { icon: 'UploadIcon', text: 'Upload', targetModal: "uploadFileModal" };
       this.menuItems.unshift(uploadObj);
+
+      // ADD TRIP RATES
+      this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal = "addTripRatesModal";
     }
   }
 };
