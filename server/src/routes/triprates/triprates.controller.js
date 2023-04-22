@@ -1,6 +1,9 @@
 const db = require('../../../database/db');
 
-const { getAllTripRates } = require('../../models/triprates.model');
+const {
+  getAllTripRates,
+  setTripRatesModel
+} = require('../../models/triprates.model');
 
 function httpGetAllTripRates(req, res) {
   return res.status(200).json(getAllTripRates());
@@ -64,4 +67,60 @@ function httpPostNewTripRates(req, res) {
     });
 }
 
-module.exports = { httpGetAllTripRates, httpPostNewTripRates };
+function httpDeleteTripRates(req, res) {
+  const { id } = req.body;
+
+  if (id === undefined || id <= 0) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM triprates WHERE triprates.id=${id}`;
+    let removedTripRates;
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        removedTripRates = rows.find((row) => row.id === id);
+
+        if (removedTripRates === undefined) {
+          return reject('id does not exist');
+        }
+
+        setTripRatesModel(
+          getAllTripRates().filter(
+            (triprates) => triprates.id !== removedTripRates.id
+          )
+        );
+
+        removeTripRatesById(id);
+        resolve(removedTripRates);
+      }
+    });
+  });
+
+  promise
+    .then((employee) => {
+      return res.status(200).json(employee);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err });
+    });
+}
+
+// DELETE EMPLOYEE FROM THE DATABASE BY ID
+function removeTripRatesById(id) {
+  const sql = `DELETE FROM triprates WHERE triprates.id=${id}`;
+  db.run(sql, [], (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
+module.exports = {
+  httpGetAllTripRates,
+  httpPostNewTripRates,
+  httpDeleteTripRates
+};
