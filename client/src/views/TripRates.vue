@@ -9,7 +9,7 @@ import Modal from '../components/Modal.vue';
 
 import { getClientsModel } from '../models/client.model';
 import { getTripRatesModel } from '../models/triprates.model';
-import { httpCreateTripRates } from '../requests/requests';
+import { httpCreateTripRates, httpDeleteTripRates } from '../requests/requests';
 
 export default {
   name: 'Trip Rates',
@@ -18,7 +18,7 @@ export default {
       clients: getClientsModel(),
       tripRates: getTripRatesModel(),
       currentTripRates: [],
-      currentClient: undefined,
+      currentClient: getClientsModel()[0],
       isFileSubmitValidFormat: undefined,
 
       // Add Inputs
@@ -30,7 +30,12 @@ export default {
       addTripRates4WInput: null,
       addTripRates6WElfInput: null,
       addTripRates6WFInput: null,
-      addTripRates10WInput: null
+      addTripRates10WInput: null,
+
+      // Delete Inputs
+      deleteTripRatesBranchInput: '',
+      deleteTripRatesProvinceInput: '',
+      deleteTripRatesCityInput: ''
     };
   },
   components: {
@@ -94,7 +99,8 @@ export default {
             this.isFileSubmitValidFormat = true;
             this.tripRates.push(...result);
             this.currentTripRates = this.tripRates.filter(
-              (tripRate) => tripRate.client_name === this.currentClient.company_name
+              (tripRate) =>
+                tripRate.client_name === this.currentClient.company_name
             );
           } catch (err) {
             this.isFileSubmitValidFormat = false;
@@ -129,16 +135,45 @@ export default {
         .then((tripRates) => {
           this.tripRates.push(tripRates);
           this.currentTripRates = this.tripRates.filter(
-            (tripRate) => tripRate.client_name === this.currentClient.company_name
+            (tripRate) =>
+              tripRate.client_name === this.currentClient.company_name
           );
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    onSubmitDeleteTripRates() {
+      const deletedTripRates = this.currentTripRates.find((tripRates) => {
+        return (
+          tripRates.branch.toLowerCase() ===
+            this.deleteTripRatesBranchInput.toLowerCase() &&
+          tripRates.province.toLowerCase() ===
+            this.deleteTripRatesProvinceInput.toLowerCase() &&
+          tripRates.city.toLowerCase() ===
+            this.deleteTripRatesCityInput.toLowerCase()
+        );
+      });
+
+      const { id } = deletedTripRates;
+      httpDeleteTripRates(id)
+        .then((id) => {
+          this.tripRates = this.tripRates.filter((rate) => rate.id !== id);
+          this.currentTripRates = this.currentTripRates.filter(
+            (rate) => rate.id !== id
+          );
+        })
+        .catch((error) => {
+          console.log('Invalid inputs, trip rates not found based on input');
+        });
+
+      this.deleteTripRatesBranchInput = '';
+      this.deleteTripRatesProvinceInput = '';
+      this.deleteTripRatesCityInput = '';
     }
   },
   mounted() {
-    this.currentClient = this.clients[0];
     this.currentTripRates = this.tripRates.filter(
       (tripRate) => tripRate.client_name === this.currentClient.company_name
     );
@@ -389,6 +424,85 @@ export default {
           data-bs-dismiss="modal"
         >
           Add Trip Rates
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="deleteTripRatesModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="addTripRatesLabel">
+          Delete Rates for {{ this.currentClient.company_name }}
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form
+          id="deleteTripRatesForm"
+          @submit.prevent="onSubmitDeleteTripRates"
+        >
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesBranch"
+              class="form-label d-block text-start"
+              >Branch</label
+            >
+            <input
+              v-model="deleteTripRatesBranchInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesBranch"
+              aria-describedby="deleteTripRatesBranch"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesProvince"
+              class="form-label d-block text-start"
+              >Province</label
+            >
+            <input
+              v-model="deleteTripRatesProvinceInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesProvince"
+              aria-describedby="deleteTripRatesProvince"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesCity"
+              class="form-label d-block text-start"
+              >City</label
+            >
+            <input
+              v-model="deleteTripRatesCityInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesCity"
+              aria-describedby="deleteTripRatesCity"
+            />
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          form="deleteTripRatesForm"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+        >
+          Delete Trip Rates
         </button>
       </div>
     </template>

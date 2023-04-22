@@ -110,6 +110,18 @@ async function httpCreateTripRates(triprates) {
   return await response.json();
 }
 
+// DELETE trip rates
+async function httpDeleteTripRates(id) {
+  const response = await fetch(`${API_URL}/rates`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -120,5 +132,6 @@ export {
   httpUpdateClient,
   httpArchiveClient,
   httpGetAllTripRates,
-  httpCreateTripRates
+  httpCreateTripRates,
+  httpDeleteTripRates
 };
