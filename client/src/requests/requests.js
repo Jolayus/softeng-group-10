@@ -91,7 +91,36 @@ async function httpArchiveClient(id) {
 
 // TRIP RATES
 // GET all trip rates
+async function httpGetAllTripRates() {
+  const response = await fetch(`${API_URL}/rates`);
+  const employees = await response.json();
 
+  return employees;
+}
+
+// Create new trip rates
+async function httpCreateTripRates(triprates) {
+  const response = await fetch(`${API_URL}/rates`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(triprates)
+  });
+  return await response.json();
+}
+
+// DELETE trip rates
+async function httpDeleteTripRates(id) {
+  const response = await fetch(`${API_URL}/rates`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+  });
+  return await response.json();
+}
 
 export {
   httpGetEmployees,
@@ -101,5 +130,8 @@ export {
   httpGetClients,
   httpCreateClient,
   httpUpdateClient,
-  httpArchiveClient
+  httpArchiveClient,
+  httpGetAllTripRates,
+  httpCreateTripRates,
+  httpDeleteTripRates
 };

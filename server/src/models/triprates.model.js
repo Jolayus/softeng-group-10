@@ -21,4 +21,17 @@ function getAllTripRates() {
   return tripRates;
 }
 
-module.exports = { loadTripRates, getAllTripRates };
+function setTripRatesModel(newModel) {
+  tripRates = newModel;
+}
+
+function getTripRatesById(id) {
+  return tripRates.find((tripRate) => tripRate.id === id);
+}
+
+module.exports = {
+  loadTripRates,
+  getAllTripRates,
+  setTripRatesModel,
+  getTripRatesById
+};

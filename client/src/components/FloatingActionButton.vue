@@ -33,8 +33,20 @@ export default {
   mounted() {
     // If this component is used for trip rates
     if (Boolean(this.isForTripRates)) {
-      const uploadObj =  { icon: 'UploadIcon', text: 'Upload', targetModal: "uploadFileModal" };
+      const uploadObj = {
+        icon: 'UploadIcon',
+        text: 'Upload',
+        targetModal: 'uploadFileModal'
+      };
       this.menuItems.unshift(uploadObj);
+
+      // ADD TRIP RATES
+      this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
+        'addTripRatesModal';
+
+      this.menuItems.find(
+        (menuItem) => menuItem.text === 'Delete'
+      ).targetModal = 'deleteTripRatesModal';
     }
   }
 };
@@ -49,7 +61,12 @@ export default {
       <div class="menu p-0" v-if="showMenu">
         <ul class="list-style-none mb-0">
           <li v-for="(item, index) in menuItems" :key="index">
-            <button type="button" class="list-item px-3 py-2 border w-100" data-bs-toggle="modal" :data-bs-target="`#${item.targetModal}`">
+            <button
+              type="button"
+              class="list-item px-3 py-2 border w-100"
+              data-bs-toggle="modal"
+              :data-bs-target="`#${item.targetModal}`"
+            >
               <component :is="item.icon" /> {{ item.text }}
             </button>
           </li>
