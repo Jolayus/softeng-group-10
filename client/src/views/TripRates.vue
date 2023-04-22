@@ -17,8 +17,8 @@ export default {
       clients: getClientsModel(),
       tripRates: getTripRatesModel(),
       isValidFormat: undefined,
-      currentTripRates: {},
-      currentClient: {}
+      currentTripRates: [],
+      currentClient: undefined
     };
   },
   components: {
@@ -95,14 +95,14 @@ export default {
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
       this.currentTripRates = this.tripRates.filter(
-        (tripRate) => tripRate.client === this.currentClient.company_name
+        (tripRate) => tripRate.client_name === this.currentClient.company_name
       );
     }
   },
   mounted() {
     this.currentClient = this.clients[0];
     this.currentTripRates = this.tripRates.filter(
-      (tripRate) => tripRate.client === this.currentClient.company_name
+      (tripRate) => tripRate.client_name === this.currentClient.company_name
     );
   }
 };

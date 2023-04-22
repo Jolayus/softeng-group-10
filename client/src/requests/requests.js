@@ -91,7 +91,12 @@ async function httpArchiveClient(id) {
 
 // TRIP RATES
 // GET all trip rates
+async function httpGetAllTripRates() {
+  const response = await fetch(`${API_URL}/rates`);
+  const employees = await response.json();
 
+  return employees;
+}
 
 export {
   httpGetEmployees,
@@ -101,5 +106,6 @@ export {
   httpGetClients,
   httpCreateClient,
   httpUpdateClient,
-  httpArchiveClient
+  httpArchiveClient,
+  httpGetAllTripRates
 };
