@@ -25,4 +25,13 @@ function setTripRatesModel(newModel) {
   tripRates = newModel;
 }
 
-module.exports = { loadTripRates, getAllTripRates, setTripRatesModel };
+function getTripRatesById(id) {
+  return tripRates.find((tripRate) => tripRate.id === id);
+}
+
+module.exports = {
+  loadTripRates,
+  getAllTripRates,
+  setTripRatesModel,
+  getTripRatesById
+};
