@@ -47,6 +47,9 @@ export default {
       this.menuItems.find(
         (menuItem) => menuItem.text === 'Delete'
       ).targetModal = 'deleteTripRatesModal';
+
+      this.menuItems.find((menuItem) => menuItem.text === 'Edit').targetModal =
+        'editTripRatesModal';
     }
   }
 };
