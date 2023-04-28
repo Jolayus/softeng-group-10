@@ -131,6 +131,8 @@ export default {
         ten_wheeler: this.addTripRates10WInput
       };
 
+      console.log('Hello World');
+
       httpCreateTripRates(newTripRates)
         .then((tripRates) => {
           this.tripRates.push(tripRates);
@@ -177,6 +179,19 @@ export default {
     this.currentTripRates = this.tripRates.filter(
       (tripRate) => tripRate.client_name === this.currentClient.company_name
     );
+  },
+  computed: {
+    isInputsForAddTripRatesValid() {
+      if (
+        this.addTripRatesBranchInput !== '' &&
+        this.addTripRatesProvinceInput !== '' &&
+        this.addTripRatesCityInput !== ''
+      ) {
+        return true;
+      }
+
+      return false;
+    }
   }
 };
 </script>
@@ -359,6 +374,7 @@ export default {
               class="form-control"
               id="addTripRatesAuv"
               aria-describedby="addTripRatesAuv"
+              step=".01"
             />
           </div>
           <div class="mb-3">
@@ -371,6 +387,7 @@ export default {
               class="form-control"
               id="addTripRates4w"
               aria-describedby="addTripRates4w"
+              step=".01"
             />
           </div>
           <div class="mb-3">
@@ -383,6 +400,7 @@ export default {
               class="form-control"
               id="addTripRates6wElf"
               aria-describedby="addTripRates6wElf"
+              step=".01"
             />
           </div>
           <div class="mb-3">
@@ -395,6 +413,7 @@ export default {
               class="form-control"
               id="addTripRates6wF"
               aria-describedby="addTripRates6wF"
+              step=".01"
             />
           </div>
           <div class="mb-3">
@@ -407,6 +426,7 @@ export default {
               class="form-control"
               id="addTripRates10w"
               aria-describedby="addTripRates10w"
+              step=".01"
             />
           </div>
         </form>
@@ -421,7 +441,7 @@ export default {
           type="submit"
           form="addTripRatesForm"
           class="btn btn-primary tms-btn"
-          data-bs-dismiss="modal"
+          :data-bs-dismiss="isInputsForAddTripRatesValid ? 'modal' : ''"
         >
           Add Trip Rates
         </button>
@@ -432,7 +452,7 @@ export default {
   <Modal id="deleteTripRatesModal">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
-        <h1 class="modal-title fs-5" id="addTripRatesLabel">
+        <h1 class="modal-title fs-5" id="deleteTripRatesLabel">
           Delete Rates for {{ this.currentClient.company_name }}
         </h1>
       </div>
@@ -441,6 +461,85 @@ export default {
       <div class="modal-body">
         <form
           id="deleteTripRatesForm"
+          @submit.prevent="onSubmitDeleteTripRates"
+        >
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesBranch"
+              class="form-label d-block text-start"
+              >Branch</label
+            >
+            <input
+              v-model="deleteTripRatesBranchInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesBranch"
+              aria-describedby="deleteTripRatesBranch"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesProvince"
+              class="form-label d-block text-start"
+              >Province</label
+            >
+            <input
+              v-model="deleteTripRatesProvinceInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesProvince"
+              aria-describedby="deleteTripRatesProvince"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="deleteTripRatesCity"
+              class="form-label d-block text-start"
+              >City</label
+            >
+            <input
+              v-model="deleteTripRatesCityInput"
+              required
+              type="text"
+              class="form-control"
+              id="deleteTripRatesCity"
+              aria-describedby="deleteTripRatesCity"
+            />
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          form="deleteTripRatesForm"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+        >
+          Delete Trip Rates
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="editTripRatesModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="editTripRatesLabel">
+          Edit Rates for {{ this.currentClient.company_name }}
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form
+          id="editTripRatesForm"
           @submit.prevent="onSubmitDeleteTripRates"
         >
           <div class="mb-3">
