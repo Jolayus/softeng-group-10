@@ -539,7 +539,7 @@ export default {
     <template v-slot:modal-body>
       <div class="modal-body">
         <form
-          id="deleteTripRatesForm"
+          id="editTripRatesForm"
           @submit.prevent="onSubmitDeleteTripRates"
         >
           <div class="mb-3">
