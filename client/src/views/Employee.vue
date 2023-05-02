@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      employeesModel: [],
+      employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: '',
       employeeNameInput: '',
@@ -37,10 +37,6 @@ export default {
       editEmployeeId: '',
       currentModal: ''
     };
-  },
-  mounted() {
-    this.employeesModel = getEmployeesModel();
-    console.log(getEmployeesModel());
   },
   methods: {
     archiveEmployee(id) {

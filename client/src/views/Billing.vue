@@ -28,11 +28,11 @@ export default {
     <CompanyTab  
       v-for="client in clients" 
       :classes="client === clients[0] ? 'active' : ''"
-      :id="'billing-' + client.companyName.split(' ').join('') + '-tab'"
+      :id="'billing-' + client.company_name.split(' ').join('') + '-tab'"
       :target="'#billing-' + client.id"
       :selected="client === clients[0] ? true : false"
     >
-      {{ client.companyName }}
+      {{ client.company_name }}
     </CompanyTab>
   </ul>
   <div class="tab-content" id="pills-tabContent">
@@ -41,7 +41,7 @@ export default {
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'billing-' + client.id"
     >
-    {{ client.companyName }}
+    {{ client.company_name }}
     <table class="table">
         <thead class="tbl-header-billing text-light rounded">
           <tr>
