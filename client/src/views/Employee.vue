@@ -39,6 +39,13 @@ export default {
     };
   },
   methods: {
+    isEmailValid(email) {
+      const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (email.match(mailFormat)) {
+        return true;
+      }
+      return false;
+    },
     archiveEmployee(id) {
       httpArchiveEmployee(id).then((archivedEmployee) => {
         this.employeesModel = this.employeesModel.filter((employee) => {
@@ -99,7 +106,8 @@ export default {
   computed: {
     filteredEmployees() {
       const employees = this.employeesModel.filter((employee) =>
-        employee.name.toLowerCase().includes(this.searchInput.toLowerCase()));
+        employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
+      );
 
       return employees;
     },
@@ -114,7 +122,7 @@ export default {
           name.length === 0 ||
           role.length === 0 ||
           email.length === 0 ||
-          !email.includes('@') ||
+          !this.isEmailValid(email) ||
           phone.length === 0
         ) {
           return true;
@@ -130,7 +138,7 @@ export default {
           name.length === 0 ||
           role.length === 0 ||
           email.length === 0 ||
-          !email.includes('@') ||
+          !this.isEmailValid(email) ||
           phone.length === 0
         ) {
           return true;

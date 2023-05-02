@@ -29,9 +29,15 @@ function addNewEmployee(newEmployee) {
   return employees.push(newEmployee);
 }
 
+function removeEmployee(employeeId) {
+  const idx = employees.findIndex((employee) => employee.id === employeeId);
+  return employees.splice(idx, 1);
+}
+
 module.exports = {
   loadEmployees,
   getAllEmployees,
   getEmployeeById,
-  addNewEmployee
+  addNewEmployee,
+  removeEmployee
 };

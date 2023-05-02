@@ -1,6 +1,11 @@
 const db = require('../../../database/db');
 
-const { getAllClients, getClientById, addNewClient } = require('../../models/clients.model');
+const {
+  getAllClients,
+  getClientById,
+  addNewClient,
+  removeClient
+} = require('../../models/clients.model');
 
 function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
@@ -94,14 +99,10 @@ function httpArchiveClient(req, res) {
           return reject('id does not exist');
         }
 
-        setClientsModel(
-          getAllClients().filter(
-            (client) => client.id !== archivedClient.id
-          )
-        );
+        removeClient(archivedClient.id);
 
         addClientToArchive(archivedClient);
-        removeClientById(id);
+        removeClientFromDatabase(id);
         resolve(archivedClient);
       }
     });
@@ -117,7 +118,7 @@ function httpArchiveClient(req, res) {
 }
 
 // DELETE EMPLOYEE FROM THE DATABASE BY ID
-function removeClientById(id) {
+function removeClientFromDatabase(id) {
   const sql = `DELETE FROM clients WHERE clients.id=${id}`;
   db.run(sql, [], (err) => {
     if (err) {
@@ -129,11 +130,15 @@ function removeClientById(id) {
 function addClientToArchive(client) {
   const { id, company_name, contact_person, contact_number, address } = client;
   const sql = `INSERT INTO archivedClients (id, company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?, ?)`;
-  db.run(sql, [id, company_name, contact_person, contact_number, address], (err) => {
-    if (err) {
-      console.log(err);
+  db.run(
+    sql,
+    [id, company_name, contact_person, contact_number, address],
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
     }
-  });
+  );
 }
 
 module.exports = {

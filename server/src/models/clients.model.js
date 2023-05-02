@@ -29,4 +29,15 @@ function addNewClient(newClient) {
   return clients.push(newClient);
 }
 
-module.exports = { loadClients, getAllClients, getClientById, addNewClient };
+function removeClient(clientId) {
+  const idx = clients.findIndex((client) => client.id === clientId);
+  return clients.splice(idx, 1);
+}
+
+module.exports = {
+  loadClients,
+  getAllClients,
+  getClientById,
+  addNewClient,
+  removeClient
+};

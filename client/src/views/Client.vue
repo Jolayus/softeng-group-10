@@ -60,14 +60,9 @@ export default {
       };
 
       httpCreateClient(newClient).then((client) => {
-        console.log(client);
         this.clientsModel.push(client);
       });
 
-      // Clear input
-      this.clearInput();
-    },
-    clearInput() {
       this.clientCompanyNameInput = '';
       this.clientContactPersonInput = '';
       this.clientContactNumberInput = '';

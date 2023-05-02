@@ -3,7 +3,8 @@ const db = require('../../../database/db');
 const {
   getAllEmployees,
   getEmployeeById,
-  addNewEmployee
+  addNewEmployee,
+  removeEmployee
 } = require('../../models/employees.model');
 
 // GET ALL EMPLOYEES
@@ -59,6 +60,10 @@ function httpPostNewEmployee(req, res) {
 function httpEditEmployee(req, res) {
   const { id, name, role, email, contact_number } = req.body;
 
+  if (!id || !name || !role || !email || !contact_number) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
   const updatedEmployee = getEmployeeById(id);
 
   updatedEmployee.name = name;
@@ -82,7 +87,7 @@ function httpArchiveEmployee(req, res) {
   const { id } = req.body;
 
   if (id === undefined || id <= 0) {
-    return res.status(400).json({ error: 'invalid id' });
+    return res.status(400).json({ error: 'Invalid id' });
   }
 
   const promise = new Promise((resolve, reject) => {
@@ -99,14 +104,10 @@ function httpArchiveEmployee(req, res) {
           return reject('id does not exist');
         }
 
-        setEmployeesModel(
-          getAllEmployees().filter(
-            (employee) => employee.id !== archivedEmployee.id
-          )
-        );
+        removeEmployee(archivedEmployee.id);
 
         addEmployeeToArchive(archivedEmployee);
-        removeEmployeeById(id);
+        removeEmployeeFromDatabase(id);
         resolve(archivedEmployee);
       }
     });
@@ -122,7 +123,7 @@ function httpArchiveEmployee(req, res) {
 }
 
 // DELETE EMPLOYEE FROM THE DATABASE BY ID
-function removeEmployeeById(id) {
+function removeEmployeeFromDatabase(id) {
   const sql = `DELETE FROM employees WHERE employees.id=${id}`;
   db.run(sql, [], (err) => {
     if (err) {
