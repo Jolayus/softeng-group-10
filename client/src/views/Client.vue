@@ -101,7 +101,9 @@ export default {
   computed: {
     filteredClient() {
       return this.clientsModel.filter((client) =>
-        client.company_name.includes(this.searchInput)
+        client.company_name
+          .toLowerCase()
+          .includes(this.searchInput.toLowerCase())
       );
     },
     isFormInvalid() {

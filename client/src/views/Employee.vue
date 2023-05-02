@@ -103,7 +103,7 @@ export default {
   computed: {
     filteredEmployees() {
       const employees = this.employeesModel.filter((employee) =>
-        employee.name.includes(this.searchInput));
+        employee.name.toLowerCase().includes(this.searchInput.toLowerCase()));
 
       return employees;
     },
