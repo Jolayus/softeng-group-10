@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-let clients = [];
+const clients = [];
 
 function loadClients() {
   return new Promise((resolve, reject) => {

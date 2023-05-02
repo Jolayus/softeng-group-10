@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-let employees = [];
+const employees = [];
 
 function loadEmployees() {
   return new Promise((resolve, reject) => {

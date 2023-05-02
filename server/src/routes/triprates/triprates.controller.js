@@ -2,8 +2,7 @@ const db = require('../../../database/db');
 
 const {
   getAllTripRates,
-  setTripRatesModel,
-  getTripRatesById
+  getTripRateById
 } = require('../../models/triprates.model');
 
 function httpGetAllTripRates(req, res) {
@@ -11,7 +10,7 @@ function httpGetAllTripRates(req, res) {
 }
 
 // CREATE NEW TRIP RATES
-function httpPostNewTripRates(req, res) {
+function httpPostNewTripRate(req, res) {
   const {
     client_name,
     branch,
@@ -68,7 +67,7 @@ function httpPostNewTripRates(req, res) {
     });
 }
 
-function httpDeleteTripRates(req, res) {
+function httpDeleteTripRate(req, res) {
   const { id } = req.body;
 
   if (id === undefined || id <= 0) {
@@ -95,7 +94,7 @@ function httpDeleteTripRates(req, res) {
           )
         );
 
-        removeTripRatesById(id);
+        removeTripRateFromDatabase(id);
         resolve(removedTripRates);
       }
     });
@@ -111,7 +110,7 @@ function httpDeleteTripRates(req, res) {
 }
 
 // UPDATE trip rates
-function httpEditTripRates(req, res) {
+function httpEditTripRate(req, res) {
   const {
     id,
     auv,
@@ -121,7 +120,7 @@ function httpEditTripRates(req, res) {
     ten_wheeler
   } = req.body;
 
-  const updatedTripRate = getTripRatesById(id);
+  const updatedTripRate = getTripRateById(id);
 
   updatedTripRate.auv = auv;
   updatedTripRate.four_wheeler = four_wheeler;
@@ -145,7 +144,7 @@ function httpEditTripRates(req, res) {
 }
 
 // DELETE EMPLOYEE FROM THE DATABASE BY ID
-function removeTripRatesById(id) {
+function removeTripRateFromDatabase(id) {
   const sql = `DELETE FROM triprates WHERE triprates.id=${id}`;
   db.run(sql, [], (err) => {
     if (err) {
@@ -156,7 +155,7 @@ function removeTripRatesById(id) {
 
 module.exports = {
   httpGetAllTripRates,
-  httpPostNewTripRates,
-  httpDeleteTripRates,
-  httpEditTripRates
+  httpPostNewTripRate,
+  httpDeleteTripRate,
+  httpEditTripRate
 };

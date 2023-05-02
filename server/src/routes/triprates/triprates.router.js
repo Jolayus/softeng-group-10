@@ -2,16 +2,16 @@ const express = require('express');
 
 const {
   httpGetAllTripRates,
-  httpPostNewTripRates,
-  httpEditTripRates,
-  httpDeleteTripRates
+  httpPostNewTripRate,
+  httpEditTripRate,
+  httpDeleteTripRate
 } = require('./triprates.controller');
 
 const tripRatesRouter = express.Router();
 
 tripRatesRouter.get('/', httpGetAllTripRates);
-tripRatesRouter.post('/', httpPostNewTripRates);
-tripRatesRouter.patch('/', httpEditTripRates);
-tripRatesRouter.delete('/', httpDeleteTripRates);
+tripRatesRouter.post('/', httpPostNewTripRate);
+tripRatesRouter.patch('/', httpEditTripRate);
+tripRatesRouter.delete('/', httpDeleteTripRate);
 
 module.exports = tripRatesRouter;

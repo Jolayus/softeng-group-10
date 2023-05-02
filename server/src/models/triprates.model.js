@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-let tripRates = [];
+const tripRates = [];
 
 function loadTripRates() {
   return new Promise((resolve, reject) => {
@@ -21,17 +21,12 @@ function getAllTripRates() {
   return tripRates;
 }
 
-function setTripRatesModel(newModel) {
-  tripRates = newModel;
-}
-
-function getTripRatesById(id) {
+function getTripRateById(id) {
   return tripRates.find((tripRate) => tripRate.id === id);
 }
 
 module.exports = {
   loadTripRates,
   getAllTripRates,
-  setTripRatesModel,
-  getTripRatesById
+  getTripRateById
 };
