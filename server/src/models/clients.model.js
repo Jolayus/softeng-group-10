@@ -25,8 +25,8 @@ function getClientById(id) {
   return clients.find((client) => client.id === id);
 }
 
-function setClientsModel(newModel) {
-  clients = newModel;
+function addNewClient(newClient) {
+  return clients.push(newClient);
 }
 
-module.exports = { loadClients, getAllClients, getClientById, setClientsModel };
+module.exports = { loadClients, getAllClients, getClientById, addNewClient };

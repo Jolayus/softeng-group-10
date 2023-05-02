@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      employeesModel: getEmployeesModel(),
+      employeesModel: [],
       selectedEmployee: null,
       searchInput: '',
       employeeNameInput: '',
@@ -37,6 +37,10 @@ export default {
       editEmployeeId: '',
       currentModal: ''
     };
+  },
+  mounted() {
+    this.employeesModel = getEmployeesModel();
+    console.log(getEmployeesModel());
   },
   methods: {
     archiveEmployee(id) {
@@ -64,10 +68,9 @@ export default {
         this.employeesModel.push(employee);
       });
 
+      console.log(this.employeesModel);
+
       // Clear input
-      this.clearInput();
-    },
-    clearInput() {
       this.employeeNameInput = '';
       this.employeeRoleInput = '';
       this.employeeEmailInput = '';
@@ -89,7 +92,7 @@ export default {
         (employee) => employee.id === this.editEmployeeId
       );
 
-      employee.name = 'HELLO WORLD';
+      employee.name = this.editEmployeeNameInput;
       employee.role = this.editEmployeeRoleInput;
       employee.email = this.editEmployeeEmailInput;
       employee.contact_number = this.editEmployeeContactNumberInput;
@@ -99,9 +102,10 @@ export default {
   },
   computed: {
     filteredEmployees() {
-      return this.employeesModel.filter((employee) =>
-        employee.name.includes(this.searchInput)
-      );
+      const employees = this.employeesModel.filter((employee) =>
+        employee.name.includes(this.searchInput));
+
+      return employees;
     },
     isFormInvalid() {
       if (this.currentModal === 'ADD') {
@@ -236,13 +240,16 @@ export default {
             <label for="employeeRole" class="form-label d-block text-start"
               >Role</label
             >
-            <input
+            <select
               v-model="employeeRoleInput"
-              type="text"
-              class="form-control"
+              class="form-select"
               id="employeeRole"
               aria-describedby="employeeRole"
-            />
+            >
+              <option value="Driver">Driver</option>
+              <option value="Helper">Helper</option>
+              <option value="Admin">Admin</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
@@ -316,13 +323,16 @@ export default {
             <label for="newEmployeeRole" class="form-label d-block text-start"
               >Role</label
             >
-            <input
+            <select
               v-model="editEmployeeRoleInput"
-              type="text"
-              class="form-control"
+              class="form-select"
               id="newEmployeeRole"
               aria-describedby="newEmployeeRole"
-            />
+            >
+              <option value="Driver">Driver</option>
+              <option value="Helper">Helper</option>
+              <option value="Admin">Admin</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"

@@ -1,6 +1,6 @@
 const db = require('../../../database/db');
 
-const { getAllClients, getClientById, setClientsModel } = require('../../models/clients.model');
+const { getAllClients, getClientById, addNewClient } = require('../../models/clients.model');
 
 function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
@@ -38,6 +38,7 @@ function httpPostNewClient(req, res) {
 
   promise
     .then((newClient) => {
+      addNewClient(newClient);
       res.status(201).json(newClient);
     })
     .catch((err) => {
