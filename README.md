@@ -17,3 +17,9 @@ npm run deploy
 ```sh
 npm run server
 ```
+
+### For development
+```sh
+npm run server
+npm run client
+```
