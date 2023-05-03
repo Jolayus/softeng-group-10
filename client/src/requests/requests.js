@@ -123,13 +123,13 @@ async function httpUpdateTripRates(tripRates) {
 }
 
 // DELETE trip rates
-async function httpDeleteTripRates(id) {
+async function httpDeleteTripRates(tripRateToBeDeleted) {
   const response = await fetch(`${API_URL}/rates`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ id })
+    body: JSON.stringify(tripRateToBeDeleted)
   });
   return await response.json();
 }

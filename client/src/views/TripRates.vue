@@ -17,12 +17,12 @@ export default {
     return {
       clients: getClientsModel(),
       tripRates: getTripRatesModel(),
-      currentTripRates: [],
+      currentTripRates: {},
       currentClient: getClientsModel()[0],
       isFileSubmitValidFormat: undefined,
+      isNewTripRateValid: undefined,
 
       // Add Inputs
-      addTripRatesClientNameInput: '',
       addTripRatesBranchInput: '',
       addTripRatesProvinceInput: '',
       addTripRatesCityInput: '',
@@ -31,11 +31,21 @@ export default {
       addTripRates6WElfInput: null,
       addTripRates6WFInput: null,
       addTripRates10WInput: null,
+      newTripRate: {},
 
       // Delete Inputs
       deleteTripRatesBranchInput: '',
       deleteTripRatesProvinceInput: '',
-      deleteTripRatesCityInput: ''
+      deleteTripRatesCityInput: '',
+
+      // Edit inputs
+      editTripRatesBranchInput: '',
+      editTripRatesProvinceInput: '',
+      editTripRatesCityInput: '',
+
+      // Constants
+      EDIT_MODAL: 3,
+      DELETE_MODAL: 4
     };
   },
   components: {
@@ -80,7 +90,10 @@ export default {
 
         SheetNames.forEach((SheetName) => {
           const worksheet = workbook.Sheets[SheetName];
-          const range = 'A11:Z500'; // this range is valid if the user follow the given format
+
+          // This range is valid if the user follow the given format
+          const range = 'A11:Z500';
+
           const json = XLSX.utils.sheet_to_json(worksheet, {
             range
           });
@@ -97,11 +110,25 @@ export default {
               throw new Error('Invalid Format');
             }
             this.isFileSubmitValidFormat = true;
-            this.tripRates.push(...result);
-            this.currentTripRates = this.tripRates.filter(
-              (tripRate) =>
-                tripRate.client_name === this.currentClient.company_name
-            );
+
+            result.forEach(async (rawTripRate) => {
+              const { client, branch, province, city, AUV } = rawTripRate;
+
+              const tripRate = {
+                client_name: client,
+                branch,
+                province,
+                city,
+                auv: AUV,
+                four_wheeler: rawTripRate['4W'],
+                six_wheeler_elf: rawTripRate['6W ELF'],
+                six_wheeler_forward: rawTripRate['6WF'],
+                ten_wheeler: rawTripRate['10W']
+              };
+
+              httpCreateTripRates(tripRate);
+              this.tripRates.push(tripRate);
+            });
           } catch (err) {
             this.isFileSubmitValidFormat = false;
           }
@@ -112,15 +139,26 @@ export default {
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
-      this.currentTripRates = this.tripRates.filter(
-        (tripRate) => tripRate.client_name === this.currentClient.company_name
-      );
+      this.updateCurrentTripRates();
+    },
+
+    isTripRateExists(newTripRate) {
+      const { branch } = newTripRate;
+      const rate = this.currentTripRates[branch].find((tripRate) => {
+        return (
+          tripRate.branch === newTripRate.branch &&
+          tripRate.province === newTripRate.province &&
+          tripRate.city === newTripRate.city
+        );
+      });
+
+      return Boolean(rate);
     },
 
     // ADD TRIP RATES
     onSubmitAddTripRates() {
-      const newTripRates = {
-        client_name: this.addTripRatesClientNameInput,
+      const newTripRate = {
+        client_name: this.currentClient.company_name,
         branch: this.addTripRatesBranchInput,
         province: this.addTripRatesProvinceInput,
         city: this.addTripRatesCityInput,
@@ -131,15 +169,17 @@ export default {
         ten_wheeler: this.addTripRates10WInput
       };
 
-      console.log('Hello World');
+      this.newTripRate = newTripRate;
 
-      httpCreateTripRates(newTripRates)
-        .then((tripRates) => {
-          this.tripRates.push(tripRates);
-          this.currentTripRates = this.tripRates.filter(
-            (tripRate) =>
-              tripRate.client_name === this.currentClient.company_name
-          );
+      if (this.isTripRateExists(this.newTripRate)) {
+        this.isNewTripRateValid = false;
+        return;
+      }
+
+      httpCreateTripRates(newTripRate)
+        .then((addedTripRate) => {
+          this.tripRates.push(addedTripRate);
+          this.isNewTripRateValid = true;
         })
         .catch((error) => {
           console.log(error);
@@ -147,50 +187,164 @@ export default {
     },
 
     onSubmitDeleteTripRates() {
-      const deletedTripRates = this.currentTripRates.find((tripRates) => {
-        return (
-          tripRates.branch.toLowerCase() ===
-            this.deleteTripRatesBranchInput.toLowerCase() &&
-          tripRates.province.toLowerCase() ===
-            this.deleteTripRatesProvinceInput.toLowerCase() &&
-          tripRates.city.toLowerCase() ===
-            this.deleteTripRatesCityInput.toLowerCase()
-        );
-      });
-
-      const { id } = deletedTripRates;
-      httpDeleteTripRates(id)
-        .then((id) => {
-          this.tripRates = this.tripRates.filter((rate) => rate.id !== id);
-          this.currentTripRates = this.currentTripRates.filter(
-            (rate) => rate.id !== id
+      const selectedBranch = this.deleteTripRatesBranchInput;
+      console.log(selectedBranch);
+      const tripRateToBeDeleted = this.currentTripRates[selectedBranch].find(
+        (tripRates) => {
+          return (
+            tripRates.branch.toLowerCase() ===
+              this.deleteTripRatesBranchInput.toLowerCase() &&
+            tripRates.province.toLowerCase() ===
+              this.deleteTripRatesProvinceInput.toLowerCase() &&
+            tripRates.city.toLowerCase() ===
+              this.deleteTripRatesCityInput.toLowerCase()
           );
+        }
+      );
+
+      httpDeleteTripRates(tripRateToBeDeleted)
+        .then(({ branch, province, city }) => {
+          const idx = this.tripRates.findIndex(
+            (tripRate) =>
+              tripRate.branch === branch &&
+              tripRate.province === province &&
+              tripRate.city === city
+          );
+
+          this.tripRates.splice(idx, 1);
         })
-        .catch((error) => {
+        .catch(() => {
           console.log('Invalid inputs, trip rates not found based on input');
         });
 
       this.deleteTripRatesBranchInput = '';
       this.deleteTripRatesProvinceInput = '';
       this.deleteTripRatesCityInput = '';
+    },
+    filterTripRatesByClientName(clientName) {
+      return this.tripRates.filter((tripRate) => {
+        return tripRate.client_name === clientName;
+      });
+    },
+
+    filterCurrentTripRatesByBranch(branch) {
+      return this.currentTripRates[branch];
+    },
+
+    filterTripRatesByProvince(tripRates, province) {
+      return tripRates.filter((tripRate) => tripRate.province === province);
+    },
+
+    getProvinces(tripRates) {
+      return tripRates.map((tripRate) => tripRate.province);
+    },
+
+    getCities(tripRates) {
+      return tripRates.map((tripRate) => tripRate.city);
+    },
+
+    getUniqueValuesFromArray(arr) {
+      return Array.from(new Set(arr));
+    },
+
+    updateCurrentTripRates() {
+      this.resetCurrentTripRates();
+      const { company_name } = this.currentClient;
+      this.filterTripRatesByClientName(company_name).forEach((tripRate) => {
+        const { branch } = tripRate;
+        if (this.currentTripRates[branch] !== undefined) {
+          return this.currentTripRates[branch].push(tripRate);
+        }
+        this.currentTripRates[branch] = [tripRate];
+      });
+    },
+
+    resetCurrentTripRates() {
+      this.currentTripRates = {};
+    },
+
+    addNewTripRateToCurrentTripRates(tripRate) {
+      const { branch } = tripRate;
+      this.currentTripRates[branch].push(tripRate);
+    },
+
+    filteredProvinceByBranch(modal) {
+      let currentBranch;
+
+      if (modal === this.EDIT_MODAL) {
+        currentBranch = this.editTripRatesBranchInput;
+      } else if (modal === this.DELETE_MODAL) {
+        currentBranch = this.deleteTripRatesBranchInput;
+      }
+
+      if (!currentBranch) {
+        return [];
+      }
+
+      const filteredTripRates =
+        this.filterCurrentTripRatesByBranch(currentBranch);
+      const provinces = this.getProvinces(filteredTripRates);
+
+      return this.getUniqueValuesFromArray(provinces);
+    },
+
+    filteredCityByProvince(modal) {
+      let currentBranch;
+      let currentProvince;
+
+      switch (modal) {
+        case this.EDIT_MODAL:
+          currentBranch = this.editTripRatesBranchInput;
+          currentProvince = this.editTripRatesProvinceInput;
+          break;
+        case this.DELETE_MODAL:
+          currentBranch = this.deleteTripRatesBranchInput;
+          currentProvince = this.deleteTripRatesProvinceInput;
+      }
+
+      if (!currentProvince) {
+        return [];
+      }
+
+      const filteredTripRatesByBranch =
+        this.filterCurrentTripRatesByBranch(currentBranch);
+      const filteredTripRatesByProvince = this.filterTripRatesByProvince(
+        filteredTripRatesByBranch,
+        currentProvince
+      );
+      const cities = this.getCities(filteredTripRatesByProvince);
+
+      return this.getUniqueValuesFromArray(cities);
     }
   },
   mounted() {
-    this.currentTripRates = this.tripRates.filter(
-      (tripRate) => tripRate.client_name === this.currentClient.company_name
-    );
+    this.updateCurrentTripRates();
   },
   computed: {
-    isInputsForAddTripRatesValid() {
-      if (
-        this.addTripRatesBranchInput !== '' &&
-        this.addTripRatesProvinceInput !== '' &&
-        this.addTripRatesCityInput !== ''
-      ) {
-        return true;
-      }
-
-      return false;
+    filteredTripRates() {
+      this.updateCurrentTripRates();
+      return this.currentTripRates;
+    },
+    isInputsForAddTripRateValid() {
+      return (
+        this.addTripRatesBranchInput &&
+        this.addTripRatesProvinceInput &&
+        this.addTripRatesCityInput
+      );
+    },
+    isInputsForEditTripRateValid() {
+      return (
+        this.editTripRatesBranchInput &&
+        this.editTripRateProvinceInput &&
+        this.editTripRateCityInput
+      );
+    },
+    isInputsForDeleteTripRateValid() {
+      return (
+        this.deleteTripRatesBranchInput &&
+        this.deleteTripRatesProvinceInput &&
+        this.deleteTripRatesCityInput
+      );
     }
   }
 };
@@ -219,7 +373,42 @@ export default {
       :id="'pills-' + client.id"
       :key="client.id"
     >
-      {{ currentTripRates }}
+      <p v-if="Object.keys(filteredTripRates).length === 0">Empty</p>
+      <main
+        class="mt-5"
+        v-else
+        v-for="branch in Object.keys(filteredTripRates)"
+        :key="branch"
+      >
+        <span class="text-start">{{ branch }}</span>
+        <table class="table">
+          <thead class="tbl-header text-light rounded">
+            <tr>
+              <th scope="col">Province</th>
+              <th scope="col">City</th>
+              <th scope="col">AUV</th>
+              <th scope="col">4W</th>
+              <th scope="col">6W ELF</th>
+              <th scope="col">6WF</th>
+              <th scope="col">10W</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            <tr
+              v-for="tripRate in filteredTripRates[branch]"
+              :key="tripRate.id"
+            >
+              <td scope="row">{{ tripRate.province }}</td>
+              <td>{{ tripRate.city }}</td>
+              <td>{{ tripRate.auv }}</td>
+              <td>{{ tripRate.four_wheeler }}</td>
+              <td>{{ tripRate.six_wheeler_elf }}</td>
+              <td>{{ tripRate.six_wheeler_forward }}</td>
+              <td>{{ tripRate.ten_wheeler }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
     </TabPane>
   </div>
 
@@ -299,7 +488,9 @@ export default {
   <Modal id="addTripRatesModal">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
-        <h1 class="modal-title fs-5" id="addTripRatesLabel">Add Trip Rates</h1>
+        <h1 class="modal-title fs-5" id="addTripRatesLabel">
+          Add Trip Rates for {{ this.currentClient.company_name }}
+        </h1>
       </div>
     </template>
     <template v-slot:modal-body>
@@ -307,34 +498,24 @@ export default {
         <form id="addTripRatesForm" @submit.prevent="onSubmitAddTripRates">
           <div class="mb-3">
             <label
-              for="addTripRatesClientName"
-              class="form-label d-block text-start"
-              >Client Name</label
-            >
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="addTripRatesClientNameInput"
-            >
-              <option v-for="client in clients" :value="client.company_name">
-                {{ client.company_name }}
-              </option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label
               for="addTripRatesBranch"
               class="form-label d-block text-start"
               >Branch</label
             >
-            <input
-              v-model="addTripRatesBranchInput"
-              required
-              type="text"
-              class="form-control"
+            <select
               id="addTripRatesBranch"
-              aria-describedby="addTripRatesBranch"
-            />
+              required
+              v-model="addTripRatesBranchInput"
+              class="form-select"
+            >
+              <option value="">Open this to select branch</option>
+              <option
+                v-for="branch in Object.keys(currentTripRates)"
+                :value="branch"
+              >
+                {{ branch }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label
@@ -433,18 +614,41 @@ export default {
       </div>
     </template>
     <template v-slot:modal-footer>
+      <p v-show="isNewTripRateValid === true" class="text-success">
+        Valid Format
+      </p>
+      <p v-show="isNewTripRateValid === false" class="text-danger">
+        Invalid Format
+      </p>
       <div class="modal-footer justify-content-center border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancel
-        </button>
         <button
-          type="submit"
-          form="addTripRatesForm"
-          class="btn btn-primary tms-btn"
-          :data-bs-dismiss="isInputsForAddTripRatesValid ? 'modal' : ''"
+          v-if="isNewTripRateValid"
+          type="button"
+          class="btn btn-success"
+          data-bs-dismiss="modal"
         >
-          Add Trip Rates
+          Continue
         </button>
+        <div
+          v-else
+          style="min-width: 170px"
+          class="d-flex justify-content-around"
+        >
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary tms-btn"
+            form="addTripRatesForm"
+          >
+            Add Trip Rates
+          </button>
+        </div>
       </div>
     </template>
   </Modal>
@@ -453,7 +657,7 @@ export default {
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
         <h1 class="modal-title fs-5" id="deleteTripRatesLabel">
-          Delete Rates for {{ this.currentClient.company_name }}
+          Delete Rate for {{ this.currentClient.company_name }}
         </h1>
       </div>
     </template>
@@ -469,14 +673,20 @@ export default {
               class="form-label d-block text-start"
               >Branch</label
             >
-            <input
-              v-model="deleteTripRatesBranchInput"
-              required
-              type="text"
-              class="form-control"
+            <select
               id="deleteTripRatesBranch"
-              aria-describedby="deleteTripRatesBranch"
-            />
+              required
+              v-model="deleteTripRatesBranchInput"
+              class="form-select"
+            >
+              <option value="">Open this to select branch</option>
+              <option
+                v-for="branch in Object.keys(filteredTripRates)"
+                :value="branch"
+              >
+                {{ branch }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label
@@ -484,14 +694,21 @@ export default {
               class="form-label d-block text-start"
               >Province</label
             >
-            <input
-              v-model="deleteTripRatesProvinceInput"
-              required
-              type="text"
-              class="form-control"
+            <select
+              :disabled="!deleteTripRatesBranchInput"
               id="deleteTripRatesProvince"
-              aria-describedby="deleteTripRatesProvince"
-            />
+              required
+              v-model="deleteTripRatesProvinceInput"
+              class="form-select"
+            >
+              <option value="">Open this to select province</option>
+              <option
+                v-for="province in filteredProvinceByBranch(DELETE_MODAL)"
+                :value="province"
+              >
+                {{ province }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label
@@ -499,14 +716,22 @@ export default {
               class="form-label d-block text-start"
               >City</label
             >
-            <input
-              v-model="deleteTripRatesCityInput"
-              required
-              type="text"
-              class="form-control"
+            <select
+              :disabled="!deleteTripRatesProvinceInput"
               id="deleteTripRatesCity"
-              aria-describedby="deleteTripRatesCity"
-            />
+              required
+              v-model="deleteTripRatesCityInput"
+              class="form-select"
+            >
+              <option value="">Open this to select city</option>
+              <option
+                v-for="city in filteredCityByProvince(DELETE_MODAL)"
+                :value="city"
+                :key="city"
+              >
+                {{ city }}
+              </option>
+            </select>
           </div>
         </form>
       </div>
@@ -520,7 +745,7 @@ export default {
           type="submit"
           form="deleteTripRatesForm"
           class="btn btn-primary tms-btn"
-          data-bs-dismiss="modal"
+          :data-bs-dismiss="isInputsForDeleteTripRateValid ? 'modal' : ''"
         >
           Delete Trip Rates
         </button>
@@ -532,60 +757,75 @@ export default {
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
         <h1 class="modal-title fs-5" id="editTripRatesLabel">
-          Edit Rates for {{ this.currentClient.company_name }}
+          Edit Rate for {{ this.currentClient.company_name }}
         </h1>
       </div>
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form
-          id="editTripRatesForm"
-          @submit.prevent="onSubmitDeleteTripRates"
-        >
+        <form id="editTripRatesForm" @submit.prevent="onSubmitDeleteTripRates">
           <div class="mb-3">
             <label
-              for="deleteTripRatesBranch"
+              for="editTripRatesBranch"
               class="form-label d-block text-start"
               >Branch</label
             >
-            <input
-              v-model="deleteTripRatesBranchInput"
+            <select
+              id="editTripRatesBranch"
               required
-              type="text"
-              class="form-control"
-              id="deleteTripRatesBranch"
-              aria-describedby="deleteTripRatesBranch"
-            />
+              v-model="editTripRatesBranchInput"
+              class="form-select"
+            >
+              <option value="">Open this to select branch</option>
+              <option
+                v-for="branch in Object.keys(filteredTripRates)"
+                :value="branch"
+              >
+                {{ branch }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <label
-              for="deleteTripRatesProvince"
+              for="editTripRatesProvince"
               class="form-label d-block text-start"
               >Province</label
             >
-            <input
-              v-model="deleteTripRatesProvinceInput"
+            <select
+              :disabled="!editTripRatesBranchInput"
+              id="editTripRatesProvince"
               required
-              type="text"
-              class="form-control"
-              id="deleteTripRatesProvince"
-              aria-describedby="deleteTripRatesProvince"
-            />
+              v-model="editTripRatesProvinceInput"
+              class="form-select"
+            >
+              <option value="">Open this to select province</option>
+              <option
+                v-for="province in filteredProvinceByBranch(EDIT_MODAL)"
+                :value="province"
+              >
+                {{ province }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
-            <label
-              for="deleteTripRatesCity"
-              class="form-label d-block text-start"
+            <label for="editTripRatesCity" class="form-label d-block text-start"
               >City</label
             >
-            <input
-              v-model="deleteTripRatesCityInput"
+            <select
+              :disabled="!editTripRatesProvinceInput"
+              id="editTripRatesCity"
               required
-              type="text"
-              class="form-control"
-              id="deleteTripRatesCity"
-              aria-describedby="deleteTripRatesCity"
-            />
+              v-model="editTripRatesCityInput"
+              class="form-select"
+            >
+              <option value="">Open this to select city</option>
+              <option
+                v-for="city in filteredCityByProvince(EDIT_MODAL)"
+                :value="city"
+              >
+                {{ city }}
+              </option>
+            </select>
           </div>
         </form>
       </div>
@@ -597,15 +837,15 @@ export default {
         </button>
         <button
           type="submit"
-          form="deleteTripRatesForm"
+          form="editTripRatesForm"
           class="btn btn-primary tms-btn"
-          data-bs-dismiss="modal"
+          :data-bs-dismiss="isInputsForEditTripRateValid ? 'modal' : ''"
         >
-          Delete Trip Rates
+          Edit Trip Rate
         </button>
       </div>
     </template>
   </Modal>
 
-  <FloatingActionButtonVue isForTripRates="true" />
+  <FloatingActionButtonVue :isForTripRates="true" />
 </template>

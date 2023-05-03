@@ -2,7 +2,9 @@ const db = require('../../../database/db');
 
 const {
   getAllTripRates,
-  getTripRateById
+  getTripRateById,
+  addNewTripRate,
+  removeTripRate
 } = require('../../models/triprates.model');
 
 function httpGetAllTripRates(req, res) {
@@ -60,7 +62,7 @@ function httpPostNewTripRate(req, res) {
   return promise
     .then((newTripRates) => {
       res.status(201).json(newTripRates);
-      getAllTripRates().push(newTripRates);
+      addNewTripRate(newTripRates);
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -68,32 +70,35 @@ function httpPostNewTripRate(req, res) {
 }
 
 function httpDeleteTripRate(req, res) {
-  const { id } = req.body;
+  const { branch, province, city } = req.body;
 
-  if (id === undefined || id <= 0) {
-    return res.status(400).json({ error: 'invalid id' });
+  if (!branch || !province || !city) {
+    return res.status(400).json({ error: 'Invalid Input' });
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM triprates WHERE triprates.id=${id}`;
+    const sql = `SELECT * FROM triprates WHERE triprates.branch="${branch}" AND triprates.province="${province}" AND triprates.city="${city}"`;
     let removedTripRates;
 
     db.all(sql, [], (err, rows) => {
       if (err) {
         reject(err);
       } else {
-        removedTripRates = rows.find((row) => row.id === id);
+        removedTripRates = rows.find((row) => {
+          return (
+            row.branch === branch &&
+            row.province === province &&
+            row.city === city
+          );
+        });
 
         if (removedTripRates === undefined) {
-          return reject('id does not exist');
+          return reject('Trip rate does not exist');
         }
 
-        setTripRatesModel(
-          getAllTripRates().filter(
-            (triprates) => triprates.id !== removedTripRates.id
-          )
-        );
+        const { id } = removedTripRates;
 
+        removeTripRate(id);
         removeTripRateFromDatabase(id);
         resolve(removedTripRates);
       }
