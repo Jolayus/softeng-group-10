@@ -40,14 +40,16 @@ export default {
       };
       this.menuItems.unshift(uploadObj);
 
-      // ADD TRIP RATES
+      // BUTTON FOR ADD TRIP RATE
       this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
         'addTripRatesModal';
 
+      // BUTTON FOR DELETE TRIP RATE
       this.menuItems.find(
         (menuItem) => menuItem.text === 'Delete'
       ).targetModal = 'deleteTripRatesModal';
 
+      // BUTTON FOR EDIT TRIP RATE
       this.menuItems.find((menuItem) => menuItem.text === 'Edit').targetModal =
         'editTripRatesModal';
     }
