@@ -25,8 +25,19 @@ function getTripRateById(id) {
   return tripRates.find((tripRate) => tripRate.id === id);
 }
 
+function addNewTripRate(newTripRate) {
+  return tripRates.push(newTripRate);
+}
+
+function removeTripRate(tripRateId) {
+  const idx = tripRates.findIndex((tripRate) => tripRate.id === tripRateId);
+  return tripRates.splice(idx, 1);
+}
+
 module.exports = {
   loadTripRates,
   getAllTripRates,
-  getTripRateById
+  getTripRateById,
+  addNewTripRate,
+  removeTripRate
 };

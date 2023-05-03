@@ -18,9 +18,9 @@ export default {
     return {
       showMenu: false,
       menuItems: [
-        { icon: 'AddIcon', text: 'Add' },
-        { icon: 'EditIcon', text: 'Edit' },
-        { icon: 'TrashIcon', text: 'Delete' }
+        { icon: 'AddIcon', text: 'Add', disable: false },
+        { icon: 'EditIcon', text: 'Edit', disable: false },
+        { icon: 'TrashIcon', text: 'Delete', disable: false}
       ]
     };
   },
@@ -29,14 +29,15 @@ export default {
       this.showMenu = !this.showMenu;
     }
   },
-  props: ['isForTripRates'],
+  props: ['isForTripRates', 'isUploadButtonDisable'],
   mounted() {
     // If this component is used for trip rates
-    if (Boolean(this.isForTripRates)) {
+    if (this.isForTripRates) {
       const uploadObj = {
         icon: 'UploadIcon',
         text: 'Upload',
-        targetModal: 'uploadFileModal'
+        targetModal: 'uploadFileModal',
+        disable: this.isUploadButtonDisable
       };
       this.menuItems.unshift(uploadObj);
 
@@ -71,6 +72,7 @@ export default {
               class="list-item px-3 py-2 border w-100"
               data-bs-toggle="modal"
               :data-bs-target="`#${item.targetModal}`"
+              :disabled="item.disable"
             >
               <component :is="item.icon" /> {{ item.text }}
             </button>
@@ -128,12 +130,12 @@ export default {
   display: flex;
   min-width: 80px;
   gap: 10px;
-  cursor: pointer;
 }
 
-.list-item:hover {
+.list-item:not(:disabled):hover {
   background-color: #4c7273;
   color: white;
+  cursor: pointer;
 }
 
 button {
