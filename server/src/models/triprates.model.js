@@ -21,8 +21,12 @@ function getAllTripRates() {
   return tripRates;
 }
 
-function getTripRateById(id) {
-  return tripRates.find((tripRate) => tripRate.id === id);
+function getTripRate(branch, province, city) {
+  return tripRates.find((tripRate) => (
+    tripRate.branch === branch &&
+    tripRate.province === province &&
+    tripRate.city === city
+  ));
 }
 
 function addNewTripRate(newTripRate) {
@@ -37,7 +41,7 @@ function removeTripRate(tripRateId) {
 module.exports = {
   loadTripRates,
   getAllTripRates,
-  getTripRateById,
+  getTripRate,
   addNewTripRate,
   removeTripRate
 };

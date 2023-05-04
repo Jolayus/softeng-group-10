@@ -9,7 +9,11 @@ import Modal from '../components/Modal.vue';
 
 import { getClientsModel } from '../models/client.model';
 import { getTripRatesModel } from '../models/triprates.model';
-import { httpCreateTripRates, httpDeleteTripRates } from '../requests/requests';
+import {
+  httpCreateTripRates,
+  httpDeleteTripRates,
+  httpUpdateTripRates
+} from '../requests/requests';
 
 export default {
   name: 'Trip Rates',
@@ -39,9 +43,15 @@ export default {
       deleteTripRatesCityInput: '',
 
       // Edit inputs
+      isForEditing: false,
       editTripRatesBranchInput: '',
       editTripRatesProvinceInput: '',
       editTripRatesCityInput: '',
+      editTripRatesAUVInput: null,
+      editTripRates4WInput: null,
+      editTripRates6WElfInput: null,
+      editTripRates6WFInput: null,
+      editTripRates10WInput: null,
 
       // Constants
       EDIT_MODAL: 3,
@@ -315,6 +325,36 @@ export default {
       const cities = this.getCities(filteredTripRatesByProvince);
 
       return this.getUniqueValuesFromArray(cities);
+    },
+
+    // editTripRatesHandler() {
+
+    // },
+
+    onSubmitEditTripRates() {
+      if (this.isForEditing) {
+        const branch = this.editTripRatesBranchInput;
+        const province = this.editTripRatesProvinceInput;
+        const city = this.editTripRatesCityInput;
+        const tripRateToBeEdited = this.tripRates.find(
+          (tripRate) =>
+            tripRate.branch === branch &&
+            tripRate.province === province &&
+            tripRate.city === city
+        );
+
+        tripRateToBeEdited.auv = this.editTripRatesAUVInput;
+        tripRateToBeEdited.four_wheeler = this.editTripRates4WInput;
+        tripRateToBeEdited.six_wheeler_elf = this.editTripRates6WElfInput;
+        tripRateToBeEdited.six_wheeler_forward = this.editTripRates6WFInput;
+        tripRateToBeEdited.ten_wheeler = this.editTripRates10WInput;
+
+        httpUpdateTripRates(tripRateToBeEdited);
+      }
+
+      if (this.isInputsForEditTripRateValid) {
+        this.isForEditing = true;
+      }
     }
   },
   mounted() {
@@ -335,8 +375,8 @@ export default {
     isInputsForEditTripRateValid() {
       return (
         this.editTripRatesBranchInput &&
-        this.editTripRateProvinceInput &&
-        this.editTripRateCityInput
+        this.editTripRatesProvinceInput &&
+        this.editTripRatesCityInput
       );
     },
     isInputsForDeleteTripRateValid() {
@@ -762,8 +802,80 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
-      <div class="modal-body">
-        <form id="editTripRatesForm" @submit.prevent="onSubmitDeleteTripRates">
+      <div v-if="isForEditing" class="modal-body">
+        <form id="editTripRatesForm" @submit.prevent="onSubmitEditTripRates">
+          <div class="mb-3">
+            <label for="editTripRatesAuv" class="form-label d-block text-start"
+              >AUV</label
+            >
+            <input
+              v-model="editTripRatesAUVInput"
+              type="number"
+              class="form-control"
+              id="editTripRatesAuv"
+              aria-describedby="editTripRatesAuv"
+              step=".01"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editTripRates4w" class="form-label d-block text-start"
+              >4W</label
+            >
+            <input
+              v-model="editTripRates4WInput"
+              type="number"
+              class="form-control"
+              id="editTripRates4w"
+              aria-describedby="editTripRates4w"
+              step=".01"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="editTripRates6wElf"
+              class="form-label d-block text-start"
+              >6W Elf</label
+            >
+            <input
+              v-model="editTripRates6WElfInput"
+              type="number"
+              class="form-control"
+              id="editTripRates6wElf"
+              aria-describedby="editTripRates6wElf"
+              step=".01"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editTripRates6wF" class="form-label d-block text-start"
+              >6WF</label
+            >
+            <input
+              v-model="editTripRates6WFInput"
+              type="number"
+              class="form-control"
+              id="editTripRates6wF"
+              aria-describedby="editTripRates6wF"
+              step=".01"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editTripRates10w" class="form-label d-block text-start"
+              >10W</label
+            >
+            <input
+              v-model="editTripRates10WInput"
+              type="number"
+              class="form-control"
+              id="editTripRates10w"
+              aria-describedby="editTripRates10w"
+              step=".01"
+            />
+          </div>
+        </form>
+      </div>
+
+      <div v-else class="modal-body">
+        <form id="editTripRatesForm" @submit.prevent="onSubmitEditTripRates">
           <div class="mb-3">
             <label
               for="editTripRatesBranch"
@@ -837,9 +949,9 @@ export default {
         </button>
         <button
           type="submit"
-          form="editTripRatesForm"
+          :form="'editTripRatesForm'"
           class="btn btn-primary tms-btn"
-          :data-bs-dismiss="isInputsForEditTripRateValid ? 'modal' : ''"
+          :data-bs-dismiss="isForEditing ? 'modal' : ''"
         >
           Edit Trip Rate
         </button>
