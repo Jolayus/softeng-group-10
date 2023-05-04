@@ -2,6 +2,7 @@ const db = require('../../../database/db');
 
 const {
   getAllTripRates,
+  getTripRate,
   getTripRateById,
   addNewTripRate,
   removeTripRate
@@ -117,7 +118,9 @@ function httpDeleteTripRate(req, res) {
 // UPDATE trip rates
 function httpEditTripRate(req, res) {
   const {
-    id,
+    branch,
+    province,
+    city,
     auv,
     four_wheeler,
     six_wheeler_elf,
@@ -125,7 +128,7 @@ function httpEditTripRate(req, res) {
     ten_wheeler
   } = req.body;
 
-  const updatedTripRate = getTripRateById(id);
+  const updatedTripRate = getTripRate(branch, province, city);
 
   updatedTripRate.auv = auv;
   updatedTripRate.four_wheeler = four_wheeler;
@@ -133,11 +136,11 @@ function httpEditTripRate(req, res) {
   updatedTripRate.six_wheeler_forward = six_wheeler_forward;
   updatedTripRate.ten_wheeler = ten_wheeler;
 
-  const sql = `UPDATE triprates SET auv=?, four_wheeler=?, six_wheeler_elf=?, six_wheeler_forward=?, ten_wheeler=? WHERE triprates.id=?`;
+  const sql = `UPDATE triprates SET auv=?, four_wheeler=?, six_wheeler_elf=?, six_wheeler_forward=?, ten_wheeler=? WHERE triprates.branch="${branch}" AND triprates.province="${province}" AND triprates.city="${city}"`;
 
   db.run(
     sql,
-    [auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler, id],
+    [auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });
