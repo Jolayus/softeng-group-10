@@ -24,9 +24,9 @@ export default {
       currentTripRates: {},
       currentClient: getClientsModel()[0],
       isFileSubmitValidFormat: undefined,
-      isNewTripRateValid: undefined,
 
       // Add Inputs
+      isNewTripRateValid: undefined,
       addTripRatesBranchInput: '',
       addTripRatesProvinceInput: '',
       addTripRatesCityInput: '',
@@ -146,6 +146,40 @@ export default {
       });
     },
 
+    clearDataForUpload() {
+      this.isFileSubmitValidFormat = undefined;
+    },
+
+    clearDataForAdd() {
+      this.isNewTripRateValid = undefined;
+      this.addTripRatesBranchInput = '';
+      this.addTripRatesProvinceInput = '';
+      this.addTripRatesCityInput = '';
+      this.addTripRatesAUVInput = null;
+      this.addTripRates4WInput = null;
+      this.addTripRates6WElfInput = null;
+      this.addTripRates6WFInput = null;
+      this.addTripRates10WInput = null;
+    },
+
+    clearDataForEdit() {
+      this.editTripRatesBranchInput = '';
+      this.editTripRatesProvinceInput = '';
+      this.editTripRatesCityInput = '';
+      this.editTripRatesAUVInput = null;
+      this.editTripRates4WInput = null;
+      this.editTripRates6WElfInput = null;
+      this.editTripRates6WFInput = null;
+      this.editTripRates10WInput = null;
+      this.isForEditing = false;
+    },
+
+    clearDataForDelete() {
+      this.deleteTripRatesBranchInput = '';
+      this.deleteTripRatesProvinceInput = '';
+      this.deleteTripRatesCityInput = '';
+    },
+
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
@@ -198,7 +232,6 @@ export default {
 
     onSubmitDeleteTripRates() {
       const selectedBranch = this.deleteTripRatesBranchInput;
-      console.log(selectedBranch);
       const tripRateToBeDeleted = this.currentTripRates[selectedBranch].find(
         (tripRates) => {
           return (
@@ -222,6 +255,7 @@ export default {
           );
 
           this.tripRates.splice(idx, 1);
+          this.clearDataForDelete();
         })
         .catch(() => {
           console.log('Invalid inputs, trip rates not found based on input');
@@ -350,6 +384,7 @@ export default {
         tripRateToBeEdited.ten_wheeler = this.editTripRates10WInput;
 
         httpUpdateTripRates(tripRateToBeEdited);
+        this.clearDataForEdit();
       }
 
       if (this.isInputsForEditTripRateValid) {
@@ -498,6 +533,7 @@ export default {
           type="button"
           class="btn btn-success"
           data-bs-dismiss="modal"
+          @click="clearDataForUpload()"
         >
           Continue
         </button>
@@ -510,6 +546,7 @@ export default {
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            @click="clearDataForUpload()"
           >
             Cancel
           </button>
@@ -666,6 +703,7 @@ export default {
           type="button"
           class="btn btn-success"
           data-bs-dismiss="modal"
+          @click="clearDataForAdd"
         >
           Continue
         </button>
@@ -678,6 +716,7 @@ export default {
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
+            @click="clearDataForAdd"
           >
             Cancel
           </button>
@@ -778,7 +817,12 @@ export default {
     </template>
     <template v-slot:modal-footer>
       <div class="modal-footer justify-content-center border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          @click="clearDataForDelete"
+        >
           Cancel
         </button>
         <button
@@ -944,7 +988,12 @@ export default {
     </template>
     <template v-slot:modal-footer>
       <div class="modal-footer justify-content-center border-top-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          @click="clearDataForEdit"
+        >
           Cancel
         </button>
         <button
