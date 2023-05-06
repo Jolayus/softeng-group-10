@@ -6,6 +6,7 @@ import ClientsIcon from './Icons/ClientsIcon.vue';
 import TripRatesIcon from './Icons/TripRatesIcon.vue';
 import BillingIcon from './Icons/BillingIcon.vue';
 import PayrollIcon from './Icons/PayrollIcon.vue';
+import ArchiveIcon from './Icons/ArchiveIcon.vue';
 import LogoutIcon from './Icons/LogoutIcon.vue';
 
 export default {
@@ -17,6 +18,7 @@ export default {
     TripRatesIcon,
     BillingIcon,
     PayrollIcon,
+    ArchiveIcon,
     LogoutIcon
   },
   methods: {
@@ -75,6 +77,28 @@ export default {
             <PayrollIcon /> Payroll
           </RouterLink>
         </li>
+        <li class="nav-link p-0">
+            <div class="d-flex justify-content-between dropend">
+              <RouterLink to="" class="text-light align-items-center gap-1 flex-grow-1">
+                <ArchiveIcon /> Archive
+              </RouterLink>
+              <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item">
+                  <RouterLink to="/archivedclient" class="text-light d-flex align-items-center gap-1" role="button">
+                    <ClientsIcon /> Archived Clients
+                  </RouterLink>
+                </li>
+                <li class="dropdown-item ">
+                  <RouterLink to="/archivedemployee" class="text-light d-flex align-items-center gap-1" role="button">
+                    <EmployeesIcon /> Archived Employees
+                  </RouterLink>
+                </li>
+              </ul>
+            </div>
+          </li>
       </ul>
     </nav>
     <div class="text-light border-top">

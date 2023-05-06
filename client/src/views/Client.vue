@@ -2,9 +2,9 @@
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
-import Footer from '../components/Footer.vue';
 import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
+
 import {
   httpCreateClient,
   httpUpdateClient,
@@ -17,7 +17,6 @@ export default {
     SearchIcon,
     EditIcon,
     TrashIcon,
-    Footer,
     Modal
   },
   data() {

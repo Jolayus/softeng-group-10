@@ -6,6 +6,8 @@ import Client from '../views/Client.vue';
 import TripRates from '../views/TripRates.vue';
 import Billing from '../views/Billing.vue';
 import Payroll from '../views/Payroll.vue';
+import ArchivedClient from '../views/ArchivedClient.vue';
+import ArchivedEmployee from '../views/ArchivedEmployee.vue';
 
 const routes = [
   {
@@ -53,6 +55,17 @@ const routes = [
     path: '/payroll',
     name: 'Payroll',
     component: Payroll
+  },
+  {
+    path: '/archivedclient',
+    name: 'ArchivedClient',
+    component: ArchivedClient
+  }
+  ,
+  {
+    path: '/archivedemployee',
+    name: 'ArchivedEmployee',
+    component: ArchivedEmployee
   }
 ];
 
