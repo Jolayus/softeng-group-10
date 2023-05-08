@@ -36,7 +36,7 @@ export default {
       <h1>Dashboard</h1>
       <Date />
     </header>
-    <main class="container-fluid p-5 position-relative">
+    <main class="container-fluid p-5 position-relative main">
       <div class="row justify-content-center gap-3">
         <CardDashboard v-for="(card, index) in cards" :classes="classes[index]">
           <template v-slot:title>
@@ -61,8 +61,11 @@ export default {
 </template>
 
 <style scoped>
+.main {
+  z-index: -1;
+}
+
 .btn {
   z-index: 2;
 }
-
 </style>
