@@ -118,6 +118,7 @@ a {
 aside,
 .dropdown-menu {
   background-color: #041421;
+  z-index: 200;
 }
 
 .nav-link:hover,
