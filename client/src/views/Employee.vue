@@ -21,7 +21,6 @@ export default {
   },
   data() {
     return {
-      employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: '',
       employeeNameInput: '',
@@ -46,9 +45,7 @@ export default {
     },
     archiveEmployee(id) {
       httpArchiveEmployee(id).then((archivedEmployee) => {
-        this.employeesModel = this.employeesModel.filter((employee) => {
-          return employee.id !== archivedEmployee.id;
-        });
+        this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
       });
     },
     addNewEmployee() {
@@ -66,10 +63,8 @@ export default {
       };
 
       httpCreateEmployee(newEmployee).then((employee) => {
-        this.employeesModel.push(employee);
+        this.$store.dispatch('employees/addEmployee', employee);
       });
-
-      console.log(this.employeesModel);
 
       // Clear input
       this.employeeNameInput = '';
@@ -89,21 +84,25 @@ export default {
       this.editEmployeeContactNumberInput = contact_number;
     },
     saveChanges() {
-      const employee = this.employeesModel.find(
-        (employee) => employee.id === this.editEmployeeId
-      );
+      const newDetails = {
+        id: this.editEmployeeId,
+        name: this.editEmployeeNameInput,
+        role: this.editEmployeeRoleInput,
+        email: this.editEmployeeEmailInput,
+        contact_number: this.editEmployeeContactNumberInput
+      };
 
-      employee.name = this.editEmployeeNameInput;
-      employee.role = this.editEmployeeRoleInput;
-      employee.email = this.editEmployeeEmailInput;
-      employee.contact_number = this.editEmployeeContactNumberInput;
+      this.$store.dispatch('employees/editEmployee', newDetails);
 
-      httpUpdateEmployee(employee);
+      httpUpdateEmployee(newDetails);
     }
   },
   computed: {
+    employees() {
+      return this.$store.getters['employees/employees'];
+    },
     filteredEmployees() {
-      const employees = this.employeesModel.filter((employee) =>
+      const employees = this.employees.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
 
