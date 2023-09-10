@@ -111,33 +111,33 @@ export default {
 }
 
 .billing {
-  border: 5px solid black;
+  border: 2px solid black;
 }
 
 .border-left {
-  border-left: 5px solid black;
+  border-left: 2px solid black;
 }
 
 .border-right {
-  border-right: 5px solid black;
+  border-right: 2px solid black;
 }
 
 .border-top {
-  border-top: 5px solid black;
+  border-top: 2px solid black;
 }
 
 .border-btm {
-  border-bottom: 5px solid black;
+  border-bottom: 2px solid black;
 }
 
 .border-y {
-  border-top: 5px solid black;
-  border-bottom: 5px solid black;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
 }
 
 .border-x {
-  border-right: 5px solid black;
-  border-left: 5px solid black;
+  border-right: 2px solid black;
+  border-left: 2px solid black;
 }
 
 .min-height-50 {

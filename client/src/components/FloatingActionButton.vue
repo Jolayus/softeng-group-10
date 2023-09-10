@@ -111,14 +111,12 @@ export default {
   border-radius: 10px;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
+.fade-enter-active {
+  animation: fade-action-button 0.3s ease-out;
 }
 
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+.fade-leave-active {
+  animation: fade-action-button 0.3s ease-in reverse;
 }
 
 .list-style-none {
@@ -140,5 +138,15 @@ export default {
 
 button {
   border-radius: none;
+}
+
+@keyframes fade-action-button {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 </style>

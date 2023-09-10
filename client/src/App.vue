@@ -5,6 +5,9 @@ export default {
   name: 'App',
   components: {
     AppLayout
+  },
+  async created() {
+    await this.$store.dispatch('employees/loadEmployees');
   }
 }
 </script>

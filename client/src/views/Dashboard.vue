@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template>
-  <div class="gap-2 d-flex flex-column justify-content-between">
+  <div class="gap-2 d-flex flex-column justify-content-between dashboard-main">
     <header class="position-relative">
       <h1>Dashboard</h1>
       <Date />
@@ -67,5 +67,9 @@ export default {
 
 .btn {
   z-index: 2;
+}
+
+.dashboard-main {
+  z-index: 100;
 }
 </style>

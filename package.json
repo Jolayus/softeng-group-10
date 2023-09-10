@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install-client": "npm install --prefix client",
-    "install-server": "npm install --prefix server",
+    "install-client": "cd client && npm install",
+    "install-server": "cd server && npm install",
     "install": "npm run install-client && npm run install-server",
     "server": "npm run watch --prefix server",
     "client": "npm run dev --prefix client",
@@ -14,5 +14,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
 }
