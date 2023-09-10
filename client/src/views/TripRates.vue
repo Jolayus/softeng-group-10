@@ -427,7 +427,7 @@ export default {
 
 <template>
   <h1>Clients - Trip Rates</h1>
-  <ul class="nav nav-pills mb-3 gap-2" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills mb-3 gap-2 mt-5" id="pills-tab" role="tablist">
     <CompanyTab
       v-for="client in clients"
       :classes="client === clients[0] ? 'active' : ''"
@@ -448,9 +448,11 @@ export default {
       :id="'pills-' + client.id"
       :key="client.id"
     >
-      <p v-if="Object.keys(filteredTripRates).length === 0">Empty</p>
+      <p v-if="Object.keys(filteredTripRates).length === 0">
+        There are no stored trip rates for this client.
+      </p>
       <main
-        class="mt-5"
+        class="mb-5"
         v-else
         v-for="branch in Object.keys(filteredTripRates)"
         :key="branch"
