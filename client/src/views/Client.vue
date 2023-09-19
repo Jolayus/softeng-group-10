@@ -21,9 +21,7 @@ export default {
   },
   data() {
     return {
-      clientsModel: getClientsModel(),
       selectedClient: null,
-      currentClientId: 0,
       searchInput: '',
       clientCompanyNameInput: '',
       clientContactPersonInput: '',
@@ -40,9 +38,7 @@ export default {
   methods: {
     archiveClient(id) {
       httpArchiveClient(id).then((archivedClient) => {
-        this.clientsModel = this.clientsModel.filter((client) => {
-          return client.id !== archivedClient.id;
-        });
+        this.$store.dispatch('clients/archiveClient', archivedClient.id);
       });
     },
     addNewClient() {
@@ -59,7 +55,7 @@ export default {
       };
 
       httpCreateClient(newClient).then((client) => {
-        this.clientsModel.push(client);
+        this.$store.dispatch('clients/addClient', client);
       });
 
       this.clientCompanyNameInput = '';
@@ -80,21 +76,25 @@ export default {
       this.editClientAddressInput = address;
     },
     saveChanges() {
-      const client = this.clientsModel.find(
-        (client) => client.id === this.editClientId
-      );
+      const newDetails = {
+        id: this.editClientId,
+        company_name: this.editClientCompanyNameInput,
+        contact_person: this.editClientContactPersonInput,
+        contact_number: this.editClientContactNumberInput,
+        address: this.editClientAddressInput
+      };
 
-      client.company_name = this.editClientCompanyNameInput;
-      client.contact_person = this.editClientContactPersonInput;
-      client.contact_number = this.editClientContactNumberInput;
-      client.address = this.editClientAddressInput;
+      this.$store.dispatch('clients/editClient', newDetails);
 
-      httpUpdateClient(client);
+      httpUpdateClient(newDetails);
     }
   },
   computed: {
+    clients() {
+      return this.$store.getters['clients/clients'];
+    },    
     filteredClient() {
-      return this.clientsModel.filter((client) =>
+      return this.clients.filter((client) =>
         client.company_name
           .toLowerCase()
           .includes(this.searchInput.toLowerCase())
@@ -133,9 +133,6 @@ export default {
         return false;
       }
     }
-  },
-  mounted() {
-    this.currentClientId = this.clientsModel.length;
   }
 };
 </script>

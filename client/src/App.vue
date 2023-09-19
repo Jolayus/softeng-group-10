@@ -8,6 +8,7 @@ export default {
   },
   async created() {
     await this.$store.dispatch('employees/loadEmployees');
+    await this.$store.dispatch('clients/loadClients');
   }
 }
 </script>
