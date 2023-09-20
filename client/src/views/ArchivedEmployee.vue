@@ -1,6 +1,5 @@
 <script>
 import SearchIcon from '../components/Icons/SearchIcon.vue';
-import { getEmployeesModel } from '../models/employees.model';
 
 export default {
   name: 'ArchivedEmployee',
@@ -9,19 +8,27 @@ export default {
   },
   data() {
     return {
-      employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: ''
     };
   },
   computed: {
+    archivedEmployees() {
+      return this.$store.getters['archivedEmployees/archivedEmployees'];
+    },
     filteredEmployees() {
-      const employees = this.employeesModel.filter((employee) =>
-        employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
+      const archivedEmployees = this.archivedEmployees.filter(
+        (archivedEmployee) =>
+          archivedEmployee.name
+            .toLowerCase()
+            .includes(this.searchInput.toLowerCase())
       );
 
-      return employees;
+      return archivedEmployees;
     }
+  },
+  async mounted() {
+    await this.$store.dispatch('archivedEmployees/loadArchivedEmployees');
   }
 };
 </script>

@@ -7,6 +7,10 @@ const {
   removeEmployee
 } = require('../../models/employees.model');
 
+const {
+  addNewArchivedEmployee
+} = require('../../models/archivedEmployees.model');
+
 // GET ALL EMPLOYEES
 function httpGetAllEmployees(req, res) {
   return res.status(200).json(getAllEmployees());
@@ -47,9 +51,9 @@ function httpPostNewEmployee(req, res) {
   });
 
   promise
-    .then((newClient) => {
-      addNewEmployee(newClient);
-      res.status(201).json(newClient);
+    .then((newEmployee) => {
+      addNewEmployee(newEmployee);
+      res.status(201).json(newEmployee);
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -105,7 +109,6 @@ function httpArchiveEmployee(req, res) {
         }
 
         removeEmployee(archivedEmployee.id);
-
         addEmployeeToArchive(archivedEmployee);
         removeEmployeeFromDatabase(id);
         resolve(archivedEmployee);
@@ -135,6 +138,8 @@ function removeEmployeeFromDatabase(id) {
 function addEmployeeToArchive(employee) {
   const { id, name, role, email, contact_number } = employee;
   const sql = `INSERT INTO archivedEmployees (id, name, role, email, contact_number) VALUES (?, ?, ?, ?, ?)`;
+
+  addNewArchivedEmployee({ id, name, role, email, contact_number });
 
   db.run(sql, [id, name, role, email, contact_number], (err) => {
     if (err) {

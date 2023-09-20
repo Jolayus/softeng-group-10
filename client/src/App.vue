@@ -10,7 +10,7 @@ export default {
     await this.$store.dispatch('employees/loadEmployees');
     await this.$store.dispatch('clients/loadClients');
   }
-}
+};
 </script>
 
 <template>
@@ -22,6 +22,4 @@ export default {
 .w-20 {
   width: 20%;
 }
-
-
 </style>
