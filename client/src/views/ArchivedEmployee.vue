@@ -81,14 +81,4 @@ export default {
 .input-group {
   width: 45%;
 }
-
-.modal-body label {
-  text-transform: uppercase;
-  font-weight: bold;
-  color: #86b9b0;
-}
-
-.modal-footer button {
-  background-color: #4c7273;
-}
 </style>

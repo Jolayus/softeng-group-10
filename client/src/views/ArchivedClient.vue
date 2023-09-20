@@ -1,6 +1,5 @@
 <script>
 import SearchIcon from '../components/Icons/SearchIcon.vue';
-import { getClientsModel } from '../models/client.model';
 
 export default {
   name: 'ArchivedClient',
@@ -9,7 +8,6 @@ export default {
   },
   data() {
     return {
-      clientsModel: getClientsModel(),
       searchInput: ''
     };
   },
@@ -78,15 +76,5 @@ export default {
 <style scoped>
 .input-group {
   width: 45%;
-}
-
-.modal-body label {
-  text-transform: uppercase;
-  font-weight: bold;
-  color: #86b9b0;
-}
-
-.modal-footer button {
-  background-color: #4c7273;
 }
 </style>
