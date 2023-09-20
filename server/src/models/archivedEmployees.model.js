@@ -22,7 +22,6 @@ function getAllArchivedEmployees() {
 }
 
 function addNewArchivedEmployee(newArchivedEmployee) {
-  console.log('addNewArchivedEmployee function executed');
   return archivedEmployees.push(newArchivedEmployee);
 }
 

@@ -8,6 +8,7 @@ const employeesRouter = require('./routes/employees/employees.router');
 const clientsRouter = require('./routes/clients/clients.router');
 const tripRatesRouter = require('./routes/triprates/triprates.router');
 const archivedEmployeesRouter = require('./routes/archivedEmployees/archivedEmployees.router');
+const archivedClientsRouter = require('./routes/archivedClients/archivedClients.router');
 
 const app = express();
 
@@ -22,7 +23,8 @@ app.use(express.json());
 app.use('/employees', employeesRouter);
 app.use('/clients', clientsRouter);
 app.use('/rates', tripRatesRouter);
-app.use('/archivedEmployees', archivedEmployeesRouter)
+app.use('/archivedEmployees', archivedEmployeesRouter);
+app.use('/archivedClients', archivedClientsRouter);
 
 if (process.env.MODE === 'production') {
   // Serve all our client side files
