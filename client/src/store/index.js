@@ -3,12 +3,14 @@ import { createStore } from 'vuex';
 import employeesModule from './modules/employees';
 import clientsModule from './modules/clients';
 import archivedEmployeesModule from './modules/archivedEmployees';
+import archivedClientsModule from './modules/archivedClients';
 
 const store = createStore({
   modules: {
     employees: employeesModule,
     clients: clientsModule,
-    archivedEmployees: archivedEmployeesModule
+    archivedEmployees: archivedEmployeesModule,
+    archivedClients: archivedClientsModule
   }
 });
 

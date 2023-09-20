@@ -10,22 +10,23 @@ export default {
   data() {
     return {
       clientsModel: getClientsModel(),
-      selectedClient: null,
-      currentClientId: 0,
       searchInput: ''
     };
   },
   computed: {
+    archivedClients() {
+      return this.$store.getters['archivedClients/archivedClients'];
+    },
     filteredClient() {
-      return this.clientsModel.filter((client) =>
-        client.company_name
+      return this.archivedClients.filter((archivedClient) =>
+        archivedClient.company_name
           .toLowerCase()
           .includes(this.searchInput.toLowerCase())
       );
     }
   },
-  mounted() {
-    this.currentClientId = this.clientsModel.length;
+  async mounted() {
+    await this.$store.dispatch('archivedClients/loadArchivedClients');
   }
 };
 </script>
