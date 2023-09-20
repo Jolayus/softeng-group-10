@@ -16,3 +16,12 @@ export default {
 <template>
   <AppLayout />
 </template>
+
+<style>
+/* Commonly used to set the table column's width fixed */
+.w-20 {
+  width: 20%;
+}
+
+
+</style>

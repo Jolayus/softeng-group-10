@@ -124,21 +124,10 @@ export default {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <div>
-                <ArchiveIcon /> Archives
-              </div>
+              <div><ArchiveIcon /> Archives</div>
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu w-100 nav-pills">
-              <li class="dropdown-item nav-link py-1">
-                <RouterLink
-                  to="/archivedclient"
-                  class="text-light d-flex align-items-center gap-1 "
-                  role="button"
-                >
-                  <ClientsIcon /> Archived Clients
-                </RouterLink>
-              </li>
               <li class="dropdown-item nav-link py-1">
                 <RouterLink
                   to="/archivedemployee"
@@ -146,6 +135,15 @@ export default {
                   role="button"
                 >
                   <EmployeesIcon /> Archived Employees
+                </RouterLink>
+              </li>
+              <li class="dropdown-item nav-link py-1">
+                <RouterLink
+                  to="/archivedclient"
+                  class="text-light d-flex align-items-center gap-1"
+                  role="button"
+                >
+                  <ClientsIcon /> Archived Clients
                 </RouterLink>
               </li>
             </ul>
@@ -166,7 +164,9 @@ export default {
 </template>
 
 <style scoped>
-a, .dropdown-toggle-split, .logout {
+a,
+.dropdown-toggle-split,
+.logout {
   text-decoration: none;
   padding: 8px 16px;
 }
@@ -180,10 +180,10 @@ aside,
 .nav-link:hover,
 .logout:hover,
 .dropdown-item:hover {
-  background-color: #4c7273;
+  background-color: #4c7273 !important;
 }
 
 .nav-link {
-  background-color: transparent;
+  background-color: #041421 !important;
 }
 </style>

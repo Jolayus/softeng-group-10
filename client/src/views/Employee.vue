@@ -179,20 +179,20 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Role</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone #</th>
-            <th scope="col">Actions</th>
+            <th class="w-20" scope="col">Name</th>
+            <th class="w-20" scope="col">Role</th>
+            <th class="w-20" scope="col">Email</th>
+            <th class="w-20" scope="col">Phone #</th>
+            <th class="w-20" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
-            <th scope="row">{{ employee.name }}</th>
-            <td>{{ employee.role }}</td>
-            <td>{{ employee.email }}</td>
-            <td>{{ employee.contact_number }}</td>
-            <td>
+            <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.email }}</td>
+            <td class="align-middle">{{ employee.contact_number }}</td>
+            <td class="align-middle">
               <EditIcon
                 data-bs-toggle="modal"
                 data-bs-target="#editEmployeeModal"
