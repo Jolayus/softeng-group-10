@@ -1,10 +1,16 @@
 <script>
 import SearchIcon from '../components/Icons/SearchIcon.vue';
+import RecoverIcon from '../components/Icons/RecoverIcon.vue';
+import TrashIcon from '../components/Icons/TrashIcon.vue';
+
+import { httpCreateEmployee } from '../requests/requests';
 
 export default {
   name: 'ArchivedEmployee',
   components: {
-    SearchIcon
+    SearchIcon,
+    RecoverIcon,
+    TrashIcon
   },
   data() {
     return {
@@ -25,6 +31,25 @@ export default {
       );
 
       return archivedEmployees;
+    }
+  },
+  methods: {
+    async recoverEmployeeInformation(archivedEmployeeId) {
+      const selectedArchivedEmployee = this.$store.getters[
+        'archivedEmployees/archivedEmployees'
+      ].find((archivedEmployee) => archivedEmployee.id === archivedEmployeeId);
+
+      const recoveredEmployee = await httpCreateEmployee(
+        selectedArchivedEmployee
+      );
+      this.$store.dispatch('employees/addEmployee', recoveredEmployee);
+      this.removeArchivedEmployeeFromStore(archivedEmployeeId);
+    },
+    removeArchivedEmployeeFromStore(employeeId) {
+      this.$store.dispatch(
+        'archivedEmployees/deleteArchivedEmployee',
+        employeeId
+      );
     }
   },
   async mounted() {
@@ -69,7 +94,14 @@ export default {
             <td class="align-middle">{{ employee.role }}</td>
             <td class="align-middle">{{ employee.email }}</td>
             <td class="align-middle">{{ employee.contact_number }}</td>
-            <td class="align-middle"></td>
+            <td class="align-middle">
+              <RecoverIcon
+                @click.prevent="recoverEmployeeInformation(employee.id)"
+                class="mx-2"
+                role="button"
+              ></RecoverIcon>
+              <TrashIcon class="mx-2" role="button"></TrashIcon>
+            </td>
           </tr>
         </tbody>
       </table>
