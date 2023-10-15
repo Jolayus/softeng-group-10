@@ -53,6 +53,8 @@ export default {
     addNewEmployee() {
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
+      const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
+      const plate_number = this.employeePlateNumberInput.trim() || '-';
       const email = this.employeeEmailInput.trim();
       const contact_number = this.employeeContactNumberInput.trim();
 
@@ -60,6 +62,8 @@ export default {
       const newEmployee = {
         name,
         role,
+        vehicle_type,
+        plate_number,
         email,
         contact_number
       };
@@ -68,11 +72,7 @@ export default {
         this.$store.dispatch('employees/addEmployee', employee);
       });
 
-      // Clear input
-      this.employeeNameInput = '';
-      this.employeeRoleInput = '';
-      this.employeeEmailInput = '';
-      this.employeeContactNumberInput = '';
+      this.clearAddEmployeeInputs();
     },
     onEdit(employee) {
       this.currentModal = 'EDIT';
@@ -103,6 +103,8 @@ export default {
       this.employeeRoleInput = '';
       this.employeeEmailInput = '';
       this.employeeContactNumberInput = '';
+      this.employeeVehicleTypeInput = '';
+      this.employeePlateNumberInput = '';
     },
     onPageChange() {
       this.clearAddEmployeeInputs();
