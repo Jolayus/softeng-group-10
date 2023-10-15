@@ -26,28 +26,40 @@ function isEmailValid(email) {
 
 // CREATE NEW EMPLOYEE
 function httpPostNewEmployee(req, res) {
-  const { name, role, email, contact_number } = req.body;
+  const { name, role, vehicle_type, plate_number, email, contact_number } =
+    req.body;
 
-  if (!name || !role || !isEmailValid(email) || !contact_number) {
+  if (
+    !name ||
+    !role ||
+    !vehicle_type ||
+    !plate_number ||
+    !isEmailValid(email) ||
+    !contact_number
+  ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO employees (name, role, email, contact_number) VALUES (?, ?, ?, ?)`;
-    db.run(sql, [name, role, email, contact_number], (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        const sql = `SELECT * FROM employees ORDER BY id DESC LIMIT 1`;
-        db.all(sql, [], (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows[0]);
-          }
-        });
+    const sql = `INSERT INTO employees (name, role, vehicle_type, plate_number, email, contact_number ) VALUES (?, ?, ?, ?, ?, ?)`;
+    db.run(
+      sql,
+      [name, role, vehicle_type, plate_number, email, contact_number],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          const sql = `SELECT * FROM employees ORDER BY id DESC LIMIT 1`;
+          db.all(sql, [], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(rows[0]);
+            }
+          });
+        }
       }
-    });
+    );
   });
 
   promise

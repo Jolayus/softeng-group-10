@@ -23,17 +23,24 @@ export default {
     return {
       selectedEmployee: null,
       searchInput: '',
+
+      // CREATE MODAL
       employeeNameInput: '',
       employeeRoleInput: '',
       employeeVehicleTypeInput: '',
       employeePlateNumberInput: '',
       employeeEmailInput: '',
       employeeContactNumberInput: '',
+
+      // EDIT MODAL
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
+      editEmployeeVehicleTypeInput: '',
+      editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
       editEmployeeContactNumberInput: '',
       editEmployeeId: '',
+
       currentModal: ''
     };
   },
@@ -50,7 +57,7 @@ export default {
         this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
       });
     },
-    addNewEmployee() {
+    async addNewEmployee() {
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
       const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
@@ -68,20 +75,29 @@ export default {
         contact_number
       };
 
-      httpCreateEmployee(newEmployee).then((employee) => {
-        this.$store.dispatch('employees/addEmployee', employee);
-      });
+      const employee = await httpCreateEmployee(newEmployee);
+      this.$store.dispatch('employees/addEmployee', employee);
 
       this.clearAddEmployeeInputs();
     },
     onEdit(employee) {
       this.currentModal = 'EDIT';
 
-      const { id, name, role, email, contact_number } = employee;
+      const {
+        id,
+        name,
+        role,
+        vehicle_type,
+        plate_number,
+        email,
+        contact_number
+      } = employee;
 
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
       this.editEmployeeRoleInput = role;
+      this.editEmployeeVehicleTypeInput = vehicle_type;
+      this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
       this.editEmployeeContactNumberInput = contact_number;
     },
@@ -90,6 +106,10 @@ export default {
         id: this.editEmployeeId,
         name: this.editEmployeeNameInput,
         role: this.editEmployeeRoleInput,
+        vehicle_type:
+          this.role === 'ADMIN' ? '-' : this.editEmployeeVehicleTypeInput,
+        plate_number:
+          this.role === 'ADMIN' ? '-' : this.editEmployeePlateNumberInput,
         email: this.editEmployeeEmailInput,
         contact_number: this.editEmployeeContactNumberInput
       };
@@ -112,9 +132,15 @@ export default {
   },
   computed: {
     employees() {
-      return this.$store.getters['employees/employees'];
+      const x = this.$store.getters['employees/employees'];
+
+      console.log(x);
+
+      return x;
     },
     filteredEmployees() {
+      console.log(this.employees);
+
       const employees = this.employees.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
@@ -158,6 +184,11 @@ export default {
     },
     isEmployeeRoleInputIsAdmin() {
       return this.employeeRoleInput === 'Admin';
+    },
+
+    // For editing employee
+    isEditEmployeeRoleInputIsAdmin() {
+      return this.editEmployeeRoleInput === 'Admin';
     }
   },
   beforeRouteLeave() {
@@ -212,6 +243,8 @@ export default {
           <tr v-for="employee in filteredEmployees" :key="employee.id">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.vehicle_type }}</td>
+            <td class="align-middle">{{ employee.plate_number }}</td>
             <td class="align-middle">{{ employee.email }}</td>
             <td class="align-middle">{{ employee.contact_number }}</td>
             <td class="align-middle">
@@ -397,6 +430,42 @@ export default {
               <option value="Admin">Admin</option>
             </select>
           </div>
+
+          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+            <label
+              for="newEmployeeVehicleType"
+              class="form-label d-block text-start"
+              >Vehicle Type</label
+            >
+            <select
+              v-model="editEmployeeVehicleTypeInput"
+              class="form-select"
+              id="newEmployeeVehicleType"
+              aria-describedby="newEmployeeVehicleType"
+            >
+              <option value="AUV">AUV</option>
+              <option value="4W">4W</option>
+              <option value="6W ELF">6W ELF</option>
+              <option value="6WF">6WF</option>
+              <option value="10W">10W</option>
+            </select>
+          </div>
+
+          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+            <label
+              for="newEmployeePlateNumber"
+              class="form-label d-block text-start"
+              >Plate number</label
+            >
+            <input
+              v-model="editEmployeePlateNumberInput"
+              type="email"
+              class="form-control"
+              id="newEmployeePlateNumber"
+              aria-describedby="newEmployeePlateNumber"
+            />
+          </div>
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
