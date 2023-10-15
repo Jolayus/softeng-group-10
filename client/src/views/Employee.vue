@@ -294,6 +294,24 @@ export default {
             </select>
           </div>
 
+          <div
+            class="mb-3"
+            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+          >
+            <label
+              for="employeePlateNumber"
+              class="form-label d-block text-start"
+              >Plate number</label
+            >
+            <input
+              v-model="employeePlateNumberInput"
+              type="text"
+              class="form-control"
+              id="employeePlateNumber"
+              aria-describedby="employeePlateNumber"
+            />
+          </div>
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
