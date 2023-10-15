@@ -25,6 +25,8 @@ export default {
       searchInput: '',
       employeeNameInput: '',
       employeeRoleInput: '',
+      employeeVehicleTypeInput: '',
+      employeePlateNumberInput: '',
       employeeEmailInput: '',
       employeeContactNumberInput: '',
       editEmployeeNameInput: '',
@@ -95,6 +97,15 @@ export default {
       this.$store.dispatch('employees/editEmployee', newDetails);
 
       httpUpdateEmployee(newDetails);
+    },
+    clearAddEmployeeInputs() {
+      this.employeeNameInput = '';
+      this.employeeRoleInput = '';
+      this.employeeEmailInput = '';
+      this.employeeContactNumberInput = '';
+    },
+    onPageChange() {
+      this.clearAddEmployeeInputs();
     }
   },
   computed: {
@@ -142,7 +153,14 @@ export default {
         }
         return false;
       }
+    },
+    isEmployeeRoleInputIsAdmin() {
+      return this.employeeRoleInput === 'Admin';
     }
+  },
+  beforeRouteLeave() {
+    // When the user selects other page
+    this.clearAddEmployeeInputs();
   }
 };
 </script>
@@ -171,7 +189,7 @@ export default {
           data-bs-toggle="modal"
           data-bs-target="#employeeModal"
           class="btn tms-btn text-light d-flex align-items-center h-100"
-          @click="currentModal = 'ADD'"
+          @click="openCreateEmployeeModal"
         >
           Add new employee
         </button>
@@ -179,11 +197,13 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Name</th>
-            <th class="w-20" scope="col">Role</th>
-            <th class="w-20" scope="col">Email</th>
-            <th class="w-20" scope="col">Phone #</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">Vehicle type</th>
+            <th scope="col">Plate #</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone #</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -252,6 +272,28 @@ export default {
               <option value="Admin">Admin</option>
             </select>
           </div>
+
+          <div
+            class="mb-3"
+            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+          >
+            <label for="employeeRole" class="form-label d-block text-start"
+              >Vehicle Type</label
+            >
+            <select
+              v-model="employeeVehicleTypeInput"
+              class="form-select"
+              id="employeeVehicleType"
+              aria-describedby="employeeVehicleType"
+            >
+              <option value="AUV">AUV</option>
+              <option value="4W">4W</option>
+              <option value="6W ELF">6W ELF</option>
+              <option value="6WF">6WF</option>
+              <option value="10W">10W</option>
+            </select>
+          </div>
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -416,6 +458,10 @@ export default {
 <style scoped>
 .input-group {
   width: 45%;
+}
+
+th {
+  width: 14%;
 }
 
 .modal-body label {
