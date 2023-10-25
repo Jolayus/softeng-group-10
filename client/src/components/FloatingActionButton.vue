@@ -13,7 +13,16 @@ export default {
       default: false,
       required: false
     },
-    isForTripRates: Boolean,
+    isForTripRates: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    isForBilling: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
     isUploadButtonDisable: Boolean
   },
   components: {
@@ -29,7 +38,7 @@ export default {
       menuItems: [
         { icon: 'AddIcon', text: 'Add', disable: false },
         { icon: 'EditIcon', text: 'Edit', disable: false },
-        { icon: 'TrashIcon', text: 'Delete', disable: false}
+        { icon: 'TrashIcon', text: 'Delete', disable: false }
       ]
     };
   },
@@ -61,6 +70,10 @@ export default {
       // BUTTON FOR EDIT TRIP RATE
       this.menuItems.find((menuItem) => menuItem.text === 'Edit').targetModal =
         'editTripRatesModal';
+    } else if (this.isForBilling) {
+      // BUTTON FOR ADD BILLING
+      this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
+        'addBillingModal';
     }
   }
 };

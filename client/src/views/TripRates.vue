@@ -490,7 +490,7 @@ export default {
     </TabPane>
   </div>
 
-  <h3 v-if="!clients.length">Please add a client...</h3>
+  <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
 
   <Modal id="uploadFileModal">
     <template v-slot:modal-header>
