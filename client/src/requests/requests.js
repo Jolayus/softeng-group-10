@@ -144,21 +144,6 @@ async function httpGetArchivedEmployees() {
   return archivedEmployees;
 }
 
-async function httpRecoverArchivedEmployee(id) {
-  const response = await fetch(`${API_URL}/archivedEmployees`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id })
-  });
-  const recoveredEmployee = await response.json();
-
-  console.log(recoveredEmployee);
-
-  return recoveredEmployee;
-}
-
 async function httpDeleteArchivedEmployee(id) {
   const response = await fetch(`${API_URL}/archivedEmployees`, {
     method: 'DELETE',
@@ -206,7 +191,6 @@ export {
   httpUpdateTripRates,
   httpDeleteTripRates,
   httpGetArchivedEmployees,
-  httpRecoverArchivedEmployee,
   httpDeleteArchivedEmployee,
   httpGetArchivedClients,
   httpDeleteArchivedClient

@@ -18,24 +18,37 @@ function httpRecoverEmployee(req, res) {
 
   const promise = new Promise((resolve, reject) => {
     const sql = `SELECT * FROM archivedEmployee WHERE archivedEmployee.id=${id}`;
-    let recoveredEmployee;
+    let recoveredArchivedEmployee;
 
     db.all(sql, [], (err, rows) => {
       if (err) {
         reject(err);
       } else {
-        recoveredEmployee = rows.find((row) => row.id === id);
+        recoveredArchivedEmployee = rows.find((row) => row.id === id);
 
-        if (recoveredEmployee === undefined) {
+        if (recoveredArchivedEmployee === undefined) {
           return reject('id does not exist');
         }
 
-        removeArchivedEmployee(recoveredEmployee.id);
+        // Remove archived employee from archivedEmployee model
+        removeArchivedEmployee(recoveredArchivedEmployee.id);
+
+        // Remove archived employee from archivedEmployee database
         removeEmployeeFromArchivedEmployeeTable(id);
-        resolve(recoveredEmployee);
+
+        // Resolve the recovered archived employee
+        resolve(recoveredArchivedEmployee);
       }
     });
   });
+
+  promise
+    .then((recoveredArchivedEmployee) => {
+      res.status(200).json(recoveredArchivedEmployee);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err });
+    });
 }
 
 function removeEmployeeFromArchivedEmployeeTable(id) {

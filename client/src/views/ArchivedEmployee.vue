@@ -6,7 +6,6 @@ import Modal from '../components/Modal.vue';
 
 import {
   httpCreateEmployee,
-  httpRecoverArchivedEmployee,
   httpDeleteArchivedEmployee
 } from '../requests/requests';
 
@@ -24,6 +23,36 @@ export default {
       searchInput: ''
     };
   },
+  methods: {
+    async recoverArchivedEmployee(archivedEmployeeId) {
+      // The archived employee information to be recover
+      const selectedArchivedEmployee = this.$store.getters[
+        'archivedEmployees/archivedEmployees'
+      ].find((archivedEmployee) => archivedEmployee.id === archivedEmployeeId);
+
+      // Add the archived employee information to the employee database
+      const recoveredArchivedEmployee = await httpCreateEmployee(
+        selectedArchivedEmployee
+      );
+
+      // Add the archived employee information to the employees store
+      this.$store.dispatch('employees/addEmployee', recoveredArchivedEmployee);
+
+      // Removing archived employee information from archivedEmployee database and store
+      this.deleteArchivedEmployee(archivedEmployeeId);
+    },
+    async deleteArchivedEmployee(archivedEmployeeId) {
+      // Remove archived employee information to the archivedEmployee database
+      // Remove archived employee information to the archivedEmployee store
+      const deletedArchivedEmployee = await httpDeleteArchivedEmployee(
+        archivedEmployeeId
+      );
+      this.$store.dispatch(
+        'archivedEmployees/deleteArchivedEmployee',
+        deletedArchivedEmployee.id
+      );
+    }
+  },
   computed: {
     archivedEmployees() {
       return this.$store.getters['archivedEmployees/archivedEmployees'];
@@ -37,30 +66,6 @@ export default {
       );
 
       return archivedEmployees;
-    }
-  },
-  methods: {
-    async recoverEmployeeInformation(archivedEmployeeId) {
-      const selectedArchivedEmployee = this.$store.getters[
-        'archivedEmployees/archivedEmployees'
-      ].find((archivedEmployee) => archivedEmployee.id === archivedEmployeeId);
-
-      const recoveredEmployee = await httpCreateEmployee(
-        selectedArchivedEmployee
-      );
-      this.$store.dispatch('employees/addEmployee', recoveredEmployee);
-      this.removeArchivedEmployeeFromStore(archivedEmployeeId);
-      httpRecoverArchivedEmployee(archivedEmployeeId);
-    },
-    removeArchivedEmployeeFromStore(employeeId) {
-      this.$store.dispatch(
-        'archivedEmployees/deleteArchivedEmployee',
-        employeeId
-      );
-    },
-    deleteArchivedEmployee(archivedEmployeeId) {
-      httpDeleteArchivedEmployee(archivedEmployeeId);
-      this.removeArchivedEmployeeFromStore(archivedEmployeeId);
     }
   },
   async mounted() {
@@ -111,7 +116,7 @@ export default {
             <td class="align-middle">{{ employee.contact_number }}</td>
             <td class="align-middle">
               <RecoverIcon
-                @click.prevent="recoverEmployeeInformation(employee.id)"
+                @click.prevent="recoverArchivedEmployee(employee.id)"
                 class="mx-2"
                 role="button"
               ></RecoverIcon>

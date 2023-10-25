@@ -19,6 +19,22 @@ export default {
     };
   },
   methods: {
+    // async recoverArchivedClient(archivedClientId) {
+    //   const selectedArchivedClient = this.$store.getters[
+    //     'archivedClients/archivedClients'
+    //   ].find((archivedClient) => archivedClient.id === archivedClientId);
+
+    //   const recoveredClient = await httpCreateEmployee(selectedArchivedClient);
+    //   this.$store.dispatch('clients/addClient', recoveredClient);
+
+    //   const 
+    //   httpRecoverArchivedClient(archivedClientId);
+    //     .then(())
+    //   this.$store.dispatch(
+    //     'archivedClients/deleteArchivedClient',
+    //     deletedArchivedClient.id
+    //   );
+    // },
     deleteArchivedClient(archivedClientId) {
       httpDeleteArchivedClient(archivedClientId).then(
         (deletedArchivedClient) => {
