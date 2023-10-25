@@ -43,13 +43,12 @@ export default {
     },
     async deleteArchivedEmployee(archivedEmployeeId) {
       // Remove archived employee information to the archivedEmployee database
+      await httpDeleteArchivedEmployee(archivedEmployeeId);
+
       // Remove archived employee information to the archivedEmployee store
-      const deletedArchivedEmployee = await httpDeleteArchivedEmployee(
-        archivedEmployeeId
-      );
       this.$store.dispatch(
         'archivedEmployees/deleteArchivedEmployee',
-        deletedArchivedEmployee.id
+        archivedEmployeeId
       );
     }
   },

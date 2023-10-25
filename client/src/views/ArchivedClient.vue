@@ -3,7 +3,10 @@ import Modal from '../components/Modal.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 
-import { httpDeleteArchivedClient } from '../requests/requests';
+import {
+  httpCreateClient,
+  httpDeleteArchivedClient
+} from '../requests/requests';
 
 export default {
   name: 'ArchivedClient',
@@ -19,30 +22,31 @@ export default {
     };
   },
   methods: {
-    // async recoverArchivedClient(archivedClientId) {
-    //   const selectedArchivedClient = this.$store.getters[
-    //     'archivedClients/archivedClients'
-    //   ].find((archivedClient) => archivedClient.id === archivedClientId);
+    async recoverArchivedClient(archivedClientId) {
+      // The archived client information to be recover
+      const selectedArchivedClient = this.$store.getters[
+        'archivedClients/archivedClients'
+      ].find((archivedClient) => archivedClient.id === archivedClientId);
 
-    //   const recoveredClient = await httpCreateEmployee(selectedArchivedClient);
-    //   this.$store.dispatch('clients/addClient', recoveredClient);
+      // Add the archived client information to the clients database
+      const recoveredArchivedClient = await httpCreateClient(
+        selectedArchivedClient
+      );
 
-    //   const 
-    //   httpRecoverArchivedClient(archivedClientId);
-    //     .then(())
-    //   this.$store.dispatch(
-    //     'archivedClients/deleteArchivedClient',
-    //     deletedArchivedClient.id
-    //   );
-    // },
-    deleteArchivedClient(archivedClientId) {
-      httpDeleteArchivedClient(archivedClientId).then(
-        (deletedArchivedClient) => {
-          this.$store.dispatch(
-            'archivedClients/deleteArchivedClient',
-            deletedArchivedClient.id
-          );
-        }
+      // Add the archived client information to the clients store
+      this.$store.dispatch('clients/addClient', recoveredArchivedClient);
+
+      // Removing archived client information from archivedClients database and store
+      this.deleteArchivedClient(archivedClientId);
+    },
+    async deleteArchivedClient(archivedClientId) {
+      // Remove archived client information to the archivedClient database
+      await httpDeleteArchivedClient(archivedClientId);
+
+      // Remove archived client information to the archivedClient store
+      this.$store.dispatch(
+        'archivedClients/deleteArchivedClient',
+        archivedClientId
       );
     }
   },
@@ -101,7 +105,11 @@ export default {
             <td class="align-middle">{{ client.contact_number }}</td>
             <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">
-              <RecoverIcon class="mx-2" role="button"></RecoverIcon>
+              <RecoverIcon
+                @click.prevent="recoverArchivedClient(client.id)"
+                class="mx-2"
+                role="button"
+              ></RecoverIcon>
               <TrashIcon
                 data-bs-toggle="modal"
                 data-bs-target="#deleteArchiveClient"
