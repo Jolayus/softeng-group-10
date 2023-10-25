@@ -3,7 +3,6 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Modal from '../components/Modal.vue';
-import { getEmployeesModel } from '../models/employees.model';
 
 import {
   httpCreateEmployee,
@@ -107,9 +106,13 @@ export default {
         name: this.editEmployeeNameInput,
         role: this.editEmployeeRoleInput,
         vehicle_type:
-          this.role === 'ADMIN' ? '-' : this.editEmployeeVehicleTypeInput,
+          this.editEmployeeRoleInput === 'Admin'
+            ? '-'
+            : this.editEmployeeVehicleTypeInput,
         plate_number:
-          this.role === 'ADMIN' ? '-' : this.editEmployeePlateNumberInput,
+          this.editEmployeeRoleInput === 'Admin'
+            ? '-'
+            : this.editEmployeePlateNumberInput,
         email: this.editEmployeeEmailInput,
         contact_number: this.editEmployeeContactNumberInput
       };
@@ -132,15 +135,9 @@ export default {
   },
   computed: {
     employees() {
-      const x = this.$store.getters['employees/employees'];
-
-      console.log(x);
-
-      return x;
+      return this.$store.getters['employees/employees'];
     },
     filteredEmployees() {
-      console.log(this.employees);
-
       const employees = this.employees.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
@@ -222,7 +219,7 @@ export default {
           data-bs-toggle="modal"
           data-bs-target="#employeeModal"
           class="btn tms-btn text-light d-flex align-items-center h-100"
-          @click="openCreateEmployeeModal"
+          @click="currentModal = 'ADD'"
         >
           Add new employee
         </button>
@@ -402,7 +399,7 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="editEmployeeForm" @submit.prevent="saveChanges">
+        <form id="editEmployeeForm">
           <div class="mb-3">
             <label for="newEmployeeName" class="form-label d-block text-start"
               >Name</label
@@ -501,7 +498,7 @@ export default {
           Close
         </button>
         <button
-          type="submit"
+          @click="saveChanges"
           class="btn btn-primary tms-btn"
           form="editEmployeeForm"
           data-bs-dismiss="modal"
