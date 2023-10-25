@@ -1,4 +1,3 @@
-const API_URL = 'http://localhost:8000';
 const db = require('../../../database/db');
 
 const {
@@ -32,23 +31,11 @@ function httpRecoverEmployee(req, res) {
         }
 
         removeArchivedEmployee(recoveredEmployee.id);
-        postNewEmployee(recoveredEmployee);
         removeEmployeeFromArchivedEmployeeTable(id);
         resolve(recoveredEmployee);
       }
     });
   });
-}
-
-async function postNewEmployee(recoveredEmployee) {
-  const response = await fetch(`${API_URL}/employees`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(recoveredEmployee)
-  });
-  return await response.json();
 }
 
 function removeEmployeeFromArchivedEmployeeTable(id) {
@@ -58,7 +45,7 @@ function removeEmployeeFromArchivedEmployeeTable(id) {
       console.log(err);
     }
   });
-} 
+}
 
 // DELETE ARCHIVED EMPLOYEE
 function httpDeleteArchivedEmployee(req, res) {
@@ -93,7 +80,7 @@ function httpDeleteArchivedEmployee(req, res) {
     .then((deletedArchivedEmployee) => {
       res.status(200).json(deletedArchivedEmployee);
     })
-    .catch()
+    .catch();
 }
 
 module.exports = {
