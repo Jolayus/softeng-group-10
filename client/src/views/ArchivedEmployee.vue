@@ -2,6 +2,7 @@
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
+import Modal from '../components/Modal.vue';
 
 import {
   httpCreateEmployee,
@@ -14,11 +15,12 @@ export default {
   components: {
     SearchIcon,
     RecoverIcon,
-    TrashIcon
+    TrashIcon,
+    Modal
   },
   data() {
     return {
-      selectedEmployee: null,
+      selectedDeleteArchivedEmployee: null,
       searchInput: ''
     };
   },
@@ -114,9 +116,11 @@ export default {
                 role="button"
               ></RecoverIcon>
               <TrashIcon
-                @click.prevent="deleteArchivedEmployee(employee.id)"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteArchivedEmployee"
                 class="mx-2"
                 role="button"
+                @click="selectedDeleteArchivedEmployee = employee.id"
               ></TrashIcon>
             </td>
           </tr>
@@ -124,6 +128,35 @@ export default {
       </table>
     </main>
   </div>
+  <Modal id="deleteArchivedEmployee">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteArchivedEmployeeLabel">
+          Delete Archived Employee
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+          @click.prevent="deleteArchivedEmployee(selectedDeleteArchivedEmployee)"
+        >
+          Delete
+        </button>
+      </div>
+    </template>
+  </Modal>
 </template>
 
 <style scoped>
