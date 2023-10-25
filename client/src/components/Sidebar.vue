@@ -25,47 +25,82 @@ export default {
     onLogout() {
       this.$emit('logout');
     }
-  },
-}
+  }
+};
 </script>
 
 <template>
-  <aside class="h-100 shadow-lg p-3 d-flex flex-column justify-content-between position-fixed">
+  <aside
+    class="h-100 shadow-lg p-3 d-flex flex-column justify-content-between position-fixed"
+  >
     <nav>
-      <div class="d-flex flex-column justify-content-center text-center align-items-center p-2 border-bottom mb-2">
+      <div
+        class="d-flex flex-column justify-content-center text-center align-items-center p-2 border-bottom mb-2"
+      >
         <a class="navbar-brand" href="#">
-          <img src="../assets/company_logo.png" height="50" alt="company logo">
+          <img
+            src="../assets/company_logo.png"
+            height="50"
+            alt="company logo"
+          />
         </a>
         <h1 class="m-0 h5 text-light">RO-ED Logistics and Services</h1>
       </div>
-      <ul class="nav flex-column justify-content-center nav-pills text-left" 
-        aria-orientation="vertical">
+      <ul
+        class="nav flex-column justify-content-center nav-pills text-left"
+        aria-orientation="vertical"
+      >
         <li class="nav-link p-0">
-          <RouterLink to="/dashboard" class="text-light d-flex align-items-center gap-1" role="button">
+          <RouterLink
+            to="/dashboard"
+            class="text-light d-flex align-items-center gap-1"
+            role="button"
+          >
             <DashboardIcon />Dashboard
           </RouterLink>
         </li>
         <li class="nav-link p-0">
-          <RouterLink to="/employee" class="text-light d-flex align-items-center gap-1" role="button">
+          <RouterLink
+            to="/employee"
+            class="text-light d-flex align-items-center gap-1"
+            role="button"
+          >
             <EmployeesIcon /> Employees
           </RouterLink>
         </li>
         <li class="nav-link p-0">
           <div class="d-flex justify-content-between dropend">
-            <RouterLink to="/client" class="text-light align-items-center gap-1 flex-grow-1" role="button">
+            <RouterLink
+              to="/client"
+              class="text-light align-items-center gap-1 flex-grow-1"
+              role="button"
+            >
               <ClientsIcon /> Clients
             </RouterLink>
-            <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <button
+              type="button"
+              class="text-light btn dropdown-toggle dropdown-toggle-split"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul class="dropdown-menu">
-              <li class="dropdown-item">
-                <RouterLink to="/triprates" class="text-light d-flex align-items-center gap-1" role="button">
+            <ul class="dropdown-menu nav-pills">
+              <li class="dropdown-item nav-link py-1">
+                <RouterLink
+                  to="/triprates"
+                  class="text-light d-flex align-items-center gap-1"
+                  role="button"
+                >
                   <TripRatesIcon /> Trip Rates
                 </RouterLink>
               </li>
-              <li class="dropdown-item ">
-                <RouterLink to="/billing" class="text-light d-flex align-items-center gap-1" role="button">
+              <li class="dropdown-item nav-link py-1">
+                <RouterLink
+                  to="/billing"
+                  class="text-light d-flex align-items-center gap-1"
+                  role="button"
+                >
                   <BillingIcon /> Billing
                 </RouterLink>
               </li>
@@ -73,36 +108,55 @@ export default {
           </div>
         </li>
         <li class="nav-link p-0">
-          <RouterLink to="/payroll" class="text-light d-flex align-items-center gap-1" role="button">
+          <RouterLink
+            to="/payroll"
+            class="text-light d-flex align-items-center gap-1"
+            role="button"
+          >
             <PayrollIcon /> Payroll
           </RouterLink>
         </li>
         <li class="nav-link p-0">
-            <div class="d-flex justify-content-between dropend">
-              <RouterLink to="" class="text-light align-items-center gap-1 flex-grow-1">
-                <ArchiveIcon /> Archive
-              </RouterLink>
-              <button type="button" class="text-light btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li class="dropdown-item">
-                  <RouterLink to="/archivedclient" class="text-light d-flex align-items-center gap-1" role="button">
-                    <ClientsIcon /> Archived Clients
-                  </RouterLink>
-                </li>
-                <li class="dropdown-item ">
-                  <RouterLink to="/archivedemployee" class="text-light d-flex align-items-center gap-1" role="button">
-                    <EmployeesIcon /> Archived Employees
-                  </RouterLink>
-                </li>
-              </ul>
-            </div>
-          </li>
+          <div class="d-flex justify-content-between dropdown">
+            <button
+              type="button"
+              class="text-light btn dropdown-toggle dropdown-toggle-split w-100 d-flex justify-content-between align-items-center pl-5"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <div><ArchiveIcon /> Archives</div>
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu w-100 nav-pills">
+              <li class="dropdown-item nav-link py-1">
+                <RouterLink
+                  to="/archivedemployee"
+                  class="text-light d-flex align-items-center gap-1"
+                  role="button"
+                >
+                  <EmployeesIcon /> Archived Employees
+                </RouterLink>
+              </li>
+              <li class="dropdown-item nav-link py-1">
+                <RouterLink
+                  to="/archivedclient"
+                  class="text-light d-flex align-items-center gap-1"
+                  role="button"
+                >
+                  <ClientsIcon /> Archived Clients
+                </RouterLink>
+              </li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </nav>
     <div class="text-light border-top">
-      <p @click="onLogout" class="logout p-2 mt-2 mb-2 rounded d-flex align-items-center gap-1" role="button">
+      <p
+        @click="onLogout"
+        class="logout mt-2 mb-2 rounded d-flex align-items-center gap-1"
+        role="button"
+      >
         <LogoutIcon /> Logout
       </p>
     </div>
@@ -110,7 +164,9 @@ export default {
 </template>
 
 <style scoped>
-a {
+a,
+.dropdown-toggle-split,
+.logout {
   text-decoration: none;
   padding: 8px 16px;
 }
@@ -124,6 +180,10 @@ aside,
 .nav-link:hover,
 .logout:hover,
 .dropdown-item:hover {
-  background-color: #4c7273;
+  background-color: #4c7273 !important;
+}
+
+.nav-link {
+  background-color: #041421 !important;
 }
 </style>

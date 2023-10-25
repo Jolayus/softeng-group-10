@@ -19,10 +19,9 @@ export default {
   name: 'Trip Rates',
   data() {
     return {
-      clients: getClientsModel(),
       tripRates: getTripRatesModel(),
       currentTripRates: {},
-      currentClient: getClientsModel()[0],
+      currentClient: getClientsModel() > 0 ? getClientsModel()[0] : {},
       isFileSubmitValidFormat: undefined,
 
       // Add Inputs
@@ -86,7 +85,6 @@ export default {
 
       return result;
     },
-
     onFileSubmitHandler() {
       const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
@@ -396,6 +394,9 @@ export default {
     this.updateCurrentTripRates();
   },
   computed: {
+    clients() {
+      return this.$store.getters['clients/clients'];
+    },
     filteredTripRates() {
       this.updateCurrentTripRates();
       return this.currentTripRates;
@@ -488,6 +489,8 @@ export default {
       </main>
     </TabPane>
   </div>
+
+  <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
 
   <Modal id="uploadFileModal">
     <template v-slot:modal-header>
@@ -1010,5 +1013,8 @@ export default {
     </template>
   </Modal>
 
-  <FloatingActionButtonVue :isForTripRates="true" />
+  <FloatingActionButtonVue
+    :isForTripRates="true"
+    :hide="clients.length > 0 ? false : true"
+  />
 </template>

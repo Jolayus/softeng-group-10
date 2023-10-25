@@ -21,9 +21,7 @@ export default {
   },
   data() {
     return {
-      clientsModel: getClientsModel(),
       selectedClient: null,
-      currentClientId: 0,
       searchInput: '',
       clientCompanyNameInput: '',
       clientContactPersonInput: '',
@@ -40,9 +38,7 @@ export default {
   methods: {
     archiveClient(id) {
       httpArchiveClient(id).then((archivedClient) => {
-        this.clientsModel = this.clientsModel.filter((client) => {
-          return client.id !== archivedClient.id;
-        });
+        this.$store.dispatch('clients/archiveClient', archivedClient.id);
       });
     },
     addNewClient() {
@@ -59,7 +55,7 @@ export default {
       };
 
       httpCreateClient(newClient).then((client) => {
-        this.clientsModel.push(client);
+        this.$store.dispatch('clients/addClient', client);
       });
 
       this.clientCompanyNameInput = '';
@@ -80,21 +76,25 @@ export default {
       this.editClientAddressInput = address;
     },
     saveChanges() {
-      const client = this.clientsModel.find(
-        (client) => client.id === this.editClientId
-      );
+      const newDetails = {
+        id: this.editClientId,
+        company_name: this.editClientCompanyNameInput,
+        contact_person: this.editClientContactPersonInput,
+        contact_number: this.editClientContactNumberInput,
+        address: this.editClientAddressInput
+      };
 
-      client.company_name = this.editClientCompanyNameInput;
-      client.contact_person = this.editClientContactPersonInput;
-      client.contact_number = this.editClientContactNumberInput;
-      client.address = this.editClientAddressInput;
+      this.$store.dispatch('clients/editClient', newDetails);
 
-      httpUpdateClient(client);
+      httpUpdateClient(newDetails);
     }
   },
   computed: {
+    clients() {
+      return this.$store.getters['clients/clients'];
+    },
     filteredClient() {
-      return this.clientsModel.filter((client) =>
+      return this.clients.filter((client) =>
         client.company_name
           .toLowerCase()
           .includes(this.searchInput.toLowerCase())
@@ -133,9 +133,6 @@ export default {
         return false;
       }
     }
-  },
-  mounted() {
-    this.currentClientId = this.clientsModel.length;
   }
 };
 </script>
@@ -172,20 +169,20 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th scope="col">Company Name</th>
-            <th scope="col">Contact Person</th>
-            <th scope="col">Contact Number</th>
-            <th scope="col">Address</th>
-            <th scope="col">Actions</th>
+            <th class="w-20" scope="col">Company Name</th>
+            <th class="w-20" scope="col">Contact Person</th>
+            <th class="w-20" scope="col">Contact Number</th>
+            <th class="w-20" scope="col">Address</th>
+            <th class="w-20" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-for="client in filteredClient" :key="client.id">
-            <th scope="row">{{ client.company_name }}</th>
-            <td>{{ client.contact_person }}</td>
-            <td>{{ client.contact_number }}</td>
-            <td>{{ client.address }}</td>
-            <td>
+          <tr class="f-flex" v-for="client in filteredClient" :key="client.id">
+            <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle" >{{ client.contact_person }}</td>
+            <td class="align-middle" >{{ client.contact_number }}</td>
+            <td class="align-middle" >{{ client.address }}</td>
+            <td class="align-middle" >
               <EditIcon
                 data-bs-toggle="modal"
                 data-bs-target="#editClientModal"

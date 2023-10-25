@@ -134,6 +134,49 @@ async function httpDeleteTripRates(tripRateToBeDeleted) {
   return await response.json();
 }
 
+// ARCHIVED EMPLOYEES
+
+// GET Archived Employees
+async function httpGetArchivedEmployees() {
+  const response = await fetch(`${API_URL}/archivedEmployees`);
+  const archivedEmployees = await response.json();
+
+  return archivedEmployees;
+}
+
+async function httpDeleteArchivedEmployee(id) {
+  const response = await fetch(`${API_URL}/archivedEmployees`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+  });
+  return await response.json();
+}
+
+// ARCHIVED CLIENTS
+
+// GET Archived Clients
+async function httpGetArchivedClients() {
+  const response = await fetch(`${API_URL}/archivedClients`);
+  const archivedClients = await response.json();
+
+  return archivedClients;
+}
+
+
+async function httpDeleteArchivedClient(archivedClientId) {
+  const response = await fetch(`${API_URL}/archivedClients`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: archivedClientId })
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -146,5 +189,9 @@ export {
   httpGetAllTripRates,
   httpCreateTripRates,
   httpUpdateTripRates,
-  httpDeleteTripRates
+  httpDeleteTripRates,
+  httpGetArchivedEmployees,
+  httpDeleteArchivedEmployee,
+  httpGetArchivedClients,
+  httpDeleteArchivedClient
 };

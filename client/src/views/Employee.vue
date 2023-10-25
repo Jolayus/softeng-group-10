@@ -3,7 +3,6 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Modal from '../components/Modal.vue';
-import { getEmployeesModel } from '../models/employees.model';
 
 import {
   httpCreateEmployee,
@@ -23,15 +22,24 @@ export default {
     return {
       selectedEmployee: null,
       searchInput: '',
+
+      // CREATE MODAL
       employeeNameInput: '',
       employeeRoleInput: '',
+      employeeVehicleTypeInput: '',
+      employeePlateNumberInput: '',
       employeeEmailInput: '',
       employeeContactNumberInput: '',
+
+      // EDIT MODAL
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
+      editEmployeeVehicleTypeInput: '',
+      editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
       editEmployeeContactNumberInput: '',
       editEmployeeId: '',
+
       currentModal: ''
     };
   },
@@ -48,9 +56,11 @@ export default {
         this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
       });
     },
-    addNewEmployee() {
+    async addNewEmployee() {
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
+      const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
+      const plate_number = this.employeePlateNumberInput.trim() || '-';
       const email = this.employeeEmailInput.trim();
       const contact_number = this.employeeContactNumberInput.trim();
 
@@ -58,28 +68,35 @@ export default {
       const newEmployee = {
         name,
         role,
+        vehicle_type,
+        plate_number,
         email,
         contact_number
       };
 
-      httpCreateEmployee(newEmployee).then((employee) => {
-        this.$store.dispatch('employees/addEmployee', employee);
-      });
+      const employee = await httpCreateEmployee(newEmployee);
+      this.$store.dispatch('employees/addEmployee', employee);
 
-      // Clear input
-      this.employeeNameInput = '';
-      this.employeeRoleInput = '';
-      this.employeeEmailInput = '';
-      this.employeeContactNumberInput = '';
+      this.clearAddEmployeeInputs();
     },
     onEdit(employee) {
       this.currentModal = 'EDIT';
 
-      const { id, name, role, email, contact_number } = employee;
+      const {
+        id,
+        name,
+        role,
+        vehicle_type,
+        plate_number,
+        email,
+        contact_number
+      } = employee;
 
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
       this.editEmployeeRoleInput = role;
+      this.editEmployeeVehicleTypeInput = vehicle_type;
+      this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
       this.editEmployeeContactNumberInput = contact_number;
     },
@@ -88,6 +105,14 @@ export default {
         id: this.editEmployeeId,
         name: this.editEmployeeNameInput,
         role: this.editEmployeeRoleInput,
+        vehicle_type:
+          this.editEmployeeRoleInput === 'Admin'
+            ? '-'
+            : this.editEmployeeVehicleTypeInput,
+        plate_number:
+          this.editEmployeeRoleInput === 'Admin'
+            ? '-'
+            : this.editEmployeePlateNumberInput,
         email: this.editEmployeeEmailInput,
         contact_number: this.editEmployeeContactNumberInput
       };
@@ -95,6 +120,17 @@ export default {
       this.$store.dispatch('employees/editEmployee', newDetails);
 
       httpUpdateEmployee(newDetails);
+    },
+    clearAddEmployeeInputs() {
+      this.employeeNameInput = '';
+      this.employeeRoleInput = '';
+      this.employeeEmailInput = '';
+      this.employeeContactNumberInput = '';
+      this.employeeVehicleTypeInput = '';
+      this.employeePlateNumberInput = '';
+    },
+    onPageChange() {
+      this.clearAddEmployeeInputs();
     }
   },
   computed: {
@@ -142,7 +178,19 @@ export default {
         }
         return false;
       }
+    },
+    isEmployeeRoleInputIsAdmin() {
+      return this.employeeRoleInput === 'Admin';
+    },
+
+    // For editing employee
+    isEditEmployeeRoleInputIsAdmin() {
+      return this.editEmployeeRoleInput === 'Admin';
     }
+  },
+  beforeRouteLeave() {
+    // When the user selects other page
+    this.clearAddEmployeeInputs();
   }
 };
 </script>
@@ -181,6 +229,8 @@ export default {
           <tr>
             <th scope="col">Name</th>
             <th scope="col">Role</th>
+            <th scope="col">Vehicle type</th>
+            <th scope="col">Plate #</th>
             <th scope="col">Email</th>
             <th scope="col">Phone #</th>
             <th scope="col">Actions</th>
@@ -188,11 +238,13 @@ export default {
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
-            <th scope="row">{{ employee.name }}</th>
-            <td>{{ employee.role }}</td>
-            <td>{{ employee.email }}</td>
-            <td>{{ employee.contact_number }}</td>
-            <td>
+            <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.vehicle_type }}</td>
+            <td class="align-middle">{{ employee.plate_number }}</td>
+            <td class="align-middle">{{ employee.email }}</td>
+            <td class="align-middle">{{ employee.contact_number }}</td>
+            <td class="align-middle">
               <EditIcon
                 data-bs-toggle="modal"
                 data-bs-target="#editEmployeeModal"
@@ -252,6 +304,46 @@ export default {
               <option value="Admin">Admin</option>
             </select>
           </div>
+
+          <div
+            class="mb-3"
+            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+          >
+            <label for="employeeRole" class="form-label d-block text-start"
+              >Vehicle Type</label
+            >
+            <select
+              v-model="employeeVehicleTypeInput"
+              class="form-select"
+              id="employeeVehicleType"
+              aria-describedby="employeeVehicleType"
+            >
+              <option value="AUV">AUV</option>
+              <option value="4W">4W</option>
+              <option value="6W ELF">6W ELF</option>
+              <option value="6WF">6WF</option>
+              <option value="10W">10W</option>
+            </select>
+          </div>
+
+          <div
+            class="mb-3"
+            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+          >
+            <label
+              for="employeePlateNumber"
+              class="form-label d-block text-start"
+              >Plate number</label
+            >
+            <input
+              v-model="employeePlateNumberInput"
+              type="text"
+              class="form-control"
+              id="employeePlateNumber"
+              aria-describedby="employeePlateNumber"
+            />
+          </div>
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -307,7 +399,7 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="editEmployeeForm" @submit.prevent="saveChanges">
+        <form id="editEmployeeForm">
           <div class="mb-3">
             <label for="newEmployeeName" class="form-label d-block text-start"
               >Name</label
@@ -335,6 +427,42 @@ export default {
               <option value="Admin">Admin</option>
             </select>
           </div>
+
+          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+            <label
+              for="newEmployeeVehicleType"
+              class="form-label d-block text-start"
+              >Vehicle Type</label
+            >
+            <select
+              v-model="editEmployeeVehicleTypeInput"
+              class="form-select"
+              id="newEmployeeVehicleType"
+              aria-describedby="newEmployeeVehicleType"
+            >
+              <option value="AUV">AUV</option>
+              <option value="4W">4W</option>
+              <option value="6W ELF">6W ELF</option>
+              <option value="6WF">6WF</option>
+              <option value="10W">10W</option>
+            </select>
+          </div>
+
+          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+            <label
+              for="newEmployeePlateNumber"
+              class="form-label d-block text-start"
+              >Plate number</label
+            >
+            <input
+              v-model="editEmployeePlateNumberInput"
+              type="email"
+              class="form-control"
+              id="newEmployeePlateNumber"
+              aria-describedby="newEmployeePlateNumber"
+            />
+          </div>
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -370,7 +498,7 @@ export default {
           Close
         </button>
         <button
-          type="submit"
+          @click="saveChanges"
           class="btn btn-primary tms-btn"
           form="editEmployeeForm"
           data-bs-dismiss="modal"
@@ -416,6 +544,10 @@ export default {
 <style scoped>
 .input-group {
   width: 45%;
+}
+
+th {
+  width: 14%;
 }
 
 .modal-body label {

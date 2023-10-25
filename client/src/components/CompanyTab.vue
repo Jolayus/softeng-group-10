@@ -1,7 +1,7 @@
 <script>
 export default {
   name: 'CompanyTab',
-  props: ['classes', 'id', 'target', 'selected', 'onClick', 'clientId'],
+  props: ['classes', 'id', 'target', 'selected', 'clientId'],
   methods: {
     clickHandler() {
       this.$emit('tabChange', this.clientId);

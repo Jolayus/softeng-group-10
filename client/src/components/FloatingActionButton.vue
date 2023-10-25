@@ -7,6 +7,24 @@ import TrashIcon from './Icons/TrashIcon.vue';
 
 export default {
   name: 'FloatingActionButton',
+  props: {
+    hide: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    isForTripRates: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    isForBilling: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    isUploadButtonDisable: Boolean
+  },
   components: {
     MenuIcon,
     UploadIcon,
@@ -20,7 +38,7 @@ export default {
       menuItems: [
         { icon: 'AddIcon', text: 'Add', disable: false },
         { icon: 'EditIcon', text: 'Edit', disable: false },
-        { icon: 'TrashIcon', text: 'Delete', disable: false}
+        { icon: 'TrashIcon', text: 'Delete', disable: false }
       ]
     };
   },
@@ -29,7 +47,6 @@ export default {
       this.showMenu = !this.showMenu;
     }
   },
-  props: ['isForTripRates', 'isUploadButtonDisable'],
   mounted() {
     // If this component is used for trip rates
     if (this.isForTripRates) {
@@ -53,13 +70,17 @@ export default {
       // BUTTON FOR EDIT TRIP RATE
       this.menuItems.find((menuItem) => menuItem.text === 'Edit').targetModal =
         'editTripRatesModal';
+    } else if (this.isForBilling) {
+      // BUTTON FOR ADD BILLING
+      this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
+        'addBillingModal';
     }
   }
 };
 </script>
 
 <template>
-  <div class="fab-container">
+  <div class="fab-container" :class="{ hidden: hide }">
     <button style="list-style-type: none" class="fab" @click="toggleMenu">
       <MenuIcon />
     </button>
@@ -74,7 +95,7 @@ export default {
               :data-bs-target="`#${item.targetModal}`"
               :disabled="item.disable"
             >
-              <component :is="item.icon" /> {{ item.text }}
+              <component :is="item.icon" class="text-dark" /> {{ item.text }}
             </button>
           </li>
         </ul>
@@ -148,5 +169,9 @@ button {
   to {
     opacity: 1;
   }
+}
+
+.hidden {
+  display: none;
 }
 </style>

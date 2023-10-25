@@ -1,93 +1,161 @@
 <script>
-import SearchIcon from '../components/Icons/SearchIcon.vue';
-import { getClientsModel } from '../models/client.model';
+import Modal from '../components/Modal.vue';
+import RecoverIcon from '../components/Icons/RecoverIcon.vue';
+import TrashIcon from '../components/Icons/TrashIcon.vue';
+
+import {
+  httpCreateClient,
+  httpDeleteArchivedClient
+} from '../requests/requests';
 
 export default {
-    name: 'ArchivedClient',
-    components: {
-        SearchIcon,
+  name: 'ArchivedClient',
+  components: {
+    Modal,
+    RecoverIcon,
+    TrashIcon
+  },
+  data() {
+    return {
+      searchInput: '',
+      selectedDeleteArchivedClientId: null
+    };
+  },
+  methods: {
+    async recoverArchivedClient(archivedClientId) {
+      // The archived client information to be recover
+      const selectedArchivedClient = this.$store.getters[
+        'archivedClients/archivedClients'
+      ].find((archivedClient) => archivedClient.id === archivedClientId);
+
+      // Add the archived client information to the clients database
+      const recoveredArchivedClient = await httpCreateClient(
+        selectedArchivedClient
+      );
+
+      // Add the archived client information to the clients store
+      this.$store.dispatch('clients/addClient', recoveredArchivedClient);
+
+      // Removing archived client information from archivedClients database and store
+      this.deleteArchivedClient(archivedClientId);
     },
-    data() {
-        return {
-            clientsModel: getClientsModel(),
-            selectedClient: null,
-            currentClientId: 0,
-            searchInput: '',
-        };
-    },
-    computed: {
-        filteredClient() {
-            return this.clientsModel.filter((client) =>
-                client.company_name
-                    .toLowerCase()
-                    .includes(this.searchInput.toLowerCase())
-            );
-        },
-    },
-    mounted() {
-        this.currentClientId = this.clientsModel.length;
+    async deleteArchivedClient(archivedClientId) {
+      // Remove archived client information to the archivedClient database
+      await httpDeleteArchivedClient(archivedClientId);
+
+      // Remove archived client information to the archivedClient store
+      this.$store.dispatch(
+        'archivedClients/deleteArchivedClient',
+        archivedClientId
+      );
     }
+  },
+  computed: {
+    archivedClients() {
+      return this.$store.getters['archivedClients/archivedClients'];
+    },
+    filteredClient() {
+      return this.archivedClients.filter((archivedClient) =>
+        archivedClient.company_name
+          .toLowerCase()
+          .includes(this.searchInput.toLowerCase())
+      );
+    }
+  },
+  async mounted() {
+    await this.$store.dispatch('archivedClients/loadArchivedClients');
+  }
 };
 </script>
 
 <template>
-    <div class="d-flex flex-column justify-content-between h-100">
-        <header class="mb-5">
-          <h1>Archived Clients</h1>
-        </header>
-        <main class="container flex-grow-1">
-          <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
-            <div class="input-group mb-3 h-100 align-items-center gap-2">
-              <label for="user-input">Search:</label>
-              <input
-                v-model="searchInput"
-                type="text"
-                class="form-control"
-                placeholder="Client's name"
-                aria-label="Recipient's username"
-                id="user-input"
-                aria-describedby="basic-addon2"
-              />
-            </div>
-          </div>
-          <table class="table">
-            <thead class="tbl-header text-light rounded">
-              <tr>
-                <th scope="col">Company Name</th>
-                <th scope="col">Contact Person</th>
-                <th scope="col">Contact Number</th>
-                <th scope="col">Address</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr v-for="client in filteredClient" :key="client.id">
-                <th scope="row">{{ client.company_name }}</th>
-                <td>{{ client.contact_person }}</td>
-                <td>{{ client.contact_number }}</td>
-                <td>{{ client.address }}</td>
-                <td>
-
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </main>
+  <div class="d-flex flex-column justify-content-between h-100">
+    <header class="mb-5">
+      <h1>Archived Clients</h1>
+    </header>
+    <main class="container flex-grow-1">
+      <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
+        <div class="input-group mb-3 h-100 align-items-center gap-2">
+          <label for="user-input">Search:</label>
+          <input
+            v-model="searchInput"
+            type="text"
+            class="form-control"
+            placeholder="Client's name"
+            aria-label="Recipient's username"
+            id="user-input"
+            aria-describedby="basic-addon2"
+          />
+        </div>
       </div>
+      <table class="table">
+        <thead class="tbl-header text-light rounded">
+          <tr>
+            <th class="w-20" scope="col">Company Name</th>
+            <th class="w-20" scope="col">Contact Person</th>
+            <th class="w-20" scope="col">Contact Number</th>
+            <th class="w-20" scope="col">Address</th>
+            <th class="w-20" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <tr v-for="client in filteredClient" :key="client.id">
+            <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle">{{ client.contact_person }}</td>
+            <td class="align-middle">{{ client.contact_number }}</td>
+            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">
+              <RecoverIcon
+                @click.prevent="recoverArchivedClient(client.id)"
+                class="mx-2"
+                role="button"
+              ></RecoverIcon>
+              <TrashIcon
+                data-bs-toggle="modal"
+                data-bs-target="#deleteArchiveClient"
+                class="mx-2"
+                role="button"
+                @click="selectedDeleteArchivedClientId = client.id"
+              ></TrashIcon>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+  <Modal id="deleteArchiveClient">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteArchivedClientLabel">
+          Delete Archived Client
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+          @click.prevent="deleteArchivedClient(selectedDeleteArchivedClientId)"
+        >
+          Delete
+        </button>
+      </div>
+    </template>
+  </Modal>
 </template>
 
 <style scoped>
 .input-group {
   width: 45%;
-}
-
-.modal-body label {
-  text-transform: uppercase;
-  font-weight: bold;
-  color: #86b9b0;
-}
-
-.modal-footer button {
-  background-color: #4c7273;
 }
 </style>

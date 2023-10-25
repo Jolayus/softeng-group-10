@@ -9,6 +9,7 @@ export default {
   <div
     class="modal fade"
     :id="id"
+    role="dialog"
     tabindex="-1"
     :aria-labelledby="id + 'Label'"
     aria-hidden="true"

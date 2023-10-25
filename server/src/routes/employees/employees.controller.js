@@ -7,6 +7,10 @@ const {
   removeEmployee
 } = require('../../models/employees.model');
 
+const {
+  addNewArchivedEmployee
+} = require('../../models/archivedEmployees.model');
+
 // GET ALL EMPLOYEES
 function httpGetAllEmployees(req, res) {
   return res.status(200).json(getAllEmployees());
@@ -22,34 +26,46 @@ function isEmailValid(email) {
 
 // CREATE NEW EMPLOYEE
 function httpPostNewEmployee(req, res) {
-  const { name, role, email, contact_number } = req.body;
+  const { name, role, vehicle_type, plate_number, email, contact_number } =
+    req.body;
 
-  if (!name || !role || !isEmailValid(email) || !contact_number) {
+  if (
+    !name ||
+    !role ||
+    !vehicle_type ||
+    !plate_number ||
+    !isEmailValid(email) ||
+    !contact_number
+  ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO employees (name, role, email, contact_number) VALUES (?, ?, ?, ?)`;
-    db.run(sql, [name, role, email, contact_number], (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        const sql = `SELECT * FROM employees ORDER BY id DESC LIMIT 1`;
-        db.all(sql, [], (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows[0]);
-          }
-        });
+    const sql = `INSERT INTO employees (name, role, vehicle_type, plate_number, email, contact_number ) VALUES (?, ?, ?, ?, ?, ?)`;
+    db.run(
+      sql,
+      [name, role, vehicle_type, plate_number, email, contact_number],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          const sql = `SELECT * FROM employees ORDER BY id DESC LIMIT 1`;
+          db.all(sql, [], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(rows[0]);
+            }
+          });
+        }
       }
-    });
+    );
   });
 
   promise
-    .then((newClient) => {
-      addNewEmployee(newClient);
-      res.status(201).json(newClient);
+    .then((newEmployee) => {
+      addNewEmployee(newEmployee);
+      res.status(201).json(newEmployee);
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -58,9 +74,20 @@ function httpPostNewEmployee(req, res) {
 
 // UPDATE EMPLOYEE
 function httpEditEmployee(req, res) {
-  const { id, name, role, email, contact_number } = req.body;
+  const { id, name, role, vehicle_type, plate_number, email, contact_number } =
+    req.body;
 
-  if (!id || !name || !role || !email || !contact_number) {
+  console.log(req.body);
+
+  if (
+    !id ||
+    !name ||
+    !role ||
+    !vehicle_type ||
+    !plate_number ||
+    !email ||
+    !contact_number
+  ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
@@ -68,17 +95,22 @@ function httpEditEmployee(req, res) {
 
   updatedEmployee.name = name;
   updatedEmployee.role = role;
+  updatedEmployee.vehicle_type = vehicle_type;
+  updatedEmployee.plate_number = plate_number;
   updatedEmployee.email = email;
   updatedEmployee.contact_number = contact_number;
 
-  const sql = `UPDATE employees SET name=?, role=?, email=?, contact_number=? WHERE employees.id=?`;
+  const sql = `UPDATE employees SET name=?, role=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
 
-  db.run(sql, [name, role, email, contact_number, id], (err) => {
-    if (err) {
-      return res.status(500).json({ error: err });
+  db.run(
+    sql,
+    [name, role, vehicle_type, plate_number, email, contact_number, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
     }
-  });
-
+  );
   return res.status(200).json(updatedEmployee);
 }
 
@@ -105,7 +137,6 @@ function httpArchiveEmployee(req, res) {
         }
 
         removeEmployee(archivedEmployee.id);
-
         addEmployeeToArchive(archivedEmployee);
         removeEmployeeFromDatabase(id);
         resolve(archivedEmployee);
@@ -133,10 +164,12 @@ function removeEmployeeFromDatabase(id) {
 }
 
 function addEmployeeToArchive(employee) {
-  const { id, name, role, email, contact_number } = employee;
-  const sql = `INSERT INTO archivedEmployees (id, name, role, email, contact_number) VALUES (?, ?, ?, ?, ?)`;
+  const { id, name, role, vehicle_type, plate_number, email, contact_number } = employee;
+  const sql = `INSERT INTO archivedEmployee (id, name, role, vehicle_type, plate_number, email, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
-  db.run(sql, [id, name, role, email, contact_number], (err) => {
+  addNewArchivedEmployee(employee);
+
+  db.run(sql, [id, name, role, vehicle_type, plate_number, email, contact_number], (err) => {
     if (err) {
       console.log(err);
     }
