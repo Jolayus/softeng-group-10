@@ -164,12 +164,12 @@ function removeEmployeeFromDatabase(id) {
 }
 
 function addEmployeeToArchive(employee) {
-  const { id, name, role, email, contact_number } = employee;
-  const sql = `INSERT INTO archivedEmployees (id, name, role, email, contact_number) VALUES (?, ?, ?, ?, ?)`;
+  const { id, name, role, vehicle_type, plate_number, email, contact_number } = employee;
+  const sql = `INSERT INTO archivedEmployee (id, name, role, vehicle_type, plate_number, email, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
-  addNewArchivedEmployee({ id, name, role, email, contact_number });
+  addNewArchivedEmployee({ id, name, role, vehicle_type, plate_number, email, contact_number });
 
-  db.run(sql, [id, name, role, email, contact_number], (err) => {
+  db.run(sql, [id, name, role, vehicle_type, plate_number, email, contact_number], (err) => {
     if (err) {
       console.log(err);
     }

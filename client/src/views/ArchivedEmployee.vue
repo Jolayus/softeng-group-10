@@ -3,7 +3,7 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 
-import { httpCreateEmployee } from '../requests/requests';
+import { httpCreateEmployee, httpRecoverArchivedEmployee } from '../requests/requests';
 
 export default {
   name: 'ArchivedEmployee',
@@ -44,6 +44,7 @@ export default {
       );
       this.$store.dispatch('employees/addEmployee', recoveredEmployee);
       this.removeArchivedEmployeeFromStore(archivedEmployeeId);
+      httpRecoverArchivedEmployee(archivedEmployeeId);
     },
     removeArchivedEmployeeFromStore(employeeId) {
       this.$store.dispatch(
@@ -81,17 +82,21 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Name</th>
-            <th class="w-20" scope="col">Role</th>
-            <th class="w-20" scope="col">Email</th>
-            <th class="w-20" scope="col">Phone #</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">Vehicle type</th>
+            <th scope="col">Plate #</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone #</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.vehicle_type }}</td>
+            <td class="align-middle">{{ employee.plate_number }}</td>
             <td class="align-middle">{{ employee.email }}</td>
             <td class="align-middle">{{ employee.contact_number }}</td>
             <td class="align-middle">
@@ -112,5 +117,9 @@ export default {
 <style scoped>
 .input-group {
   width: 45%;
+}
+
+th {
+  width: 14%;
 }
 </style>

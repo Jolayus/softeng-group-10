@@ -1,9 +1,15 @@
 const express = require('express');
 
-const { httpGetAllArchivedEmployees } = require('./archivedEmployees.controller');
+const {
+  httpGetAllArchivedEmployees,
+  httpRecoverEmployee,
+  httpDeleteArchivedEmployee
+} = require('./archivedEmployees.controller');
 
-const archivedEmployeesController = express.Router();
+const archivedEmployeesRouter = express.Router();
 
-archivedEmployeesController.get('/', httpGetAllArchivedEmployees);
+archivedEmployeesRouter.get('/', httpGetAllArchivedEmployees);
+archivedEmployeesRouter.post('/', httpRecoverEmployee);
+archivedEmployeesRouter.delete('/', httpDeleteArchivedEmployee);
 
-module.exports = archivedEmployeesController;
+module.exports = archivedEmployeesRouter;

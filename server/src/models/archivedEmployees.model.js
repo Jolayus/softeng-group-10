@@ -4,7 +4,7 @@ const archivedEmployees = [];
 
 function loadArchivedEmployees() {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM archivedEmployees';
+    const sql = 'SELECT * FROM archivedEmployee';
 
     db.all(sql, [], (err, rows) => {
       if (err) {
@@ -25,8 +25,14 @@ function addNewArchivedEmployee(newArchivedEmployee) {
   return archivedEmployees.push(newArchivedEmployee);
 }
 
+function removeArchivedEmployee(archivedEmployeeId) {
+  const idx = archivedEmployees.findIndex((archivedEmployee) => archivedEmployee.id === archivedEmployeeId);
+  return archivedEmployees.splice(idx, 1);
+} 
+
 module.exports = {
   loadArchivedEmployees,
   getAllArchivedEmployees,
-  addNewArchivedEmployee
+  addNewArchivedEmployee,
+  removeArchivedEmployee
 }
