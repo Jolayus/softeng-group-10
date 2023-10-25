@@ -1,17 +1,34 @@
 <script>
+import Modal from '../components/Modal.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
+
+import { httpDeleteArchivedClient } from '../requests/requests';
 
 export default {
   name: 'ArchivedClient',
   components: {
+    Modal,
     RecoverIcon,
     TrashIcon
   },
   data() {
     return {
-      searchInput: ''
+      searchInput: '',
+      selectedDeleteArchivedClientId: null
     };
+  },
+  methods: {
+    deleteArchivedClient(archivedClientId) {
+      httpDeleteArchivedClient(archivedClientId).then(
+        (deletedArchivedClient) => {
+          this.$store.dispatch(
+            'archivedClients/deleteArchivedClient',
+            deletedArchivedClient.id
+          );
+        }
+      );
+    }
   },
   computed: {
     archivedClients() {
@@ -68,15 +85,13 @@ export default {
             <td class="align-middle">{{ client.contact_number }}</td>
             <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">
-              <RecoverIcon
-                class="mx-2"
-                role="button"
-              ></RecoverIcon>
+              <RecoverIcon class="mx-2" role="button"></RecoverIcon>
               <TrashIcon
                 data-bs-toggle="modal"
-                data-bs-target="#deleteArchivedEmployee"
+                data-bs-target="#deleteArchiveClient"
                 class="mx-2"
                 role="button"
+                @click="selectedDeleteArchivedClientId = client.id"
               ></TrashIcon>
             </td>
           </tr>
@@ -84,6 +99,35 @@ export default {
       </table>
     </main>
   </div>
+  <Modal id="deleteArchiveClient">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteArchivedClientLabel">
+          Delete Archived Client
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+          @click.prevent="deleteArchivedClient(selectedDeleteArchivedClientId)"
+        >
+          Delete
+        </button>
+      </div>
+    </template>
+  </Modal>
 </template>
 
 <style scoped>

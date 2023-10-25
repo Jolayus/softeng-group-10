@@ -45,11 +45,11 @@ function httpDeleteArchivedClient(req, res) {
       return res.status(500).json({ error: err });
     });
 }
-
+  
 function removeClientFromArchivedClientsTable(id) {
   const sql = `DELETE FROM archivedClients WHERE archivedClients.id=${id}`;
   db.run(sql, [], (err) => {
-    if (err) {
+    if (err) {  
       console.log(err);
     }
   });

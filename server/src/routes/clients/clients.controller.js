@@ -7,6 +7,8 @@ const {
   removeClient
 } = require('../../models/clients.model');
 
+const { addNewArchivedClient } = require('../../models/archivedClients.model');
+
 function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
 }
@@ -82,7 +84,7 @@ function httpArchiveClient(req, res) {
   const { id } = req.body;
 
   if (id === undefined || id <= 0) {
-    return res.status(400).json({ error: 'invalid id' });
+    return res.status(400).json({ error: 'Invalid id' });
   }
 
   const promise = new Promise((resolve, reject) => {
@@ -100,7 +102,6 @@ function httpArchiveClient(req, res) {
         }
 
         removeClient(archivedClient.id);
-
         addClientToArchive(archivedClient);
         removeClientFromDatabase(id);
         resolve(archivedClient);
@@ -130,6 +131,9 @@ function removeClientFromDatabase(id) {
 function addClientToArchive(client) {
   const { id, company_name, contact_person, contact_number, address } = client;
   const sql = `INSERT INTO archivedClients (id, company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?, ?)`;
+
+  addNewArchivedClient(client);
+
   db.run(
     sql,
     [id, company_name, contact_person, contact_number, address],

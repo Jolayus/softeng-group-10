@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      selectedDeleteArchivedEmployee: null,
+      selectedDeleteArchivedEmployeeId: null,
       searchInput: ''
     };
   },
@@ -59,7 +59,7 @@ export default {
       );
     },
     deleteArchivedEmployee(archivedEmployeeId) {
-      httpDeleteArchivedEmployee(archivedEmployeeId)
+      httpDeleteArchivedEmployee(archivedEmployeeId);
       this.removeArchivedEmployeeFromStore(archivedEmployeeId);
     }
   },
@@ -120,7 +120,7 @@ export default {
                 data-bs-target="#deleteArchivedEmployee"
                 class="mx-2"
                 role="button"
-                @click="selectedDeleteArchivedEmployee = employee.id"
+                @click="selectedDeleteArchivedEmployeeId = employee.id"
               ></TrashIcon>
             </td>
           </tr>
@@ -150,7 +150,9 @@ export default {
           type="button"
           class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
-          @click.prevent="deleteArchivedEmployee(selectedDeleteArchivedEmployee)"
+          @click.prevent="
+            deleteArchivedEmployee(selectedDeleteArchivedEmployeeId)
+          "
         >
           Delete
         </button>
