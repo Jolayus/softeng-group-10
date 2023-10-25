@@ -80,7 +80,9 @@ function httpDeleteArchivedEmployee(req, res) {
     .then((deletedArchivedEmployee) => {
       res.status(200).json(deletedArchivedEmployee);
     })
-    .catch();
+    .catch((err) => {
+      return res.status(500).json({ error: err });
+    });
 }
 
 module.exports = {

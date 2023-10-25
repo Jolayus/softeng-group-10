@@ -19,7 +19,6 @@ export default {
   name: 'Trip Rates',
   data() {
     return {
-      clients: getClientsModel(),
       tripRates: getTripRatesModel(),
       currentTripRates: {},
       currentClient: getClientsModel()[0],
@@ -86,7 +85,6 @@ export default {
 
       return result;
     },
-
     onFileSubmitHandler() {
       const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
@@ -396,6 +394,9 @@ export default {
     this.updateCurrentTripRates();
   },
   computed: {
+    clients() {
+      return this.$store.getters['clients/clients'];
+    },
     filteredTripRates() {
       this.updateCurrentTripRates();
       return this.currentTripRates;

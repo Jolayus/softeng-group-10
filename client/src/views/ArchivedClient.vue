@@ -1,10 +1,12 @@
 <script>
-import SearchIcon from '../components/Icons/SearchIcon.vue';
+import RecoverIcon from '../components/Icons/RecoverIcon.vue';
+import TrashIcon from '../components/Icons/TrashIcon.vue';
 
 export default {
   name: 'ArchivedClient',
   components: {
-    SearchIcon
+    RecoverIcon,
+    TrashIcon
   },
   data() {
     return {
@@ -65,7 +67,18 @@ export default {
             <td class="align-middle">{{ client.contact_person }}</td>
             <td class="align-middle">{{ client.contact_number }}</td>
             <td class="align-middle">{{ client.address }}</td>
-            <td class="align-middle"></td>
+            <td class="align-middle">
+              <RecoverIcon
+                class="mx-2"
+                role="button"
+              ></RecoverIcon>
+              <TrashIcon
+                data-bs-toggle="modal"
+                data-bs-target="#deleteArchivedEmployee"
+                class="mx-2"
+                role="button"
+              ></TrashIcon>
+            </td>
           </tr>
         </tbody>
       </table>

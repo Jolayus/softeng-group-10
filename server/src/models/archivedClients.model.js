@@ -25,8 +25,16 @@ function addNewArchivedClient(newArchivedClient) {
   return archivedClients.push(newArchivedClient);
 }
 
+function removeArchivedClient(archivedClientId) {
+  const idx = archivedClients.find(
+    (archivedClient) => archivedClient.id === archivedClientId
+  );
+  return archivedClients.splice(idx, 1);
+}
+
 module.exports = {
   loadArchivedClients,
   getAllArchivedClients,
-  addNewArchivedClient
-}
+  addNewArchivedClient,
+  removeArchivedClient
+};

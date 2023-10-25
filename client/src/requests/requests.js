@@ -180,6 +180,18 @@ async function httpGetArchivedClients() {
   return archivedClients;
 }
 
+
+async function httpDeleteArchivedClient(archivedClientId) {
+  const response = await fetch(`${API_URL}/archivedClients`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: archivedClientId })
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -196,5 +208,6 @@ export {
   httpGetArchivedEmployees,
   httpRecoverArchivedEmployee,
   httpDeleteArchivedEmployee,
-  httpGetArchivedClients
+  httpGetArchivedClients,
+  httpDeleteArchivedClient
 };

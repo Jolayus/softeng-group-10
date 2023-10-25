@@ -8,16 +8,16 @@ import { getClientsModel } from '../models/client.model';
 
 export default {
   name: 'Billing',
-  data() {
-    return {
-      clients: getClientsModel()
-    };
-  },
   components: {
     CompanyTab,
     TabPane,
     Footer,
     FloatingActionButtonVue
+  },
+  computed: {
+    clients() {
+      return this.$store.getters['clients/clients'];  
+    }
   }
 };
 </script>
