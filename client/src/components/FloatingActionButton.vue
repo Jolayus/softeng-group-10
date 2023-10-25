@@ -7,6 +7,15 @@ import TrashIcon from './Icons/TrashIcon.vue';
 
 export default {
   name: 'FloatingActionButton',
+  props: {
+    hide: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    isForTripRates: Boolean,
+    isUploadButtonDisable: Boolean
+  },
   components: {
     MenuIcon,
     UploadIcon,
@@ -29,7 +38,6 @@ export default {
       this.showMenu = !this.showMenu;
     }
   },
-  props: ['isForTripRates', 'isUploadButtonDisable'],
   mounted() {
     // If this component is used for trip rates
     if (this.isForTripRates) {
@@ -59,7 +67,7 @@ export default {
 </script>
 
 <template>
-  <div class="fab-container">
+  <div class="fab-container" :class="{ hidden: hide }">
     <button style="list-style-type: none" class="fab" @click="toggleMenu">
       <MenuIcon />
     </button>
@@ -74,7 +82,7 @@ export default {
               :data-bs-target="`#${item.targetModal}`"
               :disabled="item.disable"
             >
-              <component :is="item.icon" /> {{ item.text }}
+              <component :is="item.icon" class="text-dark" /> {{ item.text }}
             </button>
           </li>
         </ul>
@@ -148,5 +156,9 @@ button {
   to {
     opacity: 1;
   }
+}
+
+.hidden {
+  display: none;
 }
 </style>

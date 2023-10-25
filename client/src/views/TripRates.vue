@@ -21,7 +21,7 @@ export default {
     return {
       tripRates: getTripRatesModel(),
       currentTripRates: {},
-      currentClient: getClientsModel()[0],
+      currentClient: getClientsModel() > 0 ? getClientsModel()[0] : {},
       isFileSubmitValidFormat: undefined,
 
       // Add Inputs
@@ -489,6 +489,8 @@ export default {
       </main>
     </TabPane>
   </div>
+
+  <h3 v-if="!clients.length">Please add a client...</h3>
 
   <Modal id="uploadFileModal">
     <template v-slot:modal-header>
@@ -1011,5 +1013,8 @@ export default {
     </template>
   </Modal>
 
-  <FloatingActionButtonVue :isForTripRates="true" />
+  <FloatingActionButtonVue
+    :isForTripRates="true"
+    :hide="clients.length > 0 ? false : true"
+  />
 </template>
