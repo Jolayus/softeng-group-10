@@ -3,7 +3,11 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 
-import { httpCreateEmployee, httpRecoverArchivedEmployee } from '../requests/requests';
+import {
+  httpCreateEmployee,
+  httpRecoverArchivedEmployee,
+  httpDeleteArchivedEmployee
+} from '../requests/requests';
 
 export default {
   name: 'ArchivedEmployee',
@@ -51,6 +55,10 @@ export default {
         'archivedEmployees/deleteArchivedEmployee',
         employeeId
       );
+    },
+    deleteArchivedEmployee(archivedEmployeeId) {
+      httpDeleteArchivedEmployee(archivedEmployeeId)
+      this.removeArchivedEmployeeFromStore(archivedEmployeeId);
     }
   },
   async mounted() {
@@ -105,7 +113,11 @@ export default {
                 class="mx-2"
                 role="button"
               ></RecoverIcon>
-              <TrashIcon class="mx-2" role="button"></TrashIcon>
+              <TrashIcon
+                @click.prevent="deleteArchivedEmployee(employee.id)"
+                class="mx-2"
+                role="button"
+              ></TrashIcon>
             </td>
           </tr>
         </tbody>

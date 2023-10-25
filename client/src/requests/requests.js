@@ -195,5 +195,6 @@ export {
   httpDeleteTripRates,
   httpGetArchivedEmployees,
   httpRecoverArchivedEmployee,
+  httpDeleteArchivedEmployee,
   httpGetArchivedClients
 };
