@@ -22,7 +22,6 @@ export default {
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
 
       // ADD BILLING
-      addBillingDateInput: '',
       addBillingTransactionNumber: '',
       addBillingShipmentNumber: '',
       addBillingSPONumber: '',
@@ -35,13 +34,14 @@ export default {
     },
     addNewBilling() {
       const clientId = this.currentClient.id;
-      const date = this.addBillingDateInput;
+      const date = new Date();
       const transactionNumber = this.addBillingTransactionNumber;
       const shipmentNumber = this.addBillingShipmentNumber;
       const SPONumber = this.addBillingSPONumber;
       const fee = this.addBillingFee;
 
       const newBilling = {
+        isActive: true,
         clientId,
         date,
         transactionNumber,
@@ -56,10 +56,24 @@ export default {
   computed: {
     clients() {
       return this.$store.getters['clients/clients'];
+    },
+    billings() {
+      return this.$store.getters['billings/billings'];
+    },
+    currentClientBillings() {
+      return this.billings.filter(
+        (billing) => billing.clientId === this.currentClient.id
+      );
+    },
+    isAddBillingInputsValid() {
+      return (
+        this.addBillingTransactionNumber.length > 0 &&
+        this.addBillingShipmentNumber.length > 0 &&
+        this.addBillingSPONumber.length > 0 &&
+        this.addBillingFee > 0 &&
+        this.addBillingFee !== null
+      );
     }
-  },
-  mounted() {
-    console.log(getEmployeesModel());
   }
 };
 </script>
@@ -84,65 +98,93 @@ export default {
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'billing-' + client.id"
     >
-      <main class="billing text-white">
-        <header
-          class="header-billing d-flex flex-row justify-content-center align-items-center"
-        >
-          <section class="w-75">
-            <div class="border-right border-btm">
-              <h1>{{ client.company_name }}</h1>
-              <p class="client_address">
-                {{ currentClient.address }}
+      <main v-for="(currentClientBilling, index) in currentClientBillings">
+        <div class="billing text-white">
+          <header
+            class="header-billing d-flex flex-row justify-content-center align-items-center"
+          >
+            <section class="w-75">
+              <div class="border-right border-btm">
+                <h1>{{ client.company_name }}</h1>
+                <p class="client_address">
+                  {{ currentClient.address }}
+                </p>
+              </div>
+              <h3 class="border-right mb-0">{{ client.company_name }}</h3>
+            </section>
+            <section
+              class="d-flex flex-column justify-content-center h-100 w-25"
+            >
+              <p class="billing_date m-0 p-2 border-y">
+                {{ currentClientBilling.date.toISOString().slice(0, 10) }}
               </p>
-            </div>
-            <h3 class="border-right mb-0">{{ client.company_name }}</h3>
-          </section>
-          <section class="d-flex flex-column justify-content-center h-100 w-25">
-            <p class="billing_date m-0 p-2 border-y">02-Feb-22</p>
-            <p class="billing_remaining_days m-0 p-2 border-btm">30 days</p>
-            <p class="billing_id m-0 p-2 border-btm">000-416-871-00000</p>
-          </section>
-        </header>
-        <div class="separator border-y p-3"></div>
+              <p class="billing_remaining_days m-0 p-2 border-btm">30 days</p>
+              <p class="billing_id m-0 p-2 border-btm">
+                {{ currentClientBilling.transactionNumber }}
+              </p>
+            </section>
+          </header>
+          <div class="separator border-y p-3"></div>
 
-        <main class="text-black d-flex flex-column">
-          <section class="d-flex w-100 height-50 border-btm">
-            <div class="d-flex justify-content-around align-items-center w-75">
-              <p class="mb-0 width-50">1</p>
-              <p class="mb-0">02-Feb-23</p>
-              <p class="mb-0">Shipment No.: 4610125213</p>
-            </div>
-            <p
-              class="w-25 mb-0 d-flex justify-content-center align-items-center"
-            >
-              4,000.00
-            </p>
-          </section>
+          <main class="text-black d-flex flex-column">
+            <section class="d-flex w-100 height-50 border-btm">
+              <div
+                class="d-flex justify-content-around align-items-center w-75"
+              >
+                <p class="mb-0 width-50 fw-bold">
+                  {{ index + 1 }}
+                </p>
+                <p class="mb-0">
+                  {{ currentClientBilling.date.toISOString().slice(0, 10) }}
+                </p>
+                <p class="mb-0">
+                  Shipment No.: {{ currentClientBilling.shipmentNumber }}
+                </p>
+              </div>
+              <p
+                class="w-25 mb-0 d-flex justify-content-center align-items-center"
+              >
+                {{ currentClientBilling.fee }}
+              </p>
+            </section>
 
-          <section class="d-flex w-100 height-50 border-btm">
-            <div class="d-flex justify-content-around align-items-center w-75">
-              <p class="mb-0 width-50"></p>
-              <p class="mb-0"></p>
-              <p class="mb-0">SPO No.: 1500115216</p>
-            </div>
-            <p
-              class="w-25 mb-0 d-flex justify-content-center align-items-center"
-            ></p>
-          </section>
+            <section class="d-flex w-100 height-50 border-btm">
+              <div
+                class="d-flex justify-content-around align-items-center w-75"
+              >
+                <p class="mb-0 width-50"></p>
+                <p class="mb-0"></p>
+                <p class="mb-0">
+                  SPO No.: {{ currentClientBilling.SPONumber }}
+                </p>
+              </div>
+              <p
+                class="w-25 mb-0 d-flex justify-content-center align-items-center"
+              ></p>
+            </section>
 
-          <section class="d-flex w-100 height-50">
-            <div class="d-flex justify-content-around align-items-center w-75">
-              <p class="mb-0 width-50"></p>
-              <p class="mb-0"></p>
-              <p class="mb-0"></p>
-            </div>
-            <p
-              class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold"
-            >
-              4,000.00
-            </p>
-          </section>
-        </main>
+            <section class="d-flex w-100 height-50">
+              <div
+                class="d-flex justify-content-around align-items-center w-75"
+              >
+                <p class="mb-0 width-50"></p>
+                <p class="mb-0"></p>
+                <p class="mb-0"></p>
+              </div>
+              <p
+                class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold"
+              >
+                {{ currentClientBilling.fee }}
+              </p>
+            </section>
+          </main>
+        </div>
+        <div
+          v-if="currentClientBilling.isActive"
+          class="actions d-flex justify-content-start pt-2"
+        >
+          <button class="btn bg-primary text-light">Add Trips</button>
+        </div>
       </main>
     </TabPane>
 
@@ -164,19 +206,6 @@ export default {
     <template v-slot:modal-body>
       <div class="modal-body">
         <form id="addBillingForm" @submit.prevent="addNewBilling">
-          <div class="mb-3">
-            <label for="dateIssue" class="form-label d-block text-start"
-              >Date Issue:
-            </label>
-            <input
-              v-model="addBillingDateInput"
-              type="date"
-              class="form-control"
-              id="dateIssue"
-              aria-describedby="dateIssue"
-            />
-          </div>
-
           <div class="mb-3">
             <label for="transactionNumber" class="form-label d-block text-start"
               >Transaction Number</label
@@ -239,6 +268,75 @@ export default {
           class="btn tms-btn text-light"
           form="addBillingForm"
           data-bs-dismiss="modal"
+          :disabled="!isAddBillingInputsValid"
+        >
+          Add Billing
+        </button>
+      </div>
+    </template>
+  </Modal>
+  
+  <Modal id="addTripModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="addTripModalLabel">
+          Trip's Information
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form id="addTripForm" @submit.prevent="addNewBilling">
+          <div class="mb-3">
+            <label for="shipmentNumber" class="form-label d-block text-start"
+              >Shipment Number</label
+            >
+            <input
+              v-model="addBillingShipmentNumber"
+              type="text"
+              class="form-control"
+              id="shipmentNumber"
+              aria-describedby="shipmentNumber"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="spoNumber" class="form-label d-block text-start"
+              >SPO Number</label
+            >
+            <input
+              v-model="addBillingSPONumber"
+              type="text"
+              class="form-control"
+              id="spoNumber"
+              aria-describedby="spoNumber"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="fee" class="form-label d-block text-start">Fee</label>
+            <input
+              v-model="addBillingFee"
+              type="number"
+              class="form-control"
+              id="fee"
+              aria-describedby="fee"
+            />
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer border-top-0 justify-content-center">
+        <button type="button" class="btn text-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="addBillingForm"
+          data-bs-dismiss="modal"
+          :disabled="!isAddBillingInputsValid"
         >
           Add Billing
         </button>

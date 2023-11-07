@@ -20,7 +20,7 @@ export default {
     // },
     // deleteArchivedClient(context, archivedClientId) {
     //   context.commit('deleteArchivedClient', archivedClientId);
-    // }
+    // },
     addBilling(context, newBilling) {
       context.commit('addBilling', newBilling);
     }

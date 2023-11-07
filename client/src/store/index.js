@@ -4,7 +4,7 @@ import employeesModule from './modules/employees';
 import clientsModule from './modules/clients';
 import archivedEmployeesModule from './modules/archivedEmployees';
 import archivedClientsModule from './modules/archivedClients';
-import billingsModule from './modules/billing';
+import billingsModule from './modules/billings';
 
 const store = createStore({
   modules: {

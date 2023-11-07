@@ -9,6 +9,7 @@ const clientsRouter = require('./routes/clients/clients.router');
 const tripRatesRouter = require('./routes/triprates/triprates.router');
 const archivedEmployeesRouter = require('./routes/archivedEmployees/archivedEmployees.router');
 const archivedClientsRouter = require('./routes/archivedClients/archivedClients.router');
+const billingsRouter = require('./routes/billings/billings.router');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/clients', clientsRouter);
 app.use('/rates', tripRatesRouter);
 app.use('/archivedEmployees', archivedEmployeesRouter);
 app.use('/archivedClients', archivedClientsRouter);
+app.use('/billings', billingsRouter);
 
 if (process.env.MODE === 'production') {
   // Serve all our client side files
