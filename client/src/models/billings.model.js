@@ -1,9 +1,7 @@
 import store from '../store';
 
-async function getEmployeesModel() {
-  await store.dispatch('clients/loadClients');
-
-  return store.getters['clients/clients'];
+function getBillingsModel() {
+  return store.getters['billings/billings'];
 } 
 
-export { getEmployeesModel };
+export { getBillingsModel };

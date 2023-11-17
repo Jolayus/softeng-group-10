@@ -6,7 +6,7 @@ import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
 import { getClientsModel } from '../models/client.model';
-import { getEmployeesModel } from '../models/billings.model';
+import { getBillingsModel } from '../models/billings.model';
 
 export default {
   name: 'Billing',
@@ -21,11 +21,15 @@ export default {
     return {
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
 
-      // ADD BILLING
+      currentBilling: getBillingsModel().length > 0 ? getClientsModel()[0] : {},
+
+      // ADD BILLING INPUT
       addBillingTransactionNumber: '',
-      addBillingShipmentNumber: '',
-      addBillingSPONumber: '',
-      addBillingFee: null
+
+      // ADD TRIP INPUT
+      addTripShipmentNumber: '',
+      addTripSPONumber: '',
+      addTripFee: null
     };
   },
   methods: {
@@ -33,24 +37,47 @@ export default {
       this.currentClient = client;
     },
     addNewBilling() {
+      const id = Math.random();
       const clientId = this.currentClient.id;
       const date = new Date();
       const transactionNumber = this.addBillingTransactionNumber;
-      const shipmentNumber = this.addBillingShipmentNumber;
-      const SPONumber = this.addBillingSPONumber;
-      const fee = this.addBillingFee;
 
       const newBilling = {
+        id,
         isActive: true,
         clientId,
         date,
         transactionNumber,
-        shipmentNumber,
-        SPONumber,
-        fee
+        trips: [],
+        totalFee: 0
       };
 
       this.$store.dispatch('billings/addBilling', newBilling);
+    },
+    addNewTrip() {
+      const newTrip = {
+        id: Math.random(),
+        date: new Date(),
+        shipmentNumber: this.addTripShipmentNumber,
+        SPONumber: this.addTripSPONumber,
+        fee: this.addTripFee
+      };
+
+      this.currentBilling.trips.push(newTrip);
+      this.currentBilling.totalFee += newTrip.fee;
+
+      this.addTripShipmentNumber = '';
+      this.addTripSPONumber = '';
+      this.addTripFee = null;
+    },
+    setCurrentBilling(billing) {
+      this.currentBilling = billing;
+    },
+    handleGenerateCopy() {
+      console.log('Handle Generated Copy');
+      fetch('http://localhost:8000/employees')
+        .then((response) => response.json())
+        .then((data) => console.log(data));
     }
   },
   computed: {
@@ -66,12 +93,14 @@ export default {
       );
     },
     isAddBillingInputsValid() {
+      return this.addBillingTransactionNumber.length > 0;
+    },
+    isAddTripInputsValid() {
       return (
-        this.addBillingTransactionNumber.length > 0 &&
-        this.addBillingShipmentNumber.length > 0 &&
-        this.addBillingSPONumber.length > 0 &&
-        this.addBillingFee > 0 &&
-        this.addBillingFee !== null
+        this.addTripShipmentNumber.length > 0 &&
+        this.addTripSPONumber.length > 0 &&
+        this.addTripFee !== null &&
+        this.addTripFee > 0
       );
     }
   }
@@ -98,7 +127,10 @@ export default {
       :classes="client === clients[0] ? 'active show' : ''"
       :id="'billing-' + client.id"
     >
-      <main v-for="(currentClientBilling, index) in currentClientBillings">
+      <p class="text-danger fw-bold" v-if="currentClientBillings.length === 0">
+        There is no billing to this client
+      </p>
+      <main v-for="currentClientBilling in currentClientBillings">
         <div class="billing text-white">
           <header
             class="header-billing d-flex flex-row justify-content-center align-items-center"
@@ -126,25 +158,34 @@ export default {
           </header>
           <div class="separator border-y p-3"></div>
 
-          <main class="text-black d-flex flex-column">
+          <p
+            class="text-danger d-flex justify-content-center align-items-center fw-bold text-decoration-underline m-0"
+            v-if="currentClientBilling.trips.length === 0"
+          >
+            There are no trip records for this client's billing.
+          </p>
+          <main
+            v-for="(trip, index) in currentClientBilling.trips"
+            class="text-black d-flex flex-column"
+          >
             <section class="d-flex w-100 height-50 border-btm">
               <div
                 class="d-flex justify-content-around align-items-center w-75"
               >
-                <p class="mb-0 width-50 fw-bold">
+                <p class="mb-0 width-50 fw-bold width-1-3">
                   {{ index + 1 }}
                 </p>
-                <p class="mb-0">
-                  {{ currentClientBilling.date.toISOString().slice(0, 10) }}
+                <p class="mb-0 width-1-3">
+                  {{ trip.date.toISOString().slice(0, 10) }}
                 </p>
-                <p class="mb-0">
-                  Shipment No.: {{ currentClientBilling.shipmentNumber }}
+                <p class="mb-0 width-1-3">
+                  Shipment No.: {{ trip.shipmentNumber }}
                 </p>
               </div>
               <p
                 class="w-25 mb-0 d-flex justify-content-center align-items-center"
               >
-                {{ currentClientBilling.fee }}
+                {{ trip.fee }}
               </p>
             </section>
 
@@ -154,40 +195,52 @@ export default {
               >
                 <p class="mb-0 width-50"></p>
                 <p class="mb-0"></p>
-                <p class="mb-0">
-                  SPO No.: {{ currentClientBilling.SPONumber }}
-                </p>
+                <p class="mb-0 spo-number">SPO No.: {{ trip.SPONumber }}</p>
               </div>
               <p
                 class="w-25 mb-0 d-flex justify-content-center align-items-center"
               ></p>
             </section>
-
-            <section class="d-flex w-100 height-50">
-              <div
-                class="d-flex justify-content-around align-items-center w-75"
-              >
-                <p class="mb-0 width-50"></p>
-                <p class="mb-0"></p>
-                <p class="mb-0"></p>
-              </div>
-              <p
-                class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold"
-              >
-                {{ currentClientBilling.fee }}
-              </p>
-            </section>
           </main>
+          <section
+            v-if="currentClientBilling.trips.length > 0"
+            class="d-flex w-100 height-50"
+          >
+            <div class="d-flex justify-content-around align-items-center w-75">
+              <p class="mb-0 width-50"></p>
+              <p class="mb-0"></p>
+              <p class="mb-0"></p>
+            </div>
+            <p
+              class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold text-black"
+            >
+              {{ currentClientBilling.totalFee }}
+            </p>
+          </section>
         </div>
         <div
           v-if="currentClientBilling.isActive"
-          class="actions d-flex justify-content-start pt-2"
+          class="actions d-flex justify-content-start pt-2 pb-5"
         >
-          <button class="btn bg-primary text-light">Add Trips</button>
+          <button
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#addTripModal"
+            class="btn tms-btn text-light px-5"
+            @click="setCurrentBilling(currentClientBilling)"
+          >
+            Add Trip
+          </button>
+          <button
+            type="button"
+            class="btn tms-btn text-light px-5 ms-2"
+            @click="handleGenerateCopy"
+          >
+            Generate copy
+          </button>
         </div>
       </main>
     </TabPane>
-
     <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
   </div>
   <FloatingActionButtonVue
@@ -218,43 +271,6 @@ export default {
               aria-describedby="transactionNumber"
             />
           </div>
-
-          <div class="mb-3">
-            <label for="shipmentNumber" class="form-label d-block text-start"
-              >Shipment Number</label
-            >
-            <input
-              v-model="addBillingShipmentNumber"
-              type="text"
-              class="form-control"
-              id="shipmentNumber"
-              aria-describedby="shipmentNumber"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="spoNumber" class="form-label d-block text-start"
-              >SPO Number</label
-            >
-            <input
-              v-model="addBillingSPONumber"
-              type="text"
-              class="form-control"
-              id="spoNumber"
-              aria-describedby="spoNumber"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label for="fee" class="form-label d-block text-start">Fee</label>
-            <input
-              v-model="addBillingFee"
-              type="number"
-              class="form-control"
-              id="fee"
-              aria-describedby="fee"
-            />
-          </div>
         </form>
       </div>
     </template>
@@ -270,12 +286,12 @@ export default {
           data-bs-dismiss="modal"
           :disabled="!isAddBillingInputsValid"
         >
-          Add Billing
+          Create Billing
         </button>
       </div>
     </template>
   </Modal>
-  
+
   <Modal id="addTripModal">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
@@ -286,13 +302,13 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="addTripForm" @submit.prevent="addNewBilling">
+        <form id="addTripForm" @submit.prevent="addNewTrip">
           <div class="mb-3">
             <label for="shipmentNumber" class="form-label d-block text-start"
               >Shipment Number</label
             >
             <input
-              v-model="addBillingShipmentNumber"
+              v-model="addTripShipmentNumber"
               type="text"
               class="form-control"
               id="shipmentNumber"
@@ -305,7 +321,7 @@ export default {
               >SPO Number</label
             >
             <input
-              v-model="addBillingSPONumber"
+              v-model="addTripSPONumber"
               type="text"
               class="form-control"
               id="spoNumber"
@@ -316,7 +332,7 @@ export default {
           <div class="mb-3">
             <label for="fee" class="form-label d-block text-start">Fee</label>
             <input
-              v-model="addBillingFee"
+              v-model="addTripFee"
               type="number"
               class="form-control"
               id="fee"
@@ -333,12 +349,12 @@ export default {
         </button>
         <button
           type="submit"
-          class="btn tms-btn text-light"
-          form="addBillingForm"
+          class="btn tms-btn"
+          form="addTripForm"
           data-bs-dismiss="modal"
-          :disabled="!isAddBillingInputsValid"
+          :disabled="!isAddTripInputsValid"
         >
-          Add Billing
+          Add Trip
         </button>
       </div>
     </template>
@@ -401,5 +417,14 @@ export default {
 
 .height-50 {
   height: 50px;
+}
+
+.width-1-3 {
+  width: 33.33%;
+}
+
+.spo-number {
+  width: 100%;
+  margin-left: 66%;
 }
 </style>
