@@ -75,9 +75,20 @@ export default {
     },
     handleGenerateCopy() {
       console.log('Handle Generated Copy');
-      fetch('http://localhost:8000/employees')
-        .then((response) => response.json())
-        .then((data) => console.log(data));
+      fetch('http://localhost:8000/billings/getFile')
+        .then((response) => {
+          return response.blob();
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'billing.xlsx';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        })
     }
   },
   computed: {

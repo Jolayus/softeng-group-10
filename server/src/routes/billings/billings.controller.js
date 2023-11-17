@@ -1,3 +1,6 @@
+const path = require('path');
+const fileSystem = require('fs');
+
 const {
   getAllBillings,
   addNewBilling
@@ -14,7 +17,12 @@ function httpPostNewBilling(req, res) {
   return res.status(201).json(newBilling);
 }
 
+function httpGetFile(req, res) {
+  res.download(path.join(__dirname, 'BILLING-FORMAT.xlsx'));
+}
+
 module.exports = {
   httpGetBillings,
-  httpPostNewBilling
+  httpPostNewBilling,
+  httpGetFile
 };
