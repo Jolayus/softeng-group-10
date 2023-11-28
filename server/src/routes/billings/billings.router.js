@@ -10,6 +10,6 @@ const billingsRouter = express.Router();
 
 billingsRouter.get('/', httpGetBillings);
 billingsRouter.post('/', httpPostNewBilling);
-billingsRouter.get('/getFile', httpGetFile)
+billingsRouter.post('/getFile', httpGetFile)
 
 module.exports = billingsRouter;

@@ -75,7 +75,18 @@ export default {
     },
     handleGenerateCopy() {
       console.log('Handle Generated Copy');
-      fetch('http://localhost:8000/billings/getFile')
+
+      fetch('http://localhost:8000/billings/getFile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...this.currentBilling,
+          company_name: this.currentClient.company_name,
+          company_address: this.currentClient.address
+        })
+      })
         .then((response) => {
           return response.blob();
         })
@@ -83,7 +94,7 @@ export default {
           const url = window.URL.createObjectURL(new Blob([blob]));
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'billing.xlsx';
+          a.download = `${this.currentClient.company_name} - Billing.xlsx`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -360,7 +371,7 @@ export default {
         </button>
         <button
           type="submit"
-          class="btn tms-btn"
+          class="btn tms-btn text-light"
           form="addTripForm"
           data-bs-dismiss="modal"
           :disabled="!isAddTripInputsValid"
