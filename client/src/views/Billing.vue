@@ -8,6 +8,8 @@ import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
 import { getBillingsModel } from '../models/billings.model';
 
+import { httpCreateBilling } from '../requests/requests';
+
 export default {
   name: 'Billing',
   components: {
@@ -29,7 +31,7 @@ export default {
       // ADD TRIP INPUT
       addTripShipmentNumber: '',
       addTripSPONumber: '',
-      addTripFee: null,
+      addTripFee: null
     };
   },
   methods: {
@@ -37,14 +39,11 @@ export default {
       this.currentClient = client;
     },
     addNewBilling() {
-      const id = Math.random();
       const clientId = this.currentClient.id;
       const date = new Date();
       const transactionNumber = this.addBillingTransactionNumber;
 
       const newBilling = {
-        id,
-        isActive: true,
         clientId,
         date,
         transactionNumber,
@@ -52,6 +51,19 @@ export default {
         totalFee: 0
       };
 
+      console.log({
+        clientId,
+        date: date.toISOString().slice(0, 19).replace('T', ' '),
+        transactionNumber
+      });
+
+      httpCreateBilling({
+        clientId,
+        date: date.toISOString().slice(0, 19).replace('T', ' '),
+        transactionNumber
+      }).then((data) => {
+        console.log(data);
+      });
       this.$store.dispatch('billings/addBilling', newBilling);
     },
     addNewTrip() {
@@ -116,7 +128,9 @@ export default {
     getRemainingDays(billing) {
       const currentDate = new Date();
       const difference_in_time = currentDate.getTime() - billing.date.getTime();
-      const difference_in_days = Math.round(difference_in_time / (1000 * 3600 * 24));
+      const difference_in_days = Math.round(
+        difference_in_time / (1000 * 3600 * 24)
+      );
       return 30 - difference_in_days;
     }
   },
@@ -190,7 +204,9 @@ export default {
               <p class="billing_date m-0 p-2 border-y">
                 {{ currentClientBilling.date.toISOString().slice(0, 10) }}
               </p>
-              <p class="billing_remaining_days m-0 p-2 border-btm">{{ getRemainingDays(currentClientBilling) }} day/s</p>
+              <p class="billing_remaining_days m-0 p-2 border-btm">
+                {{ getRemainingDays(currentClientBilling) }} day/s
+              </p>
               <p class="billing_id m-0 p-2 border-btm">
                 {{ currentClientBilling.transactionNumber }}
               </p>
@@ -258,10 +274,7 @@ export default {
             </p>
           </section>
         </div>
-        <div
-          v-if="currentClientBilling.isActive"
-          class="actions d-flex justify-content-start pt-2 pb-5"
-        >
+        <div class="actions d-flex justify-content-start pt-2 pb-5">
           <button
             type="button"
             data-bs-toggle="modal"
@@ -271,7 +284,7 @@ export default {
           >
             Add Trip
           </button>
-          <button 
+          <button
             type="button"
             class="btn btn-danger text-light px-5 ms-2"
             @click="deleteBilling(currentClientBilling.id)"
@@ -286,7 +299,6 @@ export default {
           >
             Generate copy
           </button>
-
         </div>
       </main>
     </TabPane>

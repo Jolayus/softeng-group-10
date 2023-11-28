@@ -10,11 +10,48 @@ function httpGetBillings(req, res) {
   return res.status(200).json(getAllBillings());
 }
 
+// CREATE NEW CLIENT
 function httpPostNewBilling(req, res) {
-  const newBilling = req.body;
-  addNewBilling(newBilling);
+  const { clientId, date, transactionNumber } = req.body;
 
-  return res.status(201).json(newBilling);
+  if (!clientId || !date || !transactionNumber) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
+  console.log(clientId, date, transactionNumber);
+
+  const promise = new Promise((resolve, reject) => {
+    const sql = `INSERT INTO billings (clientId, date, transaction_number) VALUES (?, ?, ?)`;
+    db.run(
+      sql,
+      [clientId, date, transactionNumber],
+      (err) => {
+        if (err) {
+          console.log('Hello World');
+          reject(err);
+        } else {
+          console.log('Hello World');
+          const sql = `SELECT * FROM billings ORDER BY id DESC LIMIT 1`;
+          db.all(sql, [], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(rows[0]);
+            }
+          });
+        }
+      }
+    );
+  });
+
+  promise
+    .then((newBilling) => {
+      // addNewBilling(newBilling);
+      res.status(201).json(newBilling);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
 }
 
 // Download Billing File
