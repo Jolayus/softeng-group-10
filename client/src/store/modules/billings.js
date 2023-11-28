@@ -11,6 +11,10 @@ export default {
     },
     addBilling(state, newBilling) {
       state.billings.push(newBilling);
+    },
+    deleteBilling(state, billingId) {
+      const idx = state.billings.findIndex((billing) => billing.id === billingId);
+      state.billings.splice(idx, 1);
     }
   },
   actions: {
@@ -23,6 +27,9 @@ export default {
     // },
     addBilling(context, newBilling) {
       context.commit('addBilling', newBilling);
+    },
+    deleteBilling(context, billingId) {
+      context.commit('deleteBilling', billingId);
     }
   },
   getters: {

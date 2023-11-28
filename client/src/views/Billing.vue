@@ -29,7 +29,7 @@ export default {
       // ADD TRIP INPUT
       addTripShipmentNumber: '',
       addTripSPONumber: '',
-      addTripFee: null
+      addTripFee: null,
     };
   },
   methods: {
@@ -99,7 +99,25 @@ export default {
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
-        })
+        });
+    },
+    isBillingExists(transactionNumber) {
+      const idx = this.currentClientBillings.findIndex(
+        (billing) => billing.transactionNumber === transactionNumber
+      );
+      if (idx >= 0) {
+        return true;
+      }
+      return false;
+    },
+    deleteBilling(id) {
+      this.$store.dispatch('billings/deleteBilling', id);
+    },
+    getRemainingDays(billing) {
+      const currentDate = new Date();
+      const difference_in_time = currentDate.getTime() - billing.date.getTime();
+      const difference_in_days = Math.round(difference_in_time / (1000 * 3600 * 24));
+      return 30 - difference_in_days;
     }
   },
   computed: {
@@ -172,7 +190,7 @@ export default {
               <p class="billing_date m-0 p-2 border-y">
                 {{ currentClientBilling.date.toISOString().slice(0, 10) }}
               </p>
-              <p class="billing_remaining_days m-0 p-2 border-btm">30 days</p>
+              <p class="billing_remaining_days m-0 p-2 border-btm">{{ getRemainingDays(currentClientBilling) }} day/s</p>
               <p class="billing_id m-0 p-2 border-btm">
                 {{ currentClientBilling.transactionNumber }}
               </p>
@@ -253,13 +271,22 @@ export default {
           >
             Add Trip
           </button>
+          <button 
+            type="button"
+            class="btn btn-danger text-light px-5 ms-2"
+            @click="deleteBilling(currentClientBilling.id)"
+          >
+            Delete Billing
+          </button>
           <button
+            v-if="currentClientBilling.trips.length > 0"
             type="button"
             class="btn tms-btn text-light px-5 ms-2"
             @click="handleGenerateCopy"
           >
             Generate copy
           </button>
+
         </div>
       </main>
     </TabPane>

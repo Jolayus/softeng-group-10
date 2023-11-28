@@ -73,7 +73,12 @@ export default {
     } else if (this.isForBilling) {
       // BUTTON FOR ADD BILLING
       this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
-        'addBillingModal';
+        'addBillingModal';      
+        
+      const editBtnIdx = this.menuItems.findIndex((menuItem) => menuItem.text === 'Edit');
+      this.menuItems.splice(editBtnIdx, 1);
+      const deleteBtnIdx = this.menuItems.findIndex((menuItem) => menuItem.text === 'Delete');
+      this.menuItems.splice(deleteBtnIdx, 1);      
     }
   }
 };
