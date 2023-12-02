@@ -97,7 +97,7 @@ export default {
               </li>
               <li class="dropdown-item nav-link py-1">
                 <RouterLink
-                  to="/billing"
+                  to="/billinglist"
                   class="text-light d-flex align-items-center gap-1"
                   role="button"
                 >

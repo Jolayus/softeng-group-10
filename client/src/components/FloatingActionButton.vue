@@ -23,7 +23,11 @@ export default {
       default: false,
       required: false
     },
-    isUploadButtonDisable: Boolean
+    isUploadButtonDisable: Boolean,
+    billingTrips: {
+      type: Array,
+      required: false
+    }
   },
   components: {
     MenuIcon,
@@ -73,12 +77,29 @@ export default {
     } else if (this.isForBilling) {
       // BUTTON FOR ADD BILLING
       this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
-        'addBillingModal';      
-        
-      const editBtnIdx = this.menuItems.findIndex((menuItem) => menuItem.text === 'Edit');
-      this.menuItems.splice(editBtnIdx, 1);
-      const deleteBtnIdx = this.menuItems.findIndex((menuItem) => menuItem.text === 'Delete');
-      this.menuItems.splice(deleteBtnIdx, 1);      
+        'addBillingModal';
+
+      this.menuItems = [
+        {
+          icon: 'AddIcon',
+          text: 'Add Trip',
+          disable: false,
+          targetModal: 'addTripModal'
+        },
+        {
+          icon: 'TrashIcon',
+          text: 'Delete Trip',
+          disable: false,
+          targetModal: 'deleteBillingTrip'
+        },
+        {
+          icon: 'TrashIcon',
+          text: 'Delete Billing',
+          disable: false,
+          targetModal: 'deleteBillingVerif'
+        },
+        { icon: 'AddIcon', text: 'Generate Copy', disable: false }
+      ];
     }
   }
 };
@@ -90,7 +111,11 @@ export default {
       <MenuIcon />
     </button>
     <transition name="fade">
-      <div class="menu p-0" v-if="showMenu">
+      <div
+        class="menu p-0"
+        v-if="showMenu"
+        :class="{ 'min-w-200': isForBilling }"
+      >
         <ul class="list-style-none mb-0">
           <li v-for="(item, index) in menuItems" :key="index">
             <button
@@ -110,6 +135,10 @@ export default {
 </template>
 
 <style scoped>
+.min-w-200 {
+  min-width: 200px;
+}
+
 .fab-container {
   position: fixed;
   bottom: 50px;

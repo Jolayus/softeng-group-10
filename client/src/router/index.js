@@ -4,6 +4,7 @@ import Dashboard from '../views/Dashboard.vue';
 import Employee from '../views/Employee.vue';
 import Client from '../views/Client.vue';
 import TripRates from '../views/TripRates.vue';
+import BillingList from '../views/BillingList.vue';
 import Billing from '../views/Billing.vue';
 import Payroll from '../views/Payroll.vue';
 import ArchivedClient from '../views/ArchivedClient.vue';
@@ -47,9 +48,15 @@ const routes = [
     component: TripRates
   },
   {
-    path: '/billing',
+    path: '/billinglist',
+    name: 'BillingList',
+    component: BillingList
+  },
+  {
+    path: '/billing/:billingId',
     name: 'Billing',
-    component: Billing
+    component: Billing,
+    props: true
   },
   {
     path: '/payroll',

@@ -38,9 +38,7 @@ export default {
           }
         });
       });
-
-      console.log(loadedBillings);
-
+      
       context.commit('setBillings', loadedBillings);
     },
     addBilling(context, newBilling) {

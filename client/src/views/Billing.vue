@@ -2,14 +2,9 @@
 import CompanyTab from '../components/CompanyTab.vue';
 import TabPane from '../components/TabPane.vue';
 import Footer from '../components/Footer.vue';
-import FloatingActionButtonVue from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
-import { getClientsModel } from '../models/client.model';
-import { getBillingsModel } from '../models/billings.model';
-
 import {
-  httpCreateBilling,
   httpPostBillingTrip,
   httpDeleteBilling,
   httpDeleteBillingTrips
@@ -17,22 +12,15 @@ import {
 
 export default {
   name: 'Billing',
+  props: ['billingId'],
   components: {
     CompanyTab,
     TabPane,
     Footer,
-    FloatingActionButtonVue,
     Modal
   },
   data() {
     return {
-      currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
-
-      currentBilling: getBillingsModel().length > 0 ? getClientsModel()[0] : {},
-
-      // ADD BILLING INPUT
-      addBillingTransactionNumber: '',
-
       // ADD TRIP INPUT
       addTripShipmentNumber: '',
       addTripSPONumber: '',
@@ -42,35 +30,10 @@ export default {
       deleteBillingTripIdx: -1
     };
   },
-  watch: {
-    deleteBillingTripIdx(newValue) {
-      console.log(newValue);
-    }
-  },
   methods: {
-    handleClick(client) {
-      this.currentClient = client;
-    },
-    addNewBilling() {
-      const clientId = this.currentClient.id;
-      const date = new Date();
-      const transactionNumber = this.addBillingTransactionNumber;
-
-      httpCreateBilling({
-        clientId,
-        date: date.toISOString().slice(0, 19).replace('T', ' '),
-        transactionNumber
-      }).then((data) => {
-        this.$store.dispatch('billings/addBilling', {
-          ...data,
-          trips: [],
-          totalFee: 0
-        });
-      });
-    },
     addNewTrip() {
       const newTrip = {
-        billingId: this.currentBilling.id,
+        billingId: this.billing.id,
         date: new Date().toISOString().slice(0, 19).replace('T', ' '),
         shipmentNumber: this.addTripShipmentNumber,
         SPONumber: this.addTripSPONumber,
@@ -78,9 +41,9 @@ export default {
       };
 
       httpPostBillingTrip(newTrip).then((data) => {
-        this.currentBilling.trips.push(data);
+        this.billing.trips.push(data);
         console.log(data.fee);
-        this.currentBilling.totalFee += data.fee;
+        this.billing.totalFee += data.fee;
 
         this.$store.dispatch('billingTrips/addBillingTrip', data);
       });
@@ -89,21 +52,16 @@ export default {
       this.addTripSPONumber = '';
       this.addTripFee = null;
     },
-    setCurrentBilling(billing) {
-      this.currentBilling = billing;
-    },
     handleGenerateCopy() {
-      console.log('Handle Generated Copy');
-
       fetch('http://localhost:8000/billings/getFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...this.currentBilling,
-          company_name: this.currentClient.company_name,
-          company_address: this.currentClient.address
+          ...this.billing,
+          company_name: this.client.company_name,
+          company_address: this.client.address
         })
       })
         .then((response) => {
@@ -113,7 +71,7 @@ export default {
           const url = window.URL.createObjectURL(new Blob([blob]));
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${this.currentClient.company_name} - Billing.xlsx`;
+          a.download = `${this.client.company_name} - Billing.xlsx`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -133,10 +91,12 @@ export default {
       httpDeleteBilling(billingId).then(() => {
         httpDeleteBillingTrips(billingId);
         this.$store.dispatch('billings/deleteBilling', billingId);
+
+        console.log(this.$router.replace('/billinglist'));
       });
     },
     deleteBillingTrip() {
-      const deletedBillingTrip = this.currentBilling.trips[this.deleteBillingTripIdx];
+      const deletedBillingTrip = this.billing.trips[this.deleteBillingTripIdx];
 
       httpDeleteBillingTrips(deletedBillingTrip.billingId).then(() => {
         this.$store.dispatch(
@@ -144,39 +104,35 @@ export default {
           deletedBillingTrip.billingId
         );
 
-        const idx = this.currentBilling.trips.findIndex((trip) => trip.id === deletedBillingTrip.id);
+        const idx = this.billing.trips.findIndex(
+          (trip) => trip.id === deletedBillingTrip.id
+        );
 
-        this.currentBilling.trips.splice(idx, 1);
-
-        console.log(this.$store.getters['billingTrips/billingTrips']);
+        this.billing.trips.splice(idx, 1);
       });
-    },
-    getRemainingDays(billing) {
-      const currentDate = new Date();
-      const difference_in_time =
-        currentDate.getTime() - new Date(billing.date).getTime();
-      const difference_in_days = Math.round(
-        difference_in_time / (1000 * 3600 * 24)
-      );
-      return 30 - difference_in_days;
     }
   },
   computed: {
     clients() {
       return this.$store.getters['clients/clients'];
     },
+    billing() {
+      const billing = this.billings.find(
+        (billing) => billing.id === Number(this.billingId)
+      );
+      return billing;
+    },
+    billingTrips() {
+      return this.billing.trips;
+    },
+    client() {
+      if (this.billing) {
+        const clientId = this.billing.clientId;
+        return this.clients.find((client) => client.id === clientId);
+      }
+    },
     billings() {
       return this.$store.getters['billings/billings'];
-    },
-    currentClientBillings() {
-      const filtered = this.billings.filter(
-        (billing) => billing.clientId === this.currentClient.id
-      );
-
-      return filtered;
-    },
-    isAddBillingInputsValid() {
-      return this.addBillingTransactionNumber.length > 0;
     },
     isAddTripInputsValid() {
       return (
@@ -192,219 +148,138 @@ export default {
 
 <template>
   <h1>Clients - Billing</h1>
-  <ul class="nav nav-pills mb-3 gap-2" id="billing-tab" role="tablist">
-    <CompanyTab
-      v-for="client in clients"
-      :classes="client === clients[0] ? 'active' : ''"
-      :id="'billing-' + client.company_name.split(' ').join('') + '-tab'"
-      :target="'#billing-' + client.id"
-      :selected="client === clients[0] ? true : false"
-      @click="handleClick(client)"
-    >
-      {{ client.company_name }}
-    </CompanyTab>
-  </ul>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page" v-if="billing">
+        {{ billing.date }}
+      </li>
+      <li class="breadcrumb-item">
+        <RouterLink to="/billinglist">Billing List</RouterLink>
+      </li>
+    </ol>
+  </nav>
   <div class="tab-content" id="pills-tabContent">
-    <TabPane
-      v-for="client in clients"
-      :classes="client === clients[0] ? 'active show' : ''"
-      :id="'billing-' + client.id"
-    >
-      <p class="text-danger fw-bold" v-if="currentClientBillings.length === 0">
-        There is no billing to this client
-      </p>
-      <main v-for="currentClientBilling in currentClientBillings">
-        <div class="billing text-white">
-          <header
-            class="header-billing d-flex flex-row justify-content-center align-items-center"
-          >
-            <section class="w-75">
-              <div class="border-right border-btm">
-                <h1>{{ client.company_name }}</h1>
-                <p class="client_address">
-                  {{ currentClient.address }}
-                </p>
-              </div>
-              <h3 class="border-right mb-0">{{ client.company_name }}</h3>
-            </section>
-            <section
-              class="d-flex flex-column justify-content-center h-100 w-25"
+    <main>
+      <div class="billing text-white">
+        <header
+          class="header-billing d-flex flex-row justify-content-center align-items-center"
+        >
+          <section class="w-75" v-if="client">
+            <div class="border-right border-btm">
+              <h1>{{ client.company_name }}</h1>
+              <p class="client_address">
+                {{ client.address }}
+              </p>
+            </div>
+            <h3 class="border-right mb-0">{{ client.company_name }}</h3>
+          </section>
+          <section class="d-flex flex-column justify-content-center h-100 w-25">
+            <p class="billing_date m-0 p-2 border-y" v-if="billing">
+              {{ billing.date.slice(0, 10) }}
+            </p>
+            <p class="billing_remaining_days m-0 p-2 border-btm">30 day/s</p>
+            <p class="billing_id m-0 p-2 border-btm" v-if="billing">
+              {{ billing.transaction_number }}
+            </p>
+          </section>
+        </header>
+        <div class="separator border-y p-3"></div>
+
+        <p
+          class="text-danger d-flex justify-content-center align-items-center fw-bold text-decoration-underline m-0"
+          v-if="billing && billing.trips && billing.trips.length === 0"
+        >
+          There are no trip records for this client's billing.
+        </p>
+        <main
+          v-if="billing"
+          v-for="(trip, index) in billing.trips"
+          class="text-black d-flex flex-column"
+        >
+          <section class="d-flex w-100 height-50 border-btm">
+            <div class="d-flex justify-content-around align-items-center w-75">
+              <p class="mb-0 width-50 fw-bold width-1-3">
+                {{ index + 1 }}
+              </p>
+              <p class="mb-0 width-1-3" v-if="trip.date">
+                {{ trip.date.slice(0, 10) }}
+              </p>
+              <p class="mb-0 width-1-3">
+                Shipment No.: {{ trip.shipmentNumber }}
+              </p>
+            </div>
+            <p
+              class="w-25 mb-0 d-flex justify-content-center align-items-center"
             >
-              <p class="billing_date m-0 p-2 border-y">
-                {{ currentClientBilling.date.slice(0, 10) }}
-              </p>
-              <p class="billing_remaining_days m-0 p-2 border-btm">
-                {{ getRemainingDays(currentClientBilling) }} day/s
-              </p>
-              <p class="billing_id m-0 p-2 border-btm">
-                {{ currentClientBilling.transaction_number }}
-              </p>
-            </section>
-          </header>
-          <div class="separator border-y p-3"></div>
+              {{ trip.fee }}
+            </p>
+          </section>
 
-          <p
-            class="text-danger d-flex justify-content-center align-items-center fw-bold text-decoration-underline m-0"
-            v-if="
-              currentClientBilling.trips &&
-              currentClientBilling.trips.length === 0
-            "
-          >
-            There are no trip records for this client's billing.
-          </p>
-          <main
-            v-for="(trip, index) in currentClientBilling.trips"
-            class="text-black d-flex flex-column"
-          >
-            <section class="d-flex w-100 height-50 border-btm">
-              <div
-                class="d-flex justify-content-around align-items-center w-75"
-              >
-                <p class="mb-0 width-50 fw-bold width-1-3">
-                  {{ index + 1 }}
-                </p>
-                <p class="mb-0 width-1-3" v-if="trip.date">
-                  {{ trip.date.slice(0, 10) }}
-                </p>
-                <p class="mb-0 width-1-3">
-                  Shipment No.: {{ trip.shipmentNumber }}
-                </p>
-              </div>
-              <p
-                class="w-25 mb-0 d-flex justify-content-center align-items-center"
-              >
-                {{ trip.fee }}
-              </p>
-            </section>
-
-            <section class="d-flex w-100 height-50 border-btm">
-              <div
-                class="d-flex justify-content-around align-items-center w-75"
-              >
-                <p class="mb-0 width-50"></p>
-                <p class="mb-0"></p>
-                <p class="mb-0 spo-number">SPO No.: {{ trip.SPONumber }}</p>
-              </div>
-              <p
-                class="w-25 mb-0 d-flex justify-content-center align-items-center"
-              ></p>
-            </section>
-          </main>
-          <section
-            v-if="
-              currentClientBilling.trips &&
-              currentClientBilling.trips.length > 0
-            "
-            class="d-flex w-100 height-50"
-          >
+          <section class="d-flex w-100 height-50 border-btm">
             <div class="d-flex justify-content-around align-items-center w-75">
               <p class="mb-0 width-50"></p>
               <p class="mb-0"></p>
-              <p class="mb-0"></p>
+              <p class="mb-0 spo-number">SPO No.: {{ trip.SPONumber }}</p>
             </div>
             <p
-              class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold text-black"
-            >
-              {{ currentClientBilling.totalFee }}
-            </p>
+              class="w-25 mb-0 d-flex justify-content-center align-items-center"
+            ></p>
           </section>
-        </div>
-        <div class="actions d-flex justify-content-start pt-2 pb-5">
-          <button
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#addTripModal"
-            class="btn tms-btn text-light px-5"
-            @click="setCurrentBilling(currentClientBilling)"
-          >
-            Add Trip
-          </button>
-          <button
-          v-if="
-              currentClientBilling.trips &&
-              currentClientBilling.trips.length > 0
-            "
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteBillingTrip"
-            class="btn btn-danger text-light px-5 ms-2"
-            @click="setCurrentBilling(currentClientBilling)"
-          >
-            Delete Trip
-          </button>
-          <button
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteBillingVerif"
-            class="btn btn-danger text-light px-5 ms-2"
-            @click="setCurrentBilling(currentClientBilling)"
-          >
-            Delete Billing
-          </button>
-          <button
-            v-if="
-              currentClientBilling.trips &&
-              currentClientBilling.trips.length > 0
-            "
-            type="button"
-            class="btn tms-btn text-light px-5 ms-2"
-            @click="handleGenerateCopy"
-          >
-            Generate copy
-          </button>
-        </div>
-      </main>
-    </TabPane>
-    <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
-  </div>
-  <FloatingActionButtonVue
-    :isForBilling="true"
-    :hide="clients.length > 0 ? false : true"
-  />
-
-  <Modal id="addBillingModal">
-    <template v-slot:modal-header>
-      <div class="modal-header justify-content-center border-bottom-0">
-        <h1 class="modal-title fs-5" id="addBillingModalLabel">
-          Billing's Information
-        </h1>
-      </div>
-    </template>
-    <template v-slot:modal-body>
-      <div class="modal-body">
-        <form id="addBillingForm" @submit.prevent="addNewBilling">
-          <div class="mb-3">
-            <label for="transactionNumber" class="form-label d-block text-start"
-              >Transaction Number</label
-            >
-            <input
-              v-model="addBillingTransactionNumber"
-              type="text"
-              class="form-control"
-              id="transactionNumber"
-              aria-describedby="transactionNumber"
-            />
+        </main>
+        <section
+          v-if="billing && billing.trips && billing.trips.length > 0"
+          class="d-flex w-100 height-50"
+        >
+          <div class="d-flex justify-content-around align-items-center w-75">
+            <p class="mb-0 width-50"></p>
+            <p class="mb-0"></p>
+            <p class="mb-0"></p>
           </div>
-        </form>
+          <p
+            class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold text-black"
+          >
+            {{ billing.totalFee }}
+          </p>
+        </section>
       </div>
-    </template>
-    <template v-slot:modal-footer>
-      <div class="modal-footer border-top-0 justify-content-center">
-        <button type="button" class="btn text-light" data-bs-dismiss="modal">
-          Close
+      <div class="actions d-flex justify-content-start pt-2 pb-5">
+        <button
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#addTripModal"
+          class="btn tms-btn text-light px-5"
+        >
+          Add Trip
         </button>
         <button
-          type="submit"
-          class="btn tms-btn text-light"
-          form="addBillingForm"
-          data-bs-dismiss="modal"
-          :disabled="!isAddBillingInputsValid"
+          v-if="billing && billing.trips && billing.trips.length > 0"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteBillingTrip"
+          class="btn btn-danger text-light px-5 ms-2"
         >
-          Create Billing
+          Delete Trip
+        </button>
+        <button
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteBillingVerif"
+          class="btn btn-danger text-light px-5 ms-2"
+        >
+          Delete Billing
+        </button>
+        <button
+          v-if="billing && billing.trips && billing.trips.length > 0"
+          type="button"
+          class="btn tms-btn text-light px-5 ms-2"
+          @click="handleGenerateCopy"
+        >
+          Generate copy
         </button>
       </div>
-    </template>
-  </Modal>
+    </main>
+    <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
+  </div>
 
   <Modal id="addTripModal">
     <template v-slot:modal-header>
@@ -496,7 +371,7 @@ export default {
           type="button"
           class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
-          @click.prevent="deleteBilling(currentBilling.id)"
+          @click.prevent="deleteBilling(billing.id)"
         >
           Delete Billing
         </button>
@@ -527,7 +402,8 @@ export default {
             >
               <option selected :value="-1">Open this select menu</option>
               <option
-                v-for="(trip, index) in currentBilling.trips"
+                v-if="billing"
+                v-for="(trip, index) in billing.trips"
                 :value="index"
               >
                 Number: {{ index + 1 }}
