@@ -17,7 +17,7 @@ const cardsData = [
   {
     title: 'Billing',
     description: 'Billing information for services supplied to clients.',
-    path: '/billing',
+    path: '/billinglist',
   },
   {
     title: 'Payroll',

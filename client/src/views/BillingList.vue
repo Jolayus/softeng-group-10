@@ -65,9 +65,10 @@ export default {
     },
     test(billing) {
       const date = new Date(billing.date);
-      const month = this.days[date.getMonth()];
 
-      return `${month}`;
+      const options = { month: 'long', day: '2-digit', year: 'numeric' };
+
+      return date.toLocaleDateString('en-US', options);
     }
   },
   computed: {
@@ -86,22 +87,6 @@ export default {
       );
 
       return filtered;
-    },
-    days() {
-      return {
-        0: 'January',
-        1: 'February',
-        2: 'March',
-        3: 'April',
-        4: 'May',
-        5: 'June',
-        6: 'July',
-        7: 'August',
-        8: 'September',
-        9: 'October',
-        10: 'November',
-        11: 'December'
-      };
     },
     isAddBillingInputsValid() {
       return this.addBillingTransactionNumber.length > 0;
@@ -125,10 +110,14 @@ export default {
     </CompanyTab>
   </ul>
   <div class="mb-5 d-flex justify-content-end px-5">
-    <button class="btn tms-btn text-light" type="button"
-    data-bs-toggle="modal"
-          data-bs-target="#addBillingModal"
-    >Add Billing</button>
+    <button
+      class="btn tms-btn text-light"
+      type="button"
+      data-bs-toggle="modal"
+      data-bs-target="#addBillingModal"
+    >
+      Add Billing
+    </button>
   </div>
   <div class="tab-content" id="pills-tabContent">
     <TabPane
@@ -146,10 +135,12 @@ export default {
               class="col-5 fs-4 p-2 m-1"
               v-for="currentClientBilling in currentClientBillings"
             >
-              <RouterLink :to="`/billing/${currentClientBilling.id}`"
-                >{{ test(currentClientBilling) }},
-                {{ currentClientBilling.date }}</RouterLink
+              <RouterLink
+                :to="`/billing/${currentClientBilling.id}`"
+                class="custom-link"
               >
+                <span class="month">{{ test(currentClientBilling) }}</span>
+              </RouterLink>
             </li>
           </div>
         </ul>
@@ -211,5 +202,28 @@ ul {
 li {
   border: 2px solid rgba(0, 0, 0, 0.3);
   border-radius: 5px;
+}
+
+.custom-link {
+  text-decoration: none;
+  color: #000000;
+  cursor: pointer;
+}
+
+.custom-link:hover {
+  text-decoration: underline;
+}
+
+.list-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.month {
+  font-size: 18px;
+  color: #041421;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 </style>
