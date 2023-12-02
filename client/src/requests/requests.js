@@ -196,11 +196,23 @@ async function httpCreateBilling(newBilling) {
   return await response.json();
 }
 
+async function httpDeleteBilling(billingId) {
+  const response = await fetch(`${API_URL}/billings`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ billingId })
+  });
+
+  return await response.json();
+}
+
 // BILLING TRIPS
 async function httpGetAllBillingTrips() {
   const response = await fetch(`${API_URL}/billingtrips`);
   const billingTrips = await response.json();
-  
+
   return billingTrips;
 }
 
@@ -211,6 +223,18 @@ async function httpPostBillingTrip(newBillingTrip) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(newBillingTrip)
+  });
+
+  return await response.json();
+}
+
+async function httpDeleteBillingTrips(billingId) {
+  const response = await fetch(`${API_URL}/billingtrips`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ billingId })
   });
 
   return await response.json();
@@ -235,6 +259,8 @@ export {
   httpDeleteArchivedClient,
   httpGetAllBillings,
   httpCreateBilling,
+  httpDeleteBilling,
   httpGetAllBillingTrips,
-  httpPostBillingTrip
+  httpPostBillingTrip,
+  httpDeleteBillingTrips
 };

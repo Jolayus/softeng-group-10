@@ -8,7 +8,12 @@ import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
 import { getBillingsModel } from '../models/billings.model';
 
-import { httpCreateBilling, httpPostBillingTrip } from '../requests/requests';
+import {
+  httpCreateBilling,
+  httpPostBillingTrip,
+  httpDeleteBilling,
+  httpDeleteBillingTrips
+} from '../requests/requests';
 
 export default {
   name: 'Billing',
@@ -66,7 +71,7 @@ export default {
         this.currentBilling.totalFee += data.fee;
 
         this.$store.dispatch('billingTrips/addBillingTrip', data);
-    });
+      });
 
       this.addTripShipmentNumber = '';
       this.addTripSPONumber = '';
@@ -113,7 +118,10 @@ export default {
       return false;
     },
     deleteBilling(id) {
-      this.$store.dispatch('billings/deleteBilling', id);
+      httpDeleteBilling(id).then(() => {
+        httpDeleteBillingTrips(id);
+        this.$store.dispatch('billings/deleteBilling', id);
+      });
     },
     getRemainingDays(billing) {
       const currentDate = new Date();

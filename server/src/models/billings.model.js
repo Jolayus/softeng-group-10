@@ -25,8 +25,14 @@ function addNewBilling(newBilling) {
   return billings.push(newBilling);
 }
 
+function deleteBilling(billingId) {
+  const idx = billings.findIndex((billing) => billing.id === billingId);
+  billings.splice(idx, 1);
+}
+
 module.exports = {
   loadBillings,
   getAllBillings,
-  addNewBilling
+  addNewBilling,
+  deleteBilling
 };

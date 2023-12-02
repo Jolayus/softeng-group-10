@@ -4,7 +4,8 @@ const Excel = require('exceljs');
 
 const {
   getAllBillings,
-  addNewBilling
+  addNewBilling,
+  deleteBilling
 } = require('../../models/billings.model');
 
 function httpGetBillings(req, res) {
@@ -18,8 +19,6 @@ function httpPostNewBilling(req, res) {
   if (!clientId || !date || !transactionNumber) {
     return res.status(400).json({ error: 'Invalid input' });
   }
-
-  console.log(clientId, date, transactionNumber);
 
   const promise = new Promise((resolve, reject) => {
     const sql = `INSERT INTO billings (clientId, date, transaction_number) VALUES (?, ?, ?)`;
@@ -86,6 +85,52 @@ function httpGetFile(req, res) {
         res.download(path.join(__dirname, 'output.xlsx'));
       });
     });
+}
+
+function httpDeleteBilling(req, res) {
+  const { billingId } = req.body;
+
+  if (!billingId) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
+    const promise = new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM billings WHERE billings.id=${billingId}`;
+    let deletedBilling;
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        deletedBilling = rows.find((row) => row.id === id);
+
+        if (deletedBilling === undefined) {
+          return reject('id does not exist');
+        }
+
+        deleteBilling(deletedBilling.id);
+        removeBillingFromDatabase(id);
+        resolve(deletedBilling);
+      }
+    });
+  });
+
+  promise
+    .then((client) => {
+      return res.status(200).json(client);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err });
+    });
+}
+
+function removeBillingFromDatabase(billingId) {
+  const sql = `DELETE FROM billings WHERE billings.id=${billingId}`;
+  db.run(sql, [], (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
 }
 
 module.exports = {
