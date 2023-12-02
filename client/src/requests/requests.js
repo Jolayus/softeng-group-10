@@ -196,6 +196,14 @@ async function httpCreateBilling(newBilling) {
   return await response.json();
 }
 
+// BILLING TRIPS
+async function httpGetAllBillingTrips() {
+  const response = await fetch(`${API_URL}/billingtrips`);
+  const billingTrips = await response.json();
+  
+  return billingTrips;
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -214,5 +222,6 @@ export {
   httpGetArchivedClients,
   httpDeleteArchivedClient,
   httpGetAllBillings,
-  httpCreateBilling
+  httpCreateBilling,
+  httpGetAllBillingTrips
 };

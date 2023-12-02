@@ -5,6 +5,7 @@ import clientsModule from './modules/clients';
 import archivedEmployeesModule from './modules/archivedEmployees';
 import archivedClientsModule from './modules/archivedClients';
 import billingsModule from './modules/billings';
+import billingTripsModule from './modules/billingTrips';
 
 const store = createStore({
   modules: {
@@ -12,7 +13,8 @@ const store = createStore({
     clients: clientsModule,
     archivedEmployees: archivedEmployeesModule,
     archivedClients: archivedClientsModule,
-    billings: billingsModule
+    billings: billingsModule,
+    billingTrips: billingTripsModule
   }
 });
 

@@ -43,23 +43,14 @@ export default {
       const date = new Date();
       const transactionNumber = this.addBillingTransactionNumber;
 
-      const newBilling = {
-        clientId,
-        date,
-        transactionNumber,
-        trips: [],
-        totalFee: 0
-      };
-
       httpCreateBilling({
         clientId,
         date: date.toISOString().slice(0, 19).replace('T', ' '),
         transactionNumber
       }).then((data) => {
-        this.$store.dispatch('billings/addBilling', {...data, trips: []});
-        console.log( {...data, trips: []});
+        this.$store.dispatch('billings/addBilling', { ...data, trips: [] });
+        console.log({ ...data, trips: [], totalFee: 0 });
       });
-;
     },
     addNewTrip() {
       const newTrip = {
@@ -70,7 +61,6 @@ export default {
         fee: this.addTripFee
       };
 
-      console.log(this.currentBilling);
       this.currentBilling.trips.push(newTrip);
       this.currentBilling.totalFee += newTrip.fee;
 
@@ -123,7 +113,8 @@ export default {
     },
     getRemainingDays(billing) {
       const currentDate = new Date();
-      const difference_in_time = currentDate.getTime() - new Date(billing.date).getTime();
+      const difference_in_time =
+        currentDate.getTime() - new Date(billing.date).getTime();
       const difference_in_days = Math.round(
         difference_in_time / (1000 * 3600 * 24)
       );
@@ -214,7 +205,10 @@ export default {
 
           <p
             class="text-danger d-flex justify-content-center align-items-center fw-bold text-decoration-underline m-0"
-            v-if="currentClientBilling.trips && currentClientBilling.trips.length === 0"
+            v-if="
+              currentClientBilling.trips &&
+              currentClientBilling.trips.length === 0
+            "
           >
             There are no trip records for this client's billing.
           </p>
@@ -230,7 +224,7 @@ export default {
                   {{ index + 1 }}
                 </p>
                 <p class="mb-0 width-1-3">
-                  {{ trip.date.toISOString().slice(0, 10) }}
+                  {{ trip.date.slice(0, 10) }}
                 </p>
                 <p class="mb-0 width-1-3">
                   Shipment No.: {{ trip.shipmentNumber }}
@@ -257,7 +251,10 @@ export default {
             </section>
           </main>
           <section
-            v-if="currentClientBilling.trips && currentClientBilling.trips.length > 0"
+            v-if="
+              currentClientBilling.trips &&
+              currentClientBilling.trips.length > 0
+            "
             class="d-flex w-100 height-50"
           >
             <div class="d-flex justify-content-around align-items-center w-75">
@@ -290,7 +287,10 @@ export default {
             Delete Billing
           </button>
           <button
-            v-if="currentClientBilling.trips && currentClientBilling.trips.length > 0"
+            v-if="
+              currentClientBilling.trips &&
+              currentClientBilling.trips.length > 0
+            "
             type="button"
             class="btn tms-btn text-light px-5 ms-2"
             @click="handleGenerateCopy"

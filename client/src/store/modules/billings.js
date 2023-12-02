@@ -1,4 +1,4 @@
-import { httpGetAllBillings } from "../../requests/requests";
+import { httpGetAllBillings } from '../../requests/requests';
 
 export default {
   namespaced: true,
@@ -15,20 +15,32 @@ export default {
       state.billings.push(newBilling);
     },
     deleteBilling(state, billingId) {
-      const idx = state.billings.findIndex((billing) => billing.id === billingId);
+      const idx = state.billings.findIndex(
+        (billing) => billing.id === billingId
+      );
       state.billings.splice(idx, 1);
     }
   },
   actions: {
-    // async loadArchivedClients(context) {
-    //   const loadedArchivedClients = await httpGetArchivedClients();
-    //   context.commit('setArchivedClients', loadedArchivedClients);
-    // },
-    // deleteArchivedClient(context, archivedClientId) {
-    //   context.commit('deleteArchivedClient', archivedClientId);
-    // },
     async loadBillings(context) {
       const loadedBillings = await httpGetAllBillings();
+
+      const billingTrips = context.rootGetters['billingTrips/billingTrips'];
+
+      loadedBillings.forEach((loadedBilling) => {
+        loadedBilling.trips = [];
+        loadedBilling.totalFee = 0;
+
+        billingTrips.forEach((billingTrips) => {
+          if (billingTrips.billingId === loadedBilling.id) {
+            loadedBilling.trips.push(billingTrips);
+            loadedBilling.totalFee += billingTrips.fee;
+          }
+        });
+      });
+
+      console.log(loadedBillings);
+
       context.commit('setBillings', loadedBillings);
     },
     addBilling(context, newBilling) {
