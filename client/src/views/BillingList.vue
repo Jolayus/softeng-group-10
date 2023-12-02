@@ -67,7 +67,7 @@ export default {
       }
       return false;
     },
-    test(billing) {
+    formatDate(billing) {
       const date = new Date(billing.date);
 
       const options = { month: 'long', day: '2-digit', year: 'numeric' };
@@ -146,7 +146,7 @@ export default {
                 :to="`/billing/${currentClientBilling.id}`"
                 class="custom-link"
               >
-                <span class="month">{{ test(currentClientBilling) }}</span>
+                <span class="month">{{ formatDate(currentClientBilling) }}</span>
               </RouterLink>
             </li>
           </div>
