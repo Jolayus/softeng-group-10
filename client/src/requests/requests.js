@@ -177,6 +177,13 @@ async function httpDeleteArchivedClient(archivedClientId) {
 }
 
 // BILLING
+async function httpGetAllBillings() {
+  const response = await fetch(`${API_URL}/billings`);
+  const billings = await response.json();
+
+  return billings;
+}
+
 async function httpCreateBilling(newBilling) {
   const response = await fetch(`${API_URL}/billings`, {
     method: 'POST',
@@ -206,5 +213,6 @@ export {
   httpDeleteArchivedEmployee,
   httpGetArchivedClients,
   httpDeleteArchivedClient,
+  httpGetAllBillings,
   httpCreateBilling
 };

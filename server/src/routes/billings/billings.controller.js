@@ -1,3 +1,4 @@
+const db = require('../../../database/db');
 const path = require('path');
 const Excel = require('exceljs');
 
@@ -27,10 +28,8 @@ function httpPostNewBilling(req, res) {
       [clientId, date, transactionNumber],
       (err) => {
         if (err) {
-          console.log('Hello World');
           reject(err);
         } else {
-          console.log('Hello World');
           const sql = `SELECT * FROM billings ORDER BY id DESC LIMIT 1`;
           db.all(sql, [], (err, rows) => {
             if (err) {
@@ -46,7 +45,7 @@ function httpPostNewBilling(req, res) {
 
   promise
     .then((newBilling) => {
-      // addNewBilling(newBilling);
+      addNewBilling(newBilling);
       res.status(201).json(newBilling);
     })
     .catch((err) => {

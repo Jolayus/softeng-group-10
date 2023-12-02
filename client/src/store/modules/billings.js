@@ -1,3 +1,5 @@
+import { httpGetAllBillings } from "../../requests/requests";
+
 export default {
   namespaced: true,
   state() {
@@ -25,6 +27,10 @@ export default {
     // deleteArchivedClient(context, archivedClientId) {
     //   context.commit('deleteArchivedClient', archivedClientId);
     // },
+    async loadBillings(context) {
+      const loadedBillings = await httpGetAllBillings();
+      context.commit('setBillings', loadedBillings);
+    },
     addBilling(context, newBilling) {
       context.commit('addBilling', newBilling);
     },

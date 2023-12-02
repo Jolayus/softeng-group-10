@@ -51,20 +51,15 @@ export default {
         totalFee: 0
       };
 
-      console.log({
-        clientId,
-        date: date.toISOString().slice(0, 19).replace('T', ' '),
-        transactionNumber
-      });
-
       httpCreateBilling({
         clientId,
         date: date.toISOString().slice(0, 19).replace('T', ' '),
         transactionNumber
       }).then((data) => {
-        console.log(data);
+        this.$store.dispatch('billings/addBilling', {...data, trips: []});
+        console.log( {...data, trips: []});
       });
-      this.$store.dispatch('billings/addBilling', newBilling);
+;
     },
     addNewTrip() {
       const newTrip = {
@@ -75,6 +70,7 @@ export default {
         fee: this.addTripFee
       };
 
+      console.log(this.currentBilling);
       this.currentBilling.trips.push(newTrip);
       this.currentBilling.totalFee += newTrip.fee;
 
@@ -127,7 +123,7 @@ export default {
     },
     getRemainingDays(billing) {
       const currentDate = new Date();
-      const difference_in_time = currentDate.getTime() - billing.date.getTime();
+      const difference_in_time = currentDate.getTime() - new Date(billing.date).getTime();
       const difference_in_days = Math.round(
         difference_in_time / (1000 * 3600 * 24)
       );
@@ -142,9 +138,11 @@ export default {
       return this.$store.getters['billings/billings'];
     },
     currentClientBillings() {
-      return this.billings.filter(
+      const filtered = this.billings.filter(
         (billing) => billing.clientId === this.currentClient.id
       );
+
+      return filtered;
     },
     isAddBillingInputsValid() {
       return this.addBillingTransactionNumber.length > 0;
@@ -202,13 +200,13 @@ export default {
               class="d-flex flex-column justify-content-center h-100 w-25"
             >
               <p class="billing_date m-0 p-2 border-y">
-                {{ currentClientBilling.date.toISOString().slice(0, 10) }}
+                {{ currentClientBilling.date.slice(0, 10) }}
               </p>
               <p class="billing_remaining_days m-0 p-2 border-btm">
                 {{ getRemainingDays(currentClientBilling) }} day/s
               </p>
               <p class="billing_id m-0 p-2 border-btm">
-                {{ currentClientBilling.transactionNumber }}
+                {{ currentClientBilling.transaction_number }}
               </p>
             </section>
           </header>
@@ -216,7 +214,7 @@ export default {
 
           <p
             class="text-danger d-flex justify-content-center align-items-center fw-bold text-decoration-underline m-0"
-            v-if="currentClientBilling.trips.length === 0"
+            v-if="currentClientBilling.trips && currentClientBilling.trips.length === 0"
           >
             There are no trip records for this client's billing.
           </p>
@@ -259,7 +257,7 @@ export default {
             </section>
           </main>
           <section
-            v-if="currentClientBilling.trips.length > 0"
+            v-if="currentClientBilling.trips && currentClientBilling.trips.length > 0"
             class="d-flex w-100 height-50"
           >
             <div class="d-flex justify-content-around align-items-center w-75">
@@ -292,7 +290,7 @@ export default {
             Delete Billing
           </button>
           <button
-            v-if="currentClientBilling.trips.length > 0"
+            v-if="currentClientBilling.trips && currentClientBilling.trips.length > 0"
             type="button"
             class="btn tms-btn text-light px-5 ms-2"
             @click="handleGenerateCopy"
