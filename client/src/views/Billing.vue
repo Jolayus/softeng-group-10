@@ -141,7 +141,12 @@ export default {
         this.addTripFee !== null &&
         this.addTripFee > 0
       );
-    }
+    },
+    formattedDate() {
+      const options = { month: 'long', day: '2-digit', year: 'numeric' };
+      const date = new Date(this.billing.date);
+      return date.toLocaleDateString('en-US', options);
+    },
   }
 };
 </script>
@@ -151,10 +156,10 @@ export default {
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item active" aria-current="page" v-if="billing">
-        {{ billing.date.slice(0, 10) }}
+        {{ formattedDate }}
       </li>
       <li class="breadcrumb-item">
-        <RouterLink to="/billinglist">Billing List</RouterLink>
+        <RouterLink to="/billinglist" class="custom-link">Billing List</RouterLink>
       </li>
     </ol>
   </nav>
@@ -433,6 +438,16 @@ export default {
 </template>
 
 <style scoped>
+.custom-link {
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.custom-link:hover {
+  text-decoration: underline;
+}
+
 .min-width-100px {
   min-width: 100px;
 }
