@@ -151,7 +151,7 @@ export default {
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item active" aria-current="page" v-if="billing">
-        {{ billing.date }}
+        {{ billing.date.slice(0, 10) }}
       </li>
       <li class="breadcrumb-item">
         <RouterLink to="/billinglist">Billing List</RouterLink>

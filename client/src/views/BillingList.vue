@@ -25,6 +25,7 @@ export default {
     return {
       // ADD BILLING INPUT
       addBillingTransactionNumber: '',
+      addBillingDate: null,
 
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
       currentBilling: getBillingsModel().length > 0 ? getClientsModel()[0] : {}
@@ -39,7 +40,7 @@ export default {
     },
     addNewBilling() {
       const clientId = this.currentClient.id;
-      const date = new Date();
+      const date = new Date(this.addBillingDate);
       const transactionNumber = this.addBillingTransactionNumber;
 
       httpCreateBilling({
@@ -52,6 +53,9 @@ export default {
           trips: [],
           totalFee: 0
         });
+
+        this.addBillingTransactionNumber = '';
+        this.addBillingDate = null;
       });
     },
     isBillingExists(transactionNumber) {
@@ -89,7 +93,10 @@ export default {
       return filtered;
     },
     isAddBillingInputsValid() {
-      return this.addBillingTransactionNumber.length > 0;
+      return (
+        this.addBillingTransactionNumber.length > 0 &&
+        this.addBillingDate !== null
+      );
     }
   }
 };
@@ -170,6 +177,16 @@ export default {
               class="form-control"
               id="transactionNumber"
               aria-describedby="transactionNumber"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="date" class="form-label d-block text-start">Date</label>
+            <input
+              v-model="addBillingDate"
+              type="date"
+              class="form-control"
+              id="date"
+              aria-describedby="date"
             />
           </div>
         </form>
