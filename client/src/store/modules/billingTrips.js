@@ -1,11 +1,11 @@
-import { httpGetAllBillingTrips } from "../../requests/requests";
+import { httpGetAllBillingTrips } from '../../requests/requests';
 
 export default {
   namespaced: true,
   state() {
     return {
       billingTrips: []
-    }
+    };
   },
   mutations: {
     setBillingTrips(state, newBillingTrips) {
@@ -13,6 +13,12 @@ export default {
     },
     addBillingTrip(state, newBillingTrip) {
       state.billingTrips.push(newBillingTrip);
+    },
+    deleteBillingTrip(state, billingId) {
+      const idx = state.billingTrips.findIndex(
+        (billingTrip) => billingTrip.billingId === billingId
+      );
+      state.billingTrips.splice(idx, 1);
     }
   },
   actions: {
@@ -22,6 +28,9 @@ export default {
     },
     addBillingTrip(context, addNewBillingTrip) {
       context.commit('addBillingTrip', addNewBillingTrip);
+    },
+    deleteBillingTrip(context, billingId) {
+      context.commit('deleteBillingTrip', billingId);
     }
   },
   getters: {
@@ -29,4 +38,4 @@ export default {
       return state.billingTrips;
     }
   }
-}
+};

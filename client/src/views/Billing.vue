@@ -36,8 +36,16 @@ export default {
       // ADD TRIP INPUT
       addTripShipmentNumber: '',
       addTripSPONumber: '',
-      addTripFee: null
+      addTripFee: null,
+
+      // DELETE BILLING TRIP
+      deleteBillingTripIdx: -1
     };
+  },
+  watch: {
+    deleteBillingTripIdx(newValue) {
+      console.log(newValue);
+    }
   },
   methods: {
     handleClick(client) {
@@ -53,7 +61,11 @@ export default {
         date: date.toISOString().slice(0, 19).replace('T', ' '),
         transactionNumber
       }).then((data) => {
-        this.$store.dispatch('billings/addBilling', { ...data, trips: [], totalFee: 0 });
+        this.$store.dispatch('billings/addBilling', {
+          ...data,
+          trips: [],
+          totalFee: 0
+        });
       });
     },
     addNewTrip() {
@@ -121,6 +133,22 @@ export default {
       httpDeleteBilling(billingId).then(() => {
         httpDeleteBillingTrips(billingId);
         this.$store.dispatch('billings/deleteBilling', billingId);
+      });
+    },
+    deleteBillingTrip() {
+      const deletedBillingTrip = this.currentBilling.trips[this.deleteBillingTripIdx];
+
+      httpDeleteBillingTrips(deletedBillingTrip.billingId).then(() => {
+        this.$store.dispatch(
+          'billingTrips/deleteBillingTrip',
+          deletedBillingTrip.billingId
+        );
+
+        const idx = this.currentBilling.trips.findIndex((trip) => trip.id === deletedBillingTrip.id);
+
+        this.currentBilling.trips.splice(idx, 1);
+
+        console.log(this.$store.getters['billingTrips/billingTrips']);
       });
     },
     getRemainingDays(billing) {
@@ -292,9 +320,24 @@ export default {
             Add Trip
           </button>
           <button
+          v-if="
+              currentClientBilling.trips &&
+              currentClientBilling.trips.length > 0
+            "
             type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteBillingTrip"
             class="btn btn-danger text-light px-5 ms-2"
-            @click="deleteBilling(currentClientBilling.id)"
+            @click="setCurrentBilling(currentClientBilling)"
+          >
+            Delete Trip
+          </button>
+          <button
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteBillingVerif"
+            class="btn btn-danger text-light px-5 ms-2"
+            @click="setCurrentBilling(currentClientBilling)"
           >
             Delete Billing
           </button>
@@ -426,6 +469,87 @@ export default {
           :disabled="!isAddTripInputsValid"
         >
           Add Trip
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="deleteBillingVerif">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteBillingVerifLabel">
+          Delete Billing
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+          @click.prevent="deleteBilling(currentBilling.id)"
+        >
+          Delete Billing
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="deleteBillingTrip">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteBillingTripLabel">
+          Billing Trip's number
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form id="deleteTripForm" @submit.prevent="deleteBillingTrip">
+          <div class="mb-3">
+            <label for="billingTripNumber" class="form-label d-block text-start"
+              >Billing Trip's Number</label
+            >
+            <select
+              class="form-select"
+              id="billingTripNumber"
+              aria-label="billingTripNumber"
+              v-model="deleteBillingTripIdx"
+            >
+              <option selected :value="-1">Open this select menu</option>
+              <option
+                v-for="(trip, index) in currentBilling.trips"
+                :value="index"
+              >
+                Number: {{ index + 1 }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer border-top-0 justify-content-center">
+        <button type="button" class="btn text-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="deleteTripForm"
+          data-bs-dismiss="modal"
+          :disabled="deleteBillingTripIdx < 0"
+        >
+          Delete Trip
         </button>
       </div>
     </template>
