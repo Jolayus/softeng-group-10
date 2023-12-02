@@ -53,8 +53,7 @@ export default {
         date: date.toISOString().slice(0, 19).replace('T', ' '),
         transactionNumber
       }).then((data) => {
-        this.$store.dispatch('billings/addBilling', { ...data, trips: [] });
-        console.log({ ...data, trips: [], totalFee: 0 });
+        this.$store.dispatch('billings/addBilling', { ...data, trips: [], totalFee: 0 });
       });
     },
     addNewTrip() {
@@ -68,6 +67,7 @@ export default {
 
       httpPostBillingTrip(newTrip).then((data) => {
         this.currentBilling.trips.push(data);
+        console.log(data.fee);
         this.currentBilling.totalFee += data.fee;
 
         this.$store.dispatch('billingTrips/addBillingTrip', data);
@@ -117,10 +117,10 @@ export default {
       }
       return false;
     },
-    deleteBilling(id) {
-      httpDeleteBilling(id).then(() => {
-        httpDeleteBillingTrips(id);
-        this.$store.dispatch('billings/deleteBilling', id);
+    deleteBilling(billingId) {
+      httpDeleteBilling(billingId).then(() => {
+        httpDeleteBillingTrips(billingId);
+        this.$store.dispatch('billings/deleteBilling', billingId);
       });
     },
     getRemainingDays(billing) {

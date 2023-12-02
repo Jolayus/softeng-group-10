@@ -198,7 +198,7 @@ async function httpCreateBilling(newBilling) {
 
 async function httpDeleteBilling(billingId) {
   const response = await fetch(`${API_URL}/billings`, {
-    method: 'POST',
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },

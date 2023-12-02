@@ -51,6 +51,8 @@ function httpDeleteBillingTrips(req, res) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
+  console.log(billingId)
+
   const promise = new Promise((resolve, reject) => {
     const sql = `SELECT * FROM billingTrips WHERE billingTrips.billingId=${billingId}`;
     let deletedBillingTrips = [];
@@ -64,10 +66,6 @@ function httpDeleteBillingTrips(req, res) {
             deletedBillingTrips.push(row);
           }
         });
-
-        if (deletedBillingTrips.length === 0) {
-          return reject('billing id does not exist');
-        }
 
         deletedBillingTrips.forEach((deletedBillingTrip) => {
           deleteBillingTrip(deletedBillingTrip.billingId);

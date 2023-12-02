@@ -90,8 +90,6 @@ function httpDeleteBilling(req, res) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-  console.log(billingId);
-
   const promise = new Promise((resolve, reject) => {
     const sql = `SELECT * FROM billings WHERE billings.id=${billingId}`;
     let deletedBilling;
