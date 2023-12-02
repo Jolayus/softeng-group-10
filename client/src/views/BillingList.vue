@@ -118,7 +118,7 @@ export default {
   </ul>
   <div class="mb-5 d-flex justify-content-end px-5">
     <button
-      class="btn tms-btn text-light"
+      class="btn tms-btn text-light px-5 py-2"
       type="button"
       data-bs-toggle="modal"
       data-bs-target="#addBillingModal"
