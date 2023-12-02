@@ -22,24 +22,20 @@ function httpPostNewBilling(req, res) {
 
   const promise = new Promise((resolve, reject) => {
     const sql = `INSERT INTO billings (clientId, date, transaction_number) VALUES (?, ?, ?)`;
-    db.run(
-      sql,
-      [clientId, date, transactionNumber],
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          const sql = `SELECT * FROM billings ORDER BY id DESC LIMIT 1`;
-          db.all(sql, [], (err, rows) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(rows[0]);
-            }
-          });
-        }
+    db.run(sql, [clientId, date, transactionNumber], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        const sql = `SELECT * FROM billings ORDER BY id DESC LIMIT 1`;
+        db.all(sql, [], (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows[0]);
+          }
+        });
       }
-    );
+    });
   });
 
   promise
@@ -94,7 +90,9 @@ function httpDeleteBilling(req, res) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-    const promise = new Promise((resolve, reject) => {
+  console.log(billingId);
+
+  const promise = new Promise((resolve, reject) => {
     const sql = `SELECT * FROM billings WHERE billings.id=${billingId}`;
     let deletedBilling;
 
@@ -102,14 +100,14 @@ function httpDeleteBilling(req, res) {
       if (err) {
         reject(err);
       } else {
-        deletedBilling = rows.find((row) => row.id === id);
+        deletedBilling = rows.find((row) => row.id === billingId);
 
         if (deletedBilling === undefined) {
           return reject('id does not exist');
         }
 
         deleteBilling(deletedBilling.id);
-        removeBillingFromDatabase(id);
+        removeBillingFromDatabase(billingId);
         resolve(deletedBilling);
       }
     });
@@ -136,5 +134,6 @@ function removeBillingFromDatabase(billingId) {
 module.exports = {
   httpGetBillings,
   httpPostNewBilling,
-  httpGetFile
+  httpGetFile,
+  httpDeleteBilling
 };

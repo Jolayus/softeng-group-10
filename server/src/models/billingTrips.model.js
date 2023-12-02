@@ -29,9 +29,15 @@ function addNewBillingTrip(newBillingTrip) {
   return billingTrips.push(newBillingTrip);
 }
 
+function deleteBillingTrip(billingId) {
+  const idx = billingTrips.findIndex((billingTrip) => billingTrip.billingId === billingId);
+  billingTrips.splice(idx, 1);
+}
+
 module.exports = {
   loadBillingTrips,
   getAllBillingTrips,
   getBillingTripById,
-  addNewBillingTrip
+  addNewBillingTrip,
+  deleteBillingTrip
 };
