@@ -8,7 +8,7 @@ import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
 import { getBillingsModel } from '../models/billings.model';
 
-import { httpCreateBilling } from '../requests/requests';
+import { httpCreateBilling, httpPostBillingTrip } from '../requests/requests';
 
 export default {
   name: 'Billing',
@@ -54,15 +54,19 @@ export default {
     },
     addNewTrip() {
       const newTrip = {
-        id: Math.random(),
-        date: new Date(),
+        billingId: this.currentBilling.id,
+        date: new Date().toISOString().slice(0, 19).replace('T', ' '),
         shipmentNumber: this.addTripShipmentNumber,
         SPONumber: this.addTripSPONumber,
         fee: this.addTripFee
       };
 
-      this.currentBilling.trips.push(newTrip);
-      this.currentBilling.totalFee += newTrip.fee;
+      httpPostBillingTrip(newTrip).then((data) => {
+        this.currentBilling.trips.push(data);
+        this.currentBilling.totalFee += data.fee;
+
+        this.$store.dispatch('billingTrips/addBillingTrip', data);
+    });
 
       this.addTripShipmentNumber = '';
       this.addTripSPONumber = '';
@@ -223,7 +227,7 @@ export default {
                 <p class="mb-0 width-50 fw-bold width-1-3">
                   {{ index + 1 }}
                 </p>
-                <p class="mb-0 width-1-3">
+                <p class="mb-0 width-1-3" v-if="trip.date">
                   {{ trip.date.slice(0, 10) }}
                 </p>
                 <p class="mb-0 width-1-3">
