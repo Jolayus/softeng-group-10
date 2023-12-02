@@ -146,7 +146,7 @@ export default {
       const options = { month: 'long', day: '2-digit', year: 'numeric' };
       const date = new Date(this.billing.date);
       return date.toLocaleDateString('en-US', options);
-    },
+    }
   }
 };
 </script>
@@ -159,10 +159,47 @@ export default {
         {{ formattedDate }}
       </li>
       <li class="breadcrumb-item">
-        <RouterLink to="/billinglist" class="custom-link">Billing List</RouterLink>
+        <RouterLink to="/billinglist" class="custom-link"
+          >Back to Billing List</RouterLink
+        >
       </li>
     </ol>
   </nav>
+  <div class="actions d-flex justify-content-start pt-2 mb-2">
+    <button
+      type="button"
+      data-bs-toggle="modal"
+      data-bs-target="#addTripModal"
+      class="btn tms-btn text-light px-5"
+    >
+      Add Trip
+    </button>
+    <button
+      v-if="billing && billing.trips && billing.trips.length > 0"
+      type="button"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteBillingTrip"
+      class="btn btn-danger text-light px-5 ms-2"
+    >
+      Delete Trip
+    </button>
+    <button
+      type="button"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteBillingVerif"
+      class="btn btn-danger text-light px-5 ms-2"
+    >
+      Delete Billing
+    </button>
+    <button
+      v-if="billing && billing.trips && billing.trips.length > 0"
+      type="button"
+      class="btn tms-btn text-light px-5 ms-2"
+      @click="handleGenerateCopy"
+    >
+      Generate copy
+    </button>
+  </div>
   <div class="tab-content" id="pills-tabContent">
     <main>
       <div class="billing text-white">
@@ -246,41 +283,6 @@ export default {
             {{ billing.totalFee }}
           </p>
         </section>
-      </div>
-      <div class="actions d-flex justify-content-start pt-2 pb-5">
-        <button
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#addTripModal"
-          class="btn tms-btn text-light px-5"
-        >
-          Add Trip
-        </button>
-        <button
-          v-if="billing && billing.trips && billing.trips.length > 0"
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#deleteBillingTrip"
-          class="btn btn-danger text-light px-5 ms-2"
-        >
-          Delete Trip
-        </button>
-        <button
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#deleteBillingVerif"
-          class="btn btn-danger text-light px-5 ms-2"
-        >
-          Delete Billing
-        </button>
-        <button
-          v-if="billing && billing.trips && billing.trips.length > 0"
-          type="button"
-          class="btn tms-btn text-light px-5 ms-2"
-          @click="handleGenerateCopy"
-        >
-          Generate copy
-        </button>
       </div>
     </main>
     <h3 class="text-danger" v-if="!clients.length">Please add a client...</h3>
