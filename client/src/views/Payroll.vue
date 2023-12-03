@@ -16,6 +16,44 @@ export default {
       employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: '',
+
+      //payrollInternalSalaryModal
+      payrollBasicSalaryInput: '',
+      payrollAllowanceSalaryInput: '',
+      payrollDailyRateInput: '',
+      payrollDailyAllowanceInput: '',
+      payrollDaysOfWorkInput: '',
+      payrollSemiBasicSalaryInput: '',
+      payrollSemiAllowanceSalaryInput: '',
+      payrollServiceFeeInput: '',
+      payrollOvertimePayInput: '',
+      payrollExtraPayInput: '',
+
+      //payrollInternalDeductionsModal
+      payrollDedcutionsCashAdvanceInput: '',
+      payrollDedcutionsPAGIBIGInput: '',
+      payrollDedcutionsSSSInput: '',
+      payrollDedcutionsPhilHealthInput: '',
+      payrollDedcutionsLateInput: '',
+      payrollDedcutionsDamagesInput: '',
+
+      //payrollExternalSalaryModal
+      payrollNoOfTripsInput: '',
+      payrollClientTripRatesInput: '',
+      payrollTotalAmountOfTripsInput: '',
+      payrollDropRateInput: '',
+      payrollTollFeeInput: '',
+      payrollPasswayInput: '',
+      payrollOthersInput: '',
+
+      //payrollExternalDeductionsModal
+      payrollDedcutionsCashAdvanceInput: '',
+      payrollDedcutionsMarineInsuranceFeeInput: '',
+      payrollDedcutionsUniformInput: '',
+      payrollDedcutionsPenaltiesInput: '',
+
+
+      totalPayroll: 'P123.00',
     };
   },
   computed: {
@@ -63,27 +101,27 @@ export default {
             <td>
               <button type="button" data-bs-toggle="modal" data-bs-target="#payrollBreakdownModal"
                 class="btn tms-btn text-light align-items-center h-100">
-                P0.00
+                {{ totalPayroll }}
               </button>
             </td>
-            <td>
+            <td class="align-middle">
               <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100">
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2">
                 Add Salary
               </button>
 
               <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100">
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 ">
                 Add Deductions
               </button>
 
               <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100">
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2">
                 Add Salary
               </button>
 
               <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100">
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 ">
                 Add Deductions
               </button>              
             </td>            
@@ -111,7 +149,7 @@ export default {
               >Basic Salary</label
             >
             <input
-              v-model="payrollBasicSalary"
+              v-model="payrollBasicSalaryInput"
               type="number"
               class="form-control"
               id="payrollBasicSalary"
@@ -125,7 +163,7 @@ export default {
               >Allowance Salary</label
             >
             <input
-              v-model="payrollAllowanceSalary"
+              v-model="payrollAllowanceSalaryInput"
               type="number"
               class="form-control"
               id="payrollAllowanceSalary"
@@ -139,7 +177,7 @@ export default {
               >Daily Rate</label
             >
             <input
-              v-model="payrollDailyRate"
+              v-model="payrollDailyRateInput"
               type="number"
               class="form-control"
               id="payrollDailyRate"
@@ -153,7 +191,7 @@ export default {
               >Daily Allowance</label
             >
             <input
-              v-model="payrollDailyAllowance"
+              v-model="payrollDailyAllowanceInput"
               type="number"
               class="form-control"
               id="payrollDailyAllowance"
@@ -167,7 +205,7 @@ export default {
               >Days of Work</label
             >
             <input
-              v-model="payrollDaysOfWork"
+              v-model="payrollDaysOfWorkInput"
               type="number"
               class="form-control"
               id="payrollDaysOfWork"
@@ -181,7 +219,7 @@ export default {
               >Semi - Basic Salary</label
             >
             <input
-              v-model="payrollSemiBasicSalary"
+              v-model="payrollSemiBasicSalaryInput"
               type="number"
               class="form-control"
               id="payrollSemiBasicSalary"
@@ -195,7 +233,7 @@ export default {
               >Semi - Allowance Salary</label
             >
             <input
-              v-model="payrollSemiAllowanceSalary"
+              v-model="payrollSemiAllowanceSalaryInput"
               type="number"
               class="form-control"
               id="payrollSemiAllowanceSalary"
@@ -209,7 +247,7 @@ export default {
               >Service Fee</label
             >
             <input
-              v-model="payrollServiceFee"
+              v-model="payrollServiceFeeInput"
               type="number"
               class="form-control"
               id="payrollServiceFee"
@@ -223,7 +261,7 @@ export default {
               >Overtime Pay</label
             >
             <input
-              v-model="payrollOvertimePay"
+              v-model="payrollOvertimePayInput"
               type="number"
               class="form-control"
               id="payrollOvertimePay"
@@ -237,7 +275,7 @@ export default {
               >Extra Pay</label
             >
             <input
-              v-model="payrollExtraPay"
+              v-model="payrollExtraPayInput"
               type="number"
               class="form-control"
               id="payrollExtraPay"
@@ -278,7 +316,7 @@ export default {
               >Cash Advance</label
             >
             <input
-              v-model="payrollDedcutionsCashAdvance"
+              v-model="payrollDedcutionsCashAdvanceInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsCashAdvance"
@@ -292,7 +330,7 @@ export default {
               >PAG-IBIG Contribution</label
             >
             <input
-              v-model="payrollDedcutionsHDMF"
+              v-model="payrollDedcutionsPAGIBIGInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsHDMF"
@@ -306,7 +344,7 @@ export default {
               >SSS Contribution</label
             >
             <input
-              v-model="payrollDedcutionsSSS"
+              v-model="payrollDedcutionsSSSInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsSSS"
@@ -320,7 +358,7 @@ export default {
               >PhilHealth Contribution</label
             >
             <input
-              v-model="payrollDedcutionsPhilHealth"
+              v-model="payrollDedcutionsPhilHealthInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsPhilHealth"
@@ -334,7 +372,7 @@ export default {
               >Late</label
             >
             <input
-              v-model="payrollDedcutionsLate"
+              v-model="payrollDedcutionsLateInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsLate"
@@ -348,7 +386,7 @@ export default {
               >Damages</label
             >
             <input
-              v-model="payrollDedcutionsDamages"
+              v-model="payrollDedcutionsDamagesInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsDamages"
@@ -389,7 +427,7 @@ export default {
               >No. Of Trips</label
             >
             <input
-              v-model="payrollNoOfTrips"
+              v-model="payrollNoOfTripsInput"
               type="number"
               class="form-control"
               id="payrollNoOfTrips"
@@ -403,7 +441,7 @@ export default {
               >Client Trip Rate</label
             >
             <input
-              v-model="payrollClientTripRates"
+              v-model="payrollClientTripRatesInput"
               type="number"
               class="form-control"
               id="payrollClientTripRates"
@@ -417,7 +455,7 @@ export default {
               >Total Amount of Trips</label
             >
             <input
-              v-model="payrollTotalAmountOfTrips"
+              v-model="payrollTotalAmountOfTripsInput"
               type="number"
               class="form-control"
               id="payrollTotalAmountOfTrips"
@@ -432,7 +470,7 @@ export default {
               >Drop Rate</label
             >
             <input
-              v-model="payrollDropRate"
+              v-model="payrollDropRateInput"
               type="number"
               class="form-control"
               id="payrollDropRate"
@@ -446,7 +484,7 @@ export default {
               >Toll Fee</label
             >
             <input
-              v-model="payrollTollFee"
+              v-model="payrollTollFeeInput"
               type="number"
               class="form-control"
               id="payrollTollFee"
@@ -460,7 +498,7 @@ export default {
               >Passway</label
             >
             <input
-              v-model="payrollPassway"
+              v-model="payrollPasswayInput"
               type="number"
               class="form-control"
               id="payrollPassway"
@@ -474,7 +512,7 @@ export default {
               >Others</label
             >
             <input
-              v-model="payrollOthers"
+              v-model="payrollOthersInput"
               type="number"
               class="form-control"
               id="payrollOthers"
@@ -515,7 +553,7 @@ export default {
               >Cash Advance</label
             >
             <input
-              v-model="payrollDedcutionsCashAdvance"
+              v-model="payrollDedcutionsCashAdvanceInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsCashAdvance"
@@ -524,16 +562,16 @@ export default {
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsMembershipFee"
+              for="payrollDedcutionsMarineInsuranceFee"
               class="form-label d-block text-start"
               >Marine Insurance Fee</label
             >
             <input
-              v-model="payrollDedcutionsMembershipFee"
+              v-model="payrollDedcutionsMarineInsuranceFeeInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsMembershipFee"
-              aria-describedby="payrollDedcutionsMembershipFee"
+              id="payrollDedcutionsMarineInsuranceFee"
+              aria-describedby="payrollDedcutionsMarineInsuranceFee"
             />
           </div>
           <div class="mb-3">
@@ -543,7 +581,7 @@ export default {
               >Uniform</label
             >
             <input
-              v-model="payrollDedcutionsUniform"
+              v-model="payrollDedcutionsUniformInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsUniform"
@@ -557,7 +595,7 @@ export default {
               >Penalties</label
             >
             <input
-              v-model="payrollDedcutionsPenalties"
+              v-model="payrollDedcutionsPenaltiesInput"
               type="number"
               class="form-control"
               id="payrollDedcutionsPenalties"
@@ -602,7 +640,6 @@ export default {
     </template>
   </Modal>
 
-  <!-- <FloatingActionButton /> -->
 </template>
 
 <style scoped>
