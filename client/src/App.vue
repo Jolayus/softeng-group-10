@@ -9,8 +9,11 @@ export default {
   async created() {
     await this.$store.dispatch('employees/loadEmployees');
     await this.$store.dispatch('clients/loadClients');
+    await this.$store.dispatch('tripRates/loadTripRates');
     await this.$store.dispatch('billingTrips/loadBillingTrips');
     await this.$store.dispatch('billings/loadBillings');
+
+    console.log(this.$store.getters['tripRates/tripRates']);
   }
 };
 </script>

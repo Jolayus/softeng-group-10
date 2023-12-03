@@ -19,10 +19,13 @@ export default {
   name: 'Trip Rates',
   data() {
     return {
-      tripRates: getTripRatesModel(),
       currentTripRates: {},
-      currentClient: getClientsModel() > 0 ? getClientsModel()[0] : {},
+      currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
       isFileSubmitValidFormat: undefined,
+
+      // Search Inputs
+      searchInputProvince: '',
+      searchInputCity: '',
 
       // Add Inputs
       isNewTripRateValid: undefined,
@@ -65,6 +68,10 @@ export default {
     Modal
   },
   methods: {
+    addNewTripRatesToStore(newTripRate) {
+      this.$store.dispatch('tripRates/addTripRate', newTripRate);
+    },
+
     // A method that formats the result from sheet_to_json method
     formatJson(json, branch) {
       const result = json.map((row) => {
@@ -135,7 +142,7 @@ export default {
               };
 
               httpCreateTripRates(tripRate);
-              this.tripRates.push(tripRate);
+              this.addNewTripRatesToStore(tripRate);
             });
           } catch (err) {
             this.isFileSubmitValidFormat = false;
@@ -220,7 +227,7 @@ export default {
 
       httpCreateTripRates(newTripRate)
         .then((addedTripRate) => {
-          this.tripRates.push(addedTripRate);
+          this.addNewTripRatesToStore(addedTripRate);
           this.isNewTripRateValid = true;
         })
         .catch((error) => {
@@ -245,14 +252,11 @@ export default {
 
       httpDeleteTripRates(tripRateToBeDeleted)
         .then(({ branch, province, city }) => {
-          const idx = this.tripRates.findIndex(
-            (tripRate) =>
-              tripRate.branch === branch &&
-              tripRate.province === province &&
-              tripRate.city === city
-          );
-
-          this.tripRates.splice(idx, 1);
+          this.$store.dispatch('tripRates/deleteTripRate', {
+            branch,
+            province,
+            city
+          });
           this.clearDataForDelete();
         })
         .catch(() => {
@@ -291,13 +295,24 @@ export default {
 
     updateCurrentTripRates() {
       this.resetCurrentTripRates();
+
       const { company_name } = this.currentClient;
-      this.filterTripRatesByClientName(company_name).forEach((tripRate) => {
-        const { branch } = tripRate;
-        if (this.currentTripRates[branch] !== undefined) {
-          return this.currentTripRates[branch].push(tripRate);
+
+      const filteredTripRatesByClientName =
+        this.filterTripRatesByClientName(company_name);
+      filteredTripRatesByClientName.reverse();
+
+      filteredTripRatesByClientName.forEach((tripRate) => {
+        const { branch, province, city } = tripRate;
+        if (
+          province.includes(this.searchInputProvince) &&
+          city.includes(this.searchInputCity)
+        ) {
+          if (this.currentTripRates[branch] !== undefined) {
+            return this.currentTripRates[branch].push(tripRate);
+          }
+          this.currentTripRates[branch] = [tripRate];
         }
-        this.currentTripRates[branch] = [tripRate];
       });
     },
 
@@ -397,6 +412,29 @@ export default {
     clients() {
       return this.$store.getters['clients/clients'];
     },
+    tripRates() {
+      return this.$store.getters['tripRates/tripRates'];
+    },
+    provinces() {
+      return this.$store.getters['tripRates/provinces'];
+    },
+    cities() {
+      return this.$store.getters['tripRates/cities'];
+    },
+    filteredCities() {
+      const cities = [];
+
+      const filteredTripRates = this.tripRates.filter(
+        (tripRate) => tripRate.province === this.searchInputProvince
+      );
+      filteredTripRates.forEach((tripRate) => {
+        if (!cities.includes(tripRate.city)) {
+          cities.push(tripRate.city);
+        }
+      });
+
+      return cities;
+    },
     filteredTripRates() {
       this.updateCurrentTripRates();
       return this.currentTripRates;
@@ -422,6 +460,11 @@ export default {
         this.deleteTripRatesCityInput
       );
     }
+  },
+  watch: {
+    searchInputProvince(newProvince) {
+      this.searchInputCity = '';
+    }
   }
 };
 </script>
@@ -442,6 +485,37 @@ export default {
       {{ client.company_name }}
     </CompanyTab>
   </ul>
+  <div class="d-flex mb-3 align-items-center gap-2">
+    <div class="align-self-start">
+      <label class="d-block text-start" for="province">Province:</label>
+      <select
+        v-model="searchInputProvince"
+        id="province"
+        class="form-select"
+        aria-label="Default select example"
+      >
+        <option value="" selected>All</option>
+        <option v-for="province in provinces" :value="province">
+          {{ province }}
+        </option>
+      </select>
+    </div>
+
+    <div class="align-self-start">
+      <label class="d-block text-start" for="cities">City:</label>
+      <select
+        v-model="searchInputCity"
+        id="city"
+        class="form-select"
+        aria-label="Default select example"
+      >
+        <option value="" selected>All</option>
+        <option v-for="city in filteredCities" :value="city">
+          {{ city }}
+        </option>
+      </select>
+    </div>
+  </div>
   <div class="tab-content" id="pills-tabContent">
     <TabPane
       v-for="client in clients"
