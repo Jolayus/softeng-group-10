@@ -16,8 +16,6 @@ export default {
       employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: '',
-
-      // currentModal: ''
     };
   },
   computed: {
@@ -64,30 +62,27 @@ export default {
             <td>{{ employee.role }}</td>
             <td>
               <button type="button" data-bs-toggle="modal" data-bs-target="#payrollBreakdownModal"
-                class="btn tms-btn text-light align-items-center h-100" @click="currentModal = 'BREAKDOWN'">
+                class="btn tms-btn text-light align-items-center h-100">
                 P0.00
               </button>
             </td>
             <td>
-              <button v-if="employee.role === 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100"
-                @click="currentModal = 'SALARY'">
+              <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100">
                 Add Salary
               </button>
 
-              <button v-if="employee.role === 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100"
-                @click="currentModal = 'DEDUCTIONS'">
+              <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100">
                 Add Deductions
               </button>
 
-              <button v-if="employee.role !== 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100"
-                @click="currentModal = 'SALARY'">
+              <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100">
                 Add Salary
               </button>
 
-              <button v-if="employee.role !== 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
+              <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100">
                 Add Deductions
               </button>              
@@ -294,7 +289,7 @@ export default {
             <label
               for="payrollDedcutionsHDMF"
               class="form-label d-block text-start"
-              >Housing Development Mutual Fund</label
+              >PAG-IBIG Contribution</label
             >
             <input
               v-model="payrollDedcutionsHDMF"
@@ -318,6 +313,20 @@ export default {
               aria-describedby="payrollDedcutionsSSS"
             />
           </div>
+          <div class="mb-3">
+            <label
+              for="payrollDedcutionsPhilHealth"
+              class="form-label d-block text-start"
+              >PhilHealth Contribution</label
+            >
+            <input
+              v-model="payrollDedcutionsPhilHealth"
+              type="number"
+              class="form-control"
+              id="payrollDedcutionsPhilHealth"
+              aria-describedby="payrollDedcutionsPhilHealth"
+            />
+          </div>          
           <div class="mb-3">
             <label
               for="payrollDedcutionsLate"
@@ -517,7 +526,7 @@ export default {
             <label
               for="payrollDedcutionsMembershipFee"
               class="form-label d-block text-start"
-              >Membership Fee</label
+              >Marine Insurance Fee</label
             >
             <input
               v-model="payrollDedcutionsMembershipFee"
