@@ -26,12 +26,14 @@ function isEmailValid(email) {
 
 // CREATE NEW EMPLOYEE
 function httpPostNewEmployee(req, res) {
-  const { name, role, vehicle_type, plate_number, email, contact_number } =
+  const { name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } =
     req.body;
 
   if (
     !name ||
     !role ||
+    !type ||
+    !date_hired ||
     !vehicle_type ||
     !plate_number ||
     !isEmailValid(email) ||
@@ -41,10 +43,10 @@ function httpPostNewEmployee(req, res) {
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO employees (name, role, vehicle_type, plate_number, email, contact_number ) VALUES (?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO employees (name, role, type, date_hired, vehicle_type, plate_number, email, contact_number ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     db.run(
       sql,
-      [name, role, vehicle_type, plate_number, email, contact_number],
+      [name, role, type, date_hired, vehicle_type, plate_number, email, contact_number],
       (err) => {
         if (err) {
           reject(err);
@@ -74,7 +76,7 @@ function httpPostNewEmployee(req, res) {
 
 // UPDATE EMPLOYEE
 function httpEditEmployee(req, res) {
-  const { id, name, role, vehicle_type, plate_number, email, contact_number } =
+  const { id, name, role, type, vehicle_type, plate_number, email, contact_number } =
     req.body;
 
   console.log(req.body);
@@ -83,6 +85,7 @@ function httpEditEmployee(req, res) {
     !id ||
     !name ||
     !role ||
+    !type ||
     !vehicle_type ||
     !plate_number ||
     !email ||
@@ -95,16 +98,17 @@ function httpEditEmployee(req, res) {
 
   updatedEmployee.name = name;
   updatedEmployee.role = role;
+  updatedEmployee.type = type;
   updatedEmployee.vehicle_type = vehicle_type;
   updatedEmployee.plate_number = plate_number;
   updatedEmployee.email = email;
   updatedEmployee.contact_number = contact_number;
 
-  const sql = `UPDATE employees SET name=?, role=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
+  const sql = `UPDATE employees SET name=?, role=?, type=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
 
   db.run(
     sql,
-    [name, role, vehicle_type, plate_number, email, contact_number, id],
+    [name, role, type, vehicle_type, plate_number, email, contact_number, id],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });
