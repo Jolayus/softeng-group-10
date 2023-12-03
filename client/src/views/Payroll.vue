@@ -17,16 +17,7 @@ export default {
       selectedEmployee: null,
       searchInput: '',
 
-      // EDIT MODAL
-      editEmployeeNameInput: '',
-      editEmployeeRoleInput: '',
-      editEmployeeVehicleTypeInput: '',
-      editEmployeePlateNumberInput: '',
-      editEmployeeEmailInput: '',
-      editEmployeeContactNumberInput: '',
-      editEmployeeId: '',
-
-      currentModal: ''
+      // currentModal: ''
     };
   },
   computed: {
@@ -36,38 +27,12 @@ export default {
       );
 
       return employees;
-    },
-    modalTarget() {
-      if (this.currentModal === 'SALARY')  {
-        return (employee) => {
-          if (['Helper', 'Driver'].includes(employee.role)) {
-            return '#payrollExternalSalaryModal';
-          } else {
-            return '#payrollInternalSalaryModal';
-          }
-        };
-      } else if(this.currentModal === 'DEDUCTIONS') {
-        return (employee) => {
-          if (['Helper', 'Driver'].includes(employee.role)) {
-            return '#payrollExternalDeductionsModal';
-          } else {
-            return '#payrollInternalDeductionsModal';
-          }
-        };
-      } else {
-        return '#payrollBreakdownModal';
-      }
     }
   },
   methods: {
-    getModalTarget(employee) {
-      return this.modalTarget(employee);
-    }
+
   },
-  // beforeRouteLeave() {
-  //   // When the user selects other page
-  //   this.clearAddEmployeeInputs();
-  // }
+
 };
 </script>
 
@@ -104,17 +69,28 @@ export default {
               </button>
             </td>
             <td>
-              <button type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
+              <button v-if="employee.role === 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalSalaryModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100"
                 @click="currentModal = 'SALARY'">
                 Add Salary
               </button>
 
-              <button type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
+              <button v-if="employee.role === 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalDeductionsModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100"
                 @click="currentModal = 'DEDUCTIONS'">
                 Add Deductions
               </button>
+
+              <button v-if="employee.role !== 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
+                @click="currentModal = 'SALARY'">
+                Add Salary
+              </button>
+
+              <button v-if="employee.role !== 'Admin'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100">
+                Add Deductions
+              </button>              
             </td>            
           </tr>
         </tbody>
