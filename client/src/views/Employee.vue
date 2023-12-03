@@ -26,6 +26,8 @@ export default {
       // CREATE MODAL
       employeeNameInput: '',
       employeeRoleInput: '',
+      employeeTypeInput: '',
+      employeeDateHired: null,
       employeeVehicleTypeInput: '',
       employeePlateNumberInput: '',
       employeeEmailInput: '',
@@ -34,6 +36,7 @@ export default {
       // EDIT MODAL
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
+      editEmployeeTypeInput: '',
       editEmployeeVehicleTypeInput: '',
       editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
@@ -57,8 +60,13 @@ export default {
       });
     },
     async addNewEmployee() {
+      const currentDate = new Date();
+      const options = { day: 'numeric', month: 'short', year: '2-digit' };
+
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
+      const type = this.employeeTypeInput.trim();
+      const date_hired = currentDate.toLocaleDateString('en-GB', options).replace(/\s/g, '-');
       const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
       const plate_number = this.employeePlateNumberInput.trim() || '-';
       const email = this.employeeEmailInput.trim();
@@ -67,6 +75,9 @@ export default {
       // Creating new employee
       const newEmployee = {
         name,
+        role,
+        type,
+        date_hired,
         role,
         vehicle_type,
         plate_number,
@@ -86,6 +97,7 @@ export default {
         id,
         name,
         role,
+        type,
         vehicle_type,
         plate_number,
         email,
@@ -95,16 +107,18 @@ export default {
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
       this.editEmployeeRoleInput = role;
+      this.editEmployeeTypeInput = type;
       this.editEmployeeVehicleTypeInput = vehicle_type;
       this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
       this.editEmployeeContactNumberInput = contact_number;
     },
-    saveChanges() {
+    async saveChanges() {
       const newDetails = {
         id: this.editEmployeeId,
         name: this.editEmployeeNameInput,
         role: this.editEmployeeRoleInput,
+        type: this.editEmployeeTypeInput,
         vehicle_type:
           this.editEmployeeRoleInput === 'Admin'
             ? '-'
@@ -117,13 +131,14 @@ export default {
         contact_number: this.editEmployeeContactNumberInput
       };
 
+      await httpUpdateEmployee(newDetails);
       this.$store.dispatch('employees/editEmployee', newDetails);
-
-      httpUpdateEmployee(newDetails);
     },
     clearAddEmployeeInputs() {
       this.employeeNameInput = '';
       this.employeeRoleInput = '';
+      this.employeeTypeInput = '';
+      this.employeeDateHired = null;
       this.employeeEmailInput = '';
       this.employeeContactNumberInput = '';
       this.employeeVehicleTypeInput = '';
@@ -148,12 +163,14 @@ export default {
       if (this.currentModal === 'ADD') {
         const name = this.employeeNameInput.trim();
         const role = this.employeeRoleInput.trim();
+        const type = this.employeeTypeInput.trim();
         const email = this.employeeEmailInput.trim();
         const phone = this.employeeContactNumberInput.trim();
 
         if (
           name.length === 0 ||
           role.length === 0 ||
+          type.length === 0 ||
           email.length === 0 ||
           !this.isEmailValid(email) ||
           phone.length === 0
@@ -164,12 +181,14 @@ export default {
       } else if (this.currentModal === 'EDIT') {
         const name = this.editEmployeeNameInput.trim();
         const role = this.editEmployeeRoleInput.trim();
+        const type = this.editEmployeeTypeInput.trim();
         const email = this.editEmployeeEmailInput.trim();
         const phone = this.editEmployeeContactNumberInput.trim();
 
         if (
           name.length === 0 ||
           role.length === 0 ||
+          type.length === 0 ||
           email.length === 0 ||
           !this.isEmailValid(email) ||
           phone.length === 0
@@ -228,6 +247,7 @@ export default {
         <thead class="tbl-header text-light rounded">
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Date hired</th>
             <th scope="col">Role</th>
             <th scope="col">Vehicle type</th>
             <th scope="col">Plate #</th>
@@ -239,6 +259,7 @@ export default {
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
             <td class="align-middle">{{ employee.vehicle_type }}</td>
             <td class="align-middle">{{ employee.plate_number }}</td>
@@ -302,6 +323,21 @@ export default {
               <option value="Driver">Driver</option>
               <option value="Helper">Helper</option>
               <option value="Admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="employeeType" class="form-label d-block text-start"
+              >Type</label
+            >
+            <select
+              v-model="employeeTypeInput"
+              class="form-select"
+              id="employeeType"
+              aria-describedby="employeeType"
+            >
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
             </select>
           </div>
 
@@ -428,6 +464,21 @@ export default {
             </select>
           </div>
 
+          <div class="mb-3">
+            <label for="newEmployeeType" class="form-label d-block text-start"
+              >Type</label
+            >
+            <select
+              v-model="editEmployeeTypeInput"
+              class="form-select"
+              id="newEmployeeType"
+              aria-describedby="newEmployeeType"
+            >
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
+            </select>
+          </div>
+
           <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
             <label
               for="newEmployeeVehicleType"
@@ -547,7 +598,7 @@ export default {
 }
 
 th {
-  width: 14%;
+  width: 12.5%;
 }
 
 .modal-body label {

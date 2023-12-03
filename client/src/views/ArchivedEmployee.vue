@@ -97,6 +97,7 @@ export default {
         <thead class="tbl-header text-light rounded">
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Date Hired</th>
             <th scope="col">Role</th>
             <th scope="col">Vehicle type</th>
             <th scope="col">Plate #</th>
@@ -108,6 +109,7 @@ export default {
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle" scope="row">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
             <td class="align-middle">{{ employee.vehicle_type }}</td>
             <td class="align-middle">{{ employee.plate_number }}</td>
@@ -171,6 +173,6 @@ export default {
 }
 
 th {
-  width: 14%;
+  width: 12.5%;
 }
 </style>
