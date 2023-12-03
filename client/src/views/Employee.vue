@@ -205,7 +205,14 @@ export default {
     // For editing employee
     isEditEmployeeRoleInputIsAdmin() {
       return this.editEmployeeRoleInput === 'Admin';
-    }
+    },
+
+    isEmployeeTypeInputIsInternal() {
+      return this.employeeTypeInput === 'Internal';
+    },
+    isEditEmployeeTypeInputIsInternal() {
+      return this.editEmployeeTypeInput === 'Internal';
+    },
   },
   beforeRouteLeave() {
     // When the user selects other page
@@ -311,22 +318,6 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="employeeRole" class="form-label d-block text-start"
-              >Role</label
-            >
-            <select
-              v-model="employeeRoleInput"
-              class="form-select"
-              id="employeeRole"
-              aria-describedby="employeeRole"
-            >
-              <option value="Driver">Driver</option>
-              <option value="Helper">Helper</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
             <label for="employeeType" class="form-label d-block text-start"
               >Type</label
             >
@@ -337,13 +328,30 @@ export default {
               aria-describedby="employeeType"
             >
               <option value="Internal">Internal</option>
-              <option value="External">External</option>
+              <option value="External">Sub-Contractor</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="employeeRole" class="form-label d-block text-start"
+              >Role</label
+            >
+            <select
+              v-model="employeeRoleInput"
+              class="form-select"
+              id="employeeRole"
+              aria-describedby="employeeRole"
+            >
+              <option v-if="!isEmployeeTypeInputIsInternal" value="Operator">Operator</option>
+              <option value="Driver">Driver</option>
+              <option v-if="isEmployeeTypeInputIsInternal" value="Helper">Helper</option>
+              <option v-if="isEmployeeTypeInputIsInternal" value="Admin">Admin</option>
             </select>
           </div>
 
           <div
             class="mb-3"
-            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+            v-if="((!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && employeeRoleInput === 'Operator')  || ((isEmployeeTypeInputIsInternal && employeeRoleInput !== '') && employeeRoleInput === 'Driver' || employeeRoleInput === 'Helper')"
           >
             <label for="employeeRole" class="form-label d-block text-start"
               >Vehicle Type</label
@@ -364,7 +372,7 @@ export default {
 
           <div
             class="mb-3"
-            v-if="!isEmployeeRoleInputIsAdmin && employeeRoleInput !== ''"
+            v-if="((!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && employeeRoleInput === 'Operator')  || ((isEmployeeTypeInputIsInternal && employeeRoleInput !== '') && employeeRoleInput === 'Driver' || employeeRoleInput === 'Helper')"
           >
             <label
               for="employeePlateNumber"
@@ -380,6 +388,23 @@ export default {
             />
           </div>
 
+          <div
+            class="mb-3"
+            v-if="(!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && !isEmployeeTypeInputIsInternal && employeeRoleInput === 'Driver'"
+          >
+            <label for="employeeDriverOperator" class="form-label d-block text-start"
+              >Operator</label
+            >
+            <select
+              v-model="employeeDriverOperatorInput"
+              class="form-select"
+              id="employeeDriverOperator"
+              aria-describedby="employeeDriverOperator"
+            >
+
+            </select>
+          </div>
+          
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -449,22 +474,6 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="newEmployeeRole" class="form-label d-block text-start"
-              >Role</label
-            >
-            <select
-              v-model="editEmployeeRoleInput"
-              class="form-select"
-              id="newEmployeeRole"
-              aria-describedby="newEmployeeRole"
-            >
-              <option value="Driver">Driver</option>
-              <option value="Helper">Helper</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
             <label for="newEmployeeType" class="form-label d-block text-start"
               >Type</label
             >
@@ -475,11 +484,28 @@ export default {
               aria-describedby="newEmployeeType"
             >
               <option value="Internal">Internal</option>
-              <option value="External">External</option>
+              <option value="External">Sub-Contractor</option>
             </select>
           </div>
 
-          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+          <div class="mb-3">
+            <label for="newEmployeeRole" class="form-label d-block text-start"
+              >Role</label
+            >
+            <select
+              v-model="editEmployeeRoleInput"
+              class="form-select"
+              id="newEmployeeRole"
+              aria-describedby="newEmployeeRole"
+            >
+              <option v-if="!isEditEmployeeTypeInputIsInternal" value="Operator">Operator</option>
+              <option value="Driver">Driver</option>
+              <option v-if="isEditEmployeeTypeInputIsInternal" value="Helper">Helper</option>
+              <option v-if="isEditEmployeeTypeInputIsInternal" value="Admin">Admin</option>
+            </select>
+          </div>
+          
+          <div class="mb-3" v-if="(!isEditEmployeeRoleInputIsAdmin && editEmployeeRoleInput === 'Operator') || (isEditEmployeeTypeInputIsInternal && (editEmployeeRoleInput === 'Driver' || editEmployeeRoleInput === 'Helper'))">
             <label
               for="newEmployeeVehicleType"
               class="form-label d-block text-start"
@@ -499,7 +525,7 @@ export default {
             </select>
           </div>
 
-          <div class="mb-3" v-if="!isEditEmployeeRoleInputIsAdmin">
+          <div class="mb-3" v-if="(!isEditEmployeeRoleInputIsAdmin  && editEmployeeRoleInput === 'Operator') || (isEditEmployeeTypeInputIsInternal && (editEmployeeRoleInput === 'Driver' || editEmployeeRoleInput === 'Helper'))">
             <label
               for="newEmployeePlateNumber"
               class="form-label d-block text-start"
@@ -513,6 +539,22 @@ export default {
               aria-describedby="newEmployeePlateNumber"
             />
           </div>
+
+          <div class="mb-3" v-if="!isEditEmployeeTypeInputIsInternal && editEmployeeRoleInput === 'Driver'">
+            <label
+              for="newEmployeeDriverOperator"
+              class="form-label d-block text-start"
+              >Operator</label
+            >
+            <select
+              v-model="editEmployeeDriverOperatorInput"
+              class="form-select"
+              id="newEmployeeDriverOperator"
+              aria-describedby="newEmployeeDriverOperator"
+            >
+
+            </select>
+          </div>          
 
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
