@@ -247,7 +247,7 @@ export default {
         <thead class="tbl-header text-light rounded">
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">Date hired</th>
+            <th scope="col">Date Hired</th>
             <th scope="col">Role</th>
             <th scope="col">Vehicle type</th>
             <th scope="col">Plate #</th>
