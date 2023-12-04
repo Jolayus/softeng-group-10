@@ -379,17 +379,31 @@ export default {
     // },
 
     onSubmitEditTripRates() {
-      if (this.isForEditing) {
-        const branch = this.editTripRatesBranchInput;
-        const province = this.editTripRatesProvinceInput;
-        const city = this.editTripRatesCityInput;
-        const tripRateToBeEdited = this.tripRates.find(
-          (tripRate) =>
-            tripRate.branch === branch &&
-            tripRate.province === province &&
-            tripRate.city === city
-        );
+      const branch = this.editTripRatesBranchInput;
+      const province = this.editTripRatesProvinceInput;
+      const city = this.editTripRatesCityInput;
+      const tripRateToBeEdited = this.tripRates.find(
+        (tripRate) =>
+          tripRate.branch === branch &&
+          tripRate.province === province &&
+          tripRate.city === city
+      );
 
+      const {
+        auv,
+        four_wheeler,
+        six_wheeler_elf,
+        six_wheeler_forward,
+        ten_wheeler
+      } = tripRateToBeEdited;
+
+      this.editTripRatesAUVInput = auv;
+      this.editTripRates4WInput = four_wheeler;
+      this.editTripRates6WElfInput = six_wheeler_elf;
+      this.editTripRates6WFInput = six_wheeler_forward;
+      this.editTripRates10WInput = ten_wheeler;
+
+      if (this.isForEditing) {
         tripRateToBeEdited.auv = this.editTripRatesAUVInput;
         tripRateToBeEdited.four_wheeler = this.editTripRates4WInput;
         tripRateToBeEdited.six_wheeler_elf = this.editTripRates6WElfInput;
@@ -487,7 +501,7 @@ export default {
   </ul>
   <div class="d-flex mb-3 align-items-center gap-2">
     <div class="align-self-start">
-      <label class="d-block text-start" for="province">Province:</label>
+      <label class="d-block text-start fw-bold" for="province">Province:</label>
       <select
         v-model="searchInputProvince"
         id="province"
@@ -502,7 +516,7 @@ export default {
     </div>
 
     <div class="align-self-start">
-      <label class="d-block text-start" for="cities">City:</label>
+      <label class="d-block text-start fw-bold" for="cities">City:</label>
       <select
         v-model="searchInputCity"
         id="city"
@@ -532,7 +546,7 @@ export default {
         v-for="branch in Object.keys(filteredTripRates)"
         :key="branch"
       >
-        <span class="text-start">{{ branch }}</span>
+        <span class="text-start fw-bold fs-2">{{ branch }}</span>
         <table class="table">
           <thead class="tbl-header text-light rounded">
             <tr>
