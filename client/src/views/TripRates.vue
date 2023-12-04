@@ -189,6 +189,8 @@ export default {
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
       this.updateCurrentTripRates();
+      this.searchInputProvince = '';
+      this.searchInputCity = '';
     },
 
     isTripRateExists(newTripRate) {
@@ -432,6 +434,17 @@ export default {
     provinces() {
       return this.$store.getters['tripRates/provinces'];
     },
+
+    provincesByCurrentClient() {
+      const provinces = [];
+
+      const currentTripRatesBasedOnCurrentCompanyName = this.$store.getters[
+        'tripRates/getTripRatesByCompanyName'
+      ](this.currentClient.company_name);
+
+      return new Set(currentTripRatesBasedOnCurrentCompanyName.map((tripRate) => tripRate.province));
+    },
+
     cities() {
       return this.$store.getters['tripRates/cities'];
     },
@@ -510,7 +523,7 @@ export default {
         aria-label="Default select example"
       >
         <option value="" selected>All</option>
-        <option v-for="province in provinces" :value="province">
+        <option v-for="province in provincesByCurrentClient" :value="province">
           {{ province }}
         </option>
       </select>
