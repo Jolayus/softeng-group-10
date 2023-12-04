@@ -27,7 +27,7 @@ export default {
       employeeNameInput: '',
       employeeRoleInput: '',
       employeeTypeInput: '',
-      employeeDateHired: null,
+      employeeDateHired: '',
       employeeVehicleTypeInput: '',
       employeePlateNumberInput: '',
       employeeEmailInput: '',
@@ -37,6 +37,7 @@ export default {
       editEmployeeNameInput: '',
       editEmployeeRoleInput: '',
       editEmployeeTypeInput: '',
+      editEmployeeeDateInput: '',      
       editEmployeeVehicleTypeInput: '',
       editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
@@ -60,13 +61,14 @@ export default {
       });
     },
     async addNewEmployee() {
-      const currentDate = new Date();
       const options = { day: 'numeric', month: 'short', year: '2-digit' };
+
+      console.log(this.employeeDateHiredInput)
 
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
       const type = this.employeeTypeInput.trim();
-      const date_hired = currentDate.toLocaleDateString('en-GB', options).replace(/\s/g, '-');
+      const date_hired = new Date(this.employeeDateHiredInput).toLocaleDateString('en-GB', options).replace(/\s/g, '-');
       const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
       const plate_number = this.employeePlateNumberInput.trim() || '-';
       const email = this.employeeEmailInput.trim();
@@ -98,6 +100,7 @@ export default {
         name,
         role,
         type,
+        date_hired,
         vehicle_type,
         plate_number,
         email,
@@ -108,6 +111,7 @@ export default {
       this.editEmployeeNameInput = name;
       this.editEmployeeRoleInput = role;
       this.editEmployeeTypeInput = type;
+      this.editEmployeeeDateInput = date_hired;
       this.editEmployeeVehicleTypeInput = vehicle_type;
       this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
@@ -138,7 +142,7 @@ export default {
       this.employeeNameInput = '';
       this.employeeRoleInput = '';
       this.employeeTypeInput = '';
-      this.employeeDateHired = null;
+      this.employeeDateHiredInput = '';
       this.employeeEmailInput = '';
       this.employeeContactNumberInput = '';
       this.employeeVehicleTypeInput = '';
@@ -317,6 +321,21 @@ export default {
               aria-describedby="employeeName"
             />
           </div>
+
+          <div class="mb-3">
+            <label for="employeeDateHired" class="form-label d-block text-start"
+              >Date Hired</label
+            >
+            <input
+              required
+              v-model="employeeDateHiredInput"
+              type="date"
+              class="form-control"
+              id="employeeDateHired"
+              aria-describedby="employeeDateHired"
+            />
+          </div>          
+
           <div class="mb-3">
             <label for="employeeType" class="form-label d-block text-start"
               >Type</label
