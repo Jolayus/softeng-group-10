@@ -62,6 +62,15 @@ export default {
     tripRates(state) {
       return state.tripRates;
     },
+    getTripRatesByCompanyName(state) {
+      return function (companyName) {
+        return state.tripRates.filter(
+          (tripRate) => {
+            return tripRate.client_name === companyName
+          }
+        );
+      };
+    },
     provinces(state) {
       return state.provinces;
     },

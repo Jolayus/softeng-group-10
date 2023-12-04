@@ -12,8 +12,6 @@ export default {
     await this.$store.dispatch('tripRates/loadTripRates');
     await this.$store.dispatch('billingTrips/loadBillingTrips');
     await this.$store.dispatch('billings/loadBillings');
-
-    console.log(this.$store.getters['tripRates/tripRates']);
   }
 };
 </script>

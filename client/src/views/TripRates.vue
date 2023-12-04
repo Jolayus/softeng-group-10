@@ -189,6 +189,8 @@ export default {
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
       this.updateCurrentTripRates();
+      this.searchInputProvince = '';
+      this.searchInputCity = '';
     },
 
     isTripRateExists(newTripRate) {
@@ -379,17 +381,31 @@ export default {
     // },
 
     onSubmitEditTripRates() {
-      if (this.isForEditing) {
-        const branch = this.editTripRatesBranchInput;
-        const province = this.editTripRatesProvinceInput;
-        const city = this.editTripRatesCityInput;
-        const tripRateToBeEdited = this.tripRates.find(
-          (tripRate) =>
-            tripRate.branch === branch &&
-            tripRate.province === province &&
-            tripRate.city === city
-        );
+      const branch = this.editTripRatesBranchInput;
+      const province = this.editTripRatesProvinceInput;
+      const city = this.editTripRatesCityInput;
+      const tripRateToBeEdited = this.tripRates.find(
+        (tripRate) =>
+          tripRate.branch === branch &&
+          tripRate.province === province &&
+          tripRate.city === city
+      );
 
+      const {
+        auv,
+        four_wheeler,
+        six_wheeler_elf,
+        six_wheeler_forward,
+        ten_wheeler
+      } = tripRateToBeEdited;
+
+      this.editTripRatesAUVInput = auv;
+      this.editTripRates4WInput = four_wheeler;
+      this.editTripRates6WElfInput = six_wheeler_elf;
+      this.editTripRates6WFInput = six_wheeler_forward;
+      this.editTripRates10WInput = ten_wheeler;
+
+      if (this.isForEditing) {
         tripRateToBeEdited.auv = this.editTripRatesAUVInput;
         tripRateToBeEdited.four_wheeler = this.editTripRates4WInput;
         tripRateToBeEdited.six_wheeler_elf = this.editTripRates6WElfInput;
@@ -418,6 +434,17 @@ export default {
     provinces() {
       return this.$store.getters['tripRates/provinces'];
     },
+
+    provincesByCurrentClient() {
+      const provinces = [];
+
+      const currentTripRatesBasedOnCurrentCompanyName = this.$store.getters[
+        'tripRates/getTripRatesByCompanyName'
+      ](this.currentClient.company_name);
+
+      return new Set(currentTripRatesBasedOnCurrentCompanyName.map((tripRate) => tripRate.province));
+    },
+
     cities() {
       return this.$store.getters['tripRates/cities'];
     },
@@ -471,7 +498,7 @@ export default {
 
 <template>
   <h1>Clients - Trip Rates</h1>
-  <ul class="nav nav-pills mb-3 gap-2 mt-5" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills gap-2" id="pills-tab" role="tablist">
     <CompanyTab
       v-for="client in clients"
       :classes="client === clients[0] ? 'active' : ''"
@@ -485,9 +512,10 @@ export default {
       {{ client.company_name }}
     </CompanyTab>
   </ul>
+  <hr />
   <div class="d-flex mb-3 align-items-center gap-2">
     <div class="align-self-start">
-      <label class="d-block text-start" for="province">Province:</label>
+      <label class="d-block text-start fw-bold" for="province">Province:</label>
       <select
         v-model="searchInputProvince"
         id="province"
@@ -495,14 +523,14 @@ export default {
         aria-label="Default select example"
       >
         <option value="" selected>All</option>
-        <option v-for="province in provinces" :value="province">
+        <option v-for="province in provincesByCurrentClient" :value="province">
           {{ province }}
         </option>
       </select>
     </div>
 
     <div class="align-self-start">
-      <label class="d-block text-start" for="cities">City:</label>
+      <label class="d-block text-start fw-bold" for="cities">City:</label>
       <select
         v-model="searchInputCity"
         id="city"
@@ -532,7 +560,7 @@ export default {
         v-for="branch in Object.keys(filteredTripRates)"
         :key="branch"
       >
-        <span class="text-start">{{ branch }}</span>
+        <span class="text-start fw-bold fs-2">{{ branch }}</span>
         <table class="table">
           <thead class="tbl-header text-light rounded">
             <tr>
