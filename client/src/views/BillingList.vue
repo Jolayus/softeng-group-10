@@ -23,12 +23,15 @@ export default {
   },
   data() {
     return {
-      // ADD BILLING INPUT
+      // ADD BILLING INPUTS
       addBillingTransactionNumber: '',
       addBillingDate: null,
 
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
-      currentBilling: getBillingsModel().length > 0 ? getClientsModel()[0] : {}
+      currentBilling: getBillingsModel().length > 0 ? getClientsModel()[0] : {},
+
+      // SEARCH BILLING BY DATE INPUT
+      searchBillingDateInput: ''
     };
   },
   methods: {
@@ -67,12 +70,12 @@ export default {
       }
       return false;
     },
-    formatDate(billing) {
-      const date = new Date(billing.date);
+    formatDate(date) {
+      const formattedDate = new Date(date);
 
       const options = { month: 'long', day: '2-digit', year: 'numeric' };
 
-      return date.toLocaleDateString('en-US', options);
+      return formattedDate.toLocaleDateString('en-US', options);
     }
   },
   computed: {
@@ -85,12 +88,28 @@ export default {
 
       return billingsCopy;
     },
+    filteredBillings() {
+      if (this.searchBillingDateInput) {
+        const searchDateValue = this.formatDate(this.searchBillingDateInput);
+        return this.currentClientBillings.filter(
+          (billing) => this.formatDate(billing.date) === searchDateValue
+        );
+      }
+      return this.currentClientBillings;
+    },
     currentClientBillings() {
       const filtered = this.billings.filter(
         (billing) => billing.clientId === this.currentClient.id
       );
 
       return filtered;
+    },
+    availableBillingDates() {
+      return new Set(
+        this.currentClientBillings.map((billing) =>
+          this.formatDate(billing.date)
+        )
+      );
     },
     isAddBillingInputsValid() {
       return (
@@ -116,7 +135,21 @@ export default {
       {{ client.company_name }}
     </CompanyTab>
   </ul>
-  <div class="mb-5 d-flex justify-content-end px-5">
+  <hr />
+  <div class="mb-5 d-flex justify-content-between px-5">
+    <div class="d-flex align-items-center gap-2">
+      <label class="fw-bold" for="billingDate">Filter:</label>
+      <select v-model="searchBillingDateInput" class="form-select">
+        <option value="" selected>All</option>
+        <option
+          v-for="availableBillingDate in availableBillingDates"
+          :value="availableBillingDate"
+        >
+          {{ availableBillingDate }}
+        </option>
+      </select>
+    </div>
+
     <button
       class="btn tms-btn text-light px-5 py-2"
       type="button"
@@ -133,20 +166,22 @@ export default {
       :id="'billing-' + client.id"
     >
       <p class="text-danger fw-bold" v-if="currentClientBillings.length === 0">
-        There is no billing to this client
+        Empty billing
       </p>
       <main>
         <ul class="container list-group">
-          <div class="row justify-content-center">
+          <div class="row w-100 justify-content-center">
             <li
               class="col-5 fs-4 p-2 m-1"
-              v-for="currentClientBilling in currentClientBillings"
+              v-for="currentClientBilling in filteredBillings"
             >
               <RouterLink
                 :to="`/billing/${currentClientBilling.id}`"
                 class="custom-link"
               >
-                <span class="month">{{ formatDate(currentClientBilling) }}</span>
+                <span class="month">{{
+                  formatDate(currentClientBilling.date)
+                }}</span>
               </RouterLink>
             </li>
           </div>
