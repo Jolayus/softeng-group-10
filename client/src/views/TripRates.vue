@@ -485,7 +485,7 @@ export default {
 
 <template>
   <h1>Clients - Trip Rates</h1>
-  <ul class="nav nav-pills mb-3 gap-2 mt-5" id="pills-tab" role="tablist">
+  <ul class="nav nav-pills gap-2" id="pills-tab" role="tablist">
     <CompanyTab
       v-for="client in clients"
       :classes="client === clients[0] ? 'active' : ''"
@@ -499,6 +499,7 @@ export default {
       {{ client.company_name }}
     </CompanyTab>
   </ul>
+  <hr />
   <div class="d-flex mb-3 align-items-center gap-2">
     <div class="align-self-start">
       <label class="d-block text-start fw-bold" for="province">Province:</label>
