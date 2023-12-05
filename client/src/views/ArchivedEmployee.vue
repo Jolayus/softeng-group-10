@@ -96,14 +96,15 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Date Hired</th>
-            <th scope="col">Role</th>
-            <th scope="col">Vehicle type</th>
-            <th scope="col">Plate #</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone #</th>
-            <th scope="col">Actions</th>
+            <th class="align-middle" scope="col">Name</th>
+            <th class="align-middle" scope="col">Date Hired</th>
+            <th class="align-middle" scope="col">Role</th>
+            <th class="align-middle" scope="col">Driver's Name</th>
+            <th class="align-middle" scope="col">Vehicle type</th>
+            <th class="align-middle" scope="col">Plate #</th>
+            <th class="align-middle" scope="col">Email</th>
+            <th class="align-middle" scope="col">Phone #</th>
+            <th class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -111,6 +112,7 @@ export default {
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle" scope="row">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.driver_name }}</td>
             <td class="align-middle">{{ employee.vehicle_type }}</td>
             <td class="align-middle">{{ employee.plate_number }}</td>
             <td class="align-middle">{{ employee.email }}</td>
@@ -173,6 +175,6 @@ export default {
 }
 
 th {
-  width: 12.5%;
+  width: 11.11%;
 }
 </style>

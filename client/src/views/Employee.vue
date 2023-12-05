@@ -115,10 +115,12 @@ export default {
       const date = new Date(date_hired);
 
       const year = date.getFullYear();
-      const day = date.getDate();
+      const day = date.getDate().toString().padStart(2, '0');
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
 
       const formatDate = `${year}-${month}-${day}`;
+
+      console.log(formatDate);
 
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
@@ -517,7 +519,7 @@ export default {
               class="form-select"
               id="employeeRole"
               aria-describedby="employeeRole"
-              :disabled="!isEditEmployeeTypeInputIsInternal"
+              :disabled="!isEmployeeTypeInputIsInternal"
             >
               <option selected value="">Select Role</option>
               <option value="Driver">Driver</option>
