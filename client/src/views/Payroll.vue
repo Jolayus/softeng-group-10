@@ -3,6 +3,15 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
+class Batch {
+  constructor(batchCode, batchPeriodCoverFrom, batchPeriodCoverTo, employeeId) {
+    this.batchCode = batchCode;
+    this.batchPeriodCoverFrom = batchPeriodCoverFrom;
+    this.batchPeriodCoverTo = batchPeriodCoverTo;
+    this.employeeId = employeeId;
+  }
+}
+
 export default {
   name: 'Payroll',
   components: {
@@ -12,8 +21,16 @@ export default {
   },
   data() {
     return {
-      selectedEmployee: null,
+      // SEARCH INPUT
       searchInput: '',
+
+      currentBatchCode: '',
+
+      //Create payroll batch
+      createBatchPeriodCoverFrom: '',
+      createBatchPeriodCoverTo: '',
+      createBatchCode: '',
+      selectedEmployees: [],
 
       //payrollInternalSalaryModal
       payrollBasicSalaryInput: '',
@@ -53,25 +70,102 @@ export default {
       totalPayroll: 'P123.00'
     };
   },
+  methods: {
+    submitCreateBatchHandler() {
+      this.selectedEmployees.forEach((employeeId) => {
+        const newBatch = new Batch(
+          this.createBatchCode,
+          this.createBatchPeriodCoverFrom,
+          this.createBatchPeriodCoverTo,
+          employeeId
+        );
+        this.storeCreateBatch(newBatch);
+
+        if (!this.isThereBatchCodeExists) {
+          this.currentBatchCode = newBatch.batchCode;
+        }
+      });
+    },
+    storeCreateBatch(newBatch) {
+      this.$store.dispatch('batches/addBatch', newBatch);
+    },
+    tabChangeHandler(batchCode) {
+      this.currentBatchCode = batchCode;
+    }
+  },
   computed: {
     employees() {
       return this.$store.getters['employees/employees'];
     },
-    filteredEmployees() {
+    batches() {
+      return this.$store.getters['batches/batches'];
+    },
+    batchCodes() {
+      return this.$store.getters['batches/batchCodes'];
+    },
+    employeeIdsByCurrentBatchCode() {
+      return this.batches.map((batch) => {
+        if (batch.batchCode === this.currentBatchCode) {
+          return batch.employeeId;
+        }
+      });
+    },
+    currentEmployeesByBatchCode() {
       return this.employees.filter((employee) =>
+        this.employeeIdsByCurrentBatchCode.includes(employee.id)
+      );
+    },
+    isThereBatchCodeExists() {
+      return this.batchCodes.length;
+    },
+    filteredEmployees() {
+      return this.currentEmployeesByBatchCode.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
+    },
+    periodCovered() {
+      if (this.createBatchPeriodCoverFrom && this.createBatchPeriodCoverTo) {
+        return `${this.createBatchPeriodCoverFrom} to ${this.createBatchPeriodCoverTo}`;
+      }
+    },
+    isCreateBatchInputsValid() {
+      return (
+        this.createBatchPeriodCoverFrom &&
+        this.createBatchPeriodCoverTo &&
+        this.createBatchCode &&
+        this.selectedEmployees.length
+      );
     }
-  },
-  methods: {}
+  }
 };
 </script>
 
 <template>
   <div class="d-flex flex-column justify-content-between h-100">
-    <header class="mb-5">
+    <header>
       <h1>Payroll</h1>
     </header>
+    <hr />
+    <ul class="nav nav-pills gap-2 mb-5" id="pills-tab" role="tablist">
+      <li
+        v-for="(batchCode, index) in batchCodes"
+        class="nav-item"
+        role="presentation"
+      >
+        <button
+          class="nav-link text-light px-5"
+          :class="{ active: index === 0 }"
+          :aria-selected="index === 0 ? true : false"
+          data-bs-toggle="pill"
+          type="button"
+          role="tab"
+          :aria-controls="batchCode"
+          @click="tabChangeHandler(batchCode)"
+        >
+          {{ batchCode }}
+        </button>
+      </li>
+    </ul>
     <main class="container flex-grow-1">
       <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
         <div class="input-group mb-3 h-100 align-items-center gap-2">
@@ -95,73 +189,86 @@ export default {
           Create Batch
         </button>
       </div>
-      <table class="table">
-        <thead class="tbl-header text-light rounded">
-          <tr>
-            <th class="align-middle" scope="col">Name</th>
-            <th class="align-middle" scope="col">Role</th>
-            <th class="align-middle" scope="col">Total</th>
-            <th class="align-middle" scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="table-group-divider">
-          <tr v-for="employee in filteredEmployees" :key="employee.id">
-            <th class="align-middle" scope="row">{{ employee.name }}</th>
-            <td class="align-middle">{{ employee.role }}</td>
-            <td class="align-middle">
-              <button
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#payrollBreakdownModal"
-                class="btn tms-btn text-light align-items-center h-100"
-              >
-                {{ totalPayroll }}
-              </button>
-            </td>
-            <td class="align-middle d-flex">
-              <button
-                v-if="employee.type === 'Internal'"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#payrollInternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
-              >
-                Add Salary
-              </button>
 
-              <button
-                v-if="employee.type === 'Internal'"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#payrollInternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100"
-              >
-                Add Deductions
-              </button>
+      <div class="tab-content" id="pills-tabContent">
+        <div
+          class="tab-pane fade"
+          v-for="(batchCode, index) in batchCodes"
+          :class="{ active: index === 0, show: index === 0 }"
+          :id="batchCode"
+          role="tabpanel"
+          :aria-labelledby="batchCode + '-tab'"
+          tabindex="0"
+        >
+          <table class="table">
+            <thead class="tbl-header text-light rounded">
+              <tr>
+                <th class="align-middle" scope="col">Name</th>
+                <th class="align-middle" scope="col">Role</th>
+                <th class="align-middle" scope="col">Total</th>
+                <th class="align-middle" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr v-for="employee in filteredEmployees" :key="employee.id">
+                <th class="align-middle" scope="row">{{ employee.name }}</th>
+                <td class="align-middle">{{ employee.role }}</td>
+                <td class="align-middle">
+                  <button
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#payrollBreakdownModal"
+                    class="btn tms-btn text-light align-items-center h-100"
+                  >
+                    {{ totalPayroll }}
+                  </button>
+                </td>
+                <td class="align-middle d-flex">
+                  <button
+                    v-if="employee.type === 'Internal'"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#payrollInternalSalaryModal"
+                    class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+                  >
+                    Add Salary
+                  </button>
 
-              <button
-                v-if="employee.type === 'External'"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#payrollExternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
-              >
-                Add Salary
-              </button>
+                  <button
+                    v-if="employee.type === 'Internal'"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#payrollInternalDeductionsModal"
+                    class="btn tms-btn text-light justify-content-center align-items-center h-100"
+                  >
+                    Add Deductions
+                  </button>
 
-              <button
-                v-if="employee.type === 'External'"
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#payrollExternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100"
-              >
-                Add Deductions
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <button
+                    v-if="employee.type === 'External'"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#payrollExternalSalaryModal"
+                    class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+                  >
+                    Add Salary
+                  </button>
+
+                  <button
+                    v-if="employee.type === 'External'"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#payrollExternalDeductionsModal"
+                    class="btn tms-btn text-light justify-content-center align-items-center h-100"
+                  >
+                    Add Deductions
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -175,17 +282,82 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form>
+        <form id="createBatchForm" @submit.prevent="submitCreateBatchHandler">
           <div class="mb-3">
-            <label for="selectEmployee" class="form-label d-block text-start">
+            <label class="form-label d-block text-start"
+              >Period cover:
+              <span class="fw-bold text-primary text-lowercase">{{
+                periodCovered
+              }}</span></label
+            >
+            <div class="container">
+              <div class="row">
+                <div class="col-6">
+                  <input
+                    v-model="createBatchPeriodCoverFrom"
+                    type="date"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-6">
+                  <input
+                    v-model="createBatchPeriodCoverTo"
+                    type="date"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="payrolLBatchInput" class="form-label d-block text-start"
+              >Batch</label
+            >
+            <input
+              v-model.trim="createBatchCode"
+              type="text"
+              class="form-control"
+              placeholder="Batch"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="employeeSelect" class="form-label d-block text-start">
               Employees</label
             >
           </div>
-          <select class="form-select">
-            <option selected value="">Select Employee</option>
-            <option v-for="employee in employees">{{ employee.name }}</option>
+          <select
+            v-model="selectedEmployees"
+            class="form-select"
+            id="employeeSelect"
+            multiple
+          >
+            <option
+              v-for="employee in employees"
+              :key="employee.id"
+              :value="employee.id"
+            >
+              {{ employee.name }} - {{ employee.role }}
+            </option>
           </select>
         </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer border-top-0 justify-content-center">
+        <button type="button" class="btn text-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          form="createBatchForm"
+          class="btn text-light"
+          data-bs-dismiss="modal"
+          :disabled="!isCreateBatchInputsValid"
+        >
+          Create Batch
+        </button>
       </div>
     </template>
   </Modal>
@@ -740,5 +912,9 @@ th {
 
 .modal-footer button {
   background-color: #4c7273;
+}
+
+.nav .nav-link {
+  background-color: #041421;
 }
 </style>

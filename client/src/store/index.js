@@ -7,6 +7,7 @@ import archivedEmployeesModule from './modules/archivedEmployees';
 import archivedClientsModule from './modules/archivedClients';
 import billingsModule from './modules/billings';
 import billingTripsModule from './modules/billingTrips';
+import payrollBatchesModule from './modules/payrollBatches';
 
 const store = createStore({
   modules: {
@@ -16,7 +17,8 @@ const store = createStore({
     archivedEmployees: archivedEmployeesModule,
     archivedClients: archivedClientsModule,
     billings: billingsModule,
-    billingTrips: billingTripsModule
+    billingTrips: billingTripsModule,
+    batches: payrollBatchesModule
   }
 });
 
