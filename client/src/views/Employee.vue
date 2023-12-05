@@ -26,6 +26,7 @@ export default {
       // CREATE MODAL
       employeeNameInput: '',
       employeeRoleInput: '',
+      employeeDriverNameInput: '',
       employeeTypeInput: '',
       employeeDateHiredInput: '',
       employeeVehicleTypeInput: '',
@@ -37,11 +38,12 @@ export default {
       editEmployeeNameInput: '',
       editEmployeeDateHiredInput: '',
       editEmployeeRoleInput: '',
-      editEmployeeTypeInput: '',    
+      editEmployeeTypeInput: '',
       editEmployeeVehicleTypeInput: '',
       editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
       editEmployeeContactNumberInput: '',
+      editEmployeeDriverNameInput: '',
       editEmployeeId: '',
 
       currentModal: ''
@@ -66,9 +68,12 @@ export default {
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
       const type = this.employeeTypeInput.trim();
-      const date_hired = new Date(this.employeeDateHiredInput).toLocaleDateString('en-GB', options).replace(/\s/g, '-');
+      const date_hired = new Date(this.employeeDateHiredInput)
+        .toLocaleDateString('en-GB', options)
+        .replace(/\s/g, '-');
       const vehicle_type = this.employeeVehicleTypeInput.trim() || '-';
       const plate_number = this.employeePlateNumberInput.trim() || '-';
+      const driver_name = this.employeeDriverNameInput.trim() || '-';
       const email = this.employeeEmailInput.trim();
       const contact_number = this.employeeContactNumberInput.trim();
 
@@ -82,7 +87,8 @@ export default {
         vehicle_type,
         plate_number,
         email,
-        contact_number
+        contact_number,
+        driver_name
       };
 
       const employee = await httpCreateEmployee(newEmployee);
@@ -102,7 +108,8 @@ export default {
         vehicle_type,
         plate_number,
         email,
-        contact_number
+        contact_number,
+        driver_name
       } = employee;
 
       const date = new Date(date_hired);
@@ -111,7 +118,7 @@ export default {
       const day = date.getDate();
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
 
-      const formatDate = `${ year }-${ month }-${ day }` 
+      const formatDate = `${year}-${month}-${day}`;
 
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
@@ -122,7 +129,7 @@ export default {
       this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
       this.editEmployeeContactNumberInput = contact_number;
-
+      this.editEmployeeDriverNameInput = driver_name;
     },
     async saveChanges() {
       const newDetails = {
@@ -140,7 +147,8 @@ export default {
             ? '-'
             : this.editEmployeePlateNumberInput,
         email: this.editEmployeeEmailInput,
-        contact_number: this.editEmployeeContactNumberInput
+        contact_number: this.editEmployeeContactNumberInput,
+        driver_name: this.editEmployeeDriverNameInput
       };
 
       await httpUpdateEmployee(newDetails);
@@ -155,13 +163,14 @@ export default {
       this.employeeContactNumberInput = '';
       this.employeeVehicleTypeInput = '';
       this.employeePlateNumberInput = '';
+      this.employeeDriverNameInput = '';
     },
     onPageChange() {
       this.clearAddEmployeeInputs();
     }
   },
   computed: {
-     employees() {
+    employees() {
       return this.$store.getters['employees/employees'];
     },
     filteredEmployees() {
@@ -178,36 +187,132 @@ export default {
         const type = this.employeeTypeInput.trim();
         const email = this.employeeEmailInput.trim();
         const phone = this.employeeContactNumberInput.trim();
+        const date_hired = this.employeeDateHiredInput.trim();
+        const vehicle_type = this.employeeVehicleTypeInput.trim();
+        const plate_number = this.employeePlateNumberInput.trim();
+        const driverName = this.employeeDriverNameInput.trim();
 
         if (
-          name.length === 0 ||
-          role.length === 0 ||
-          type.length === 0 ||
-          email.length === 0 ||
-          !this.isEmailValid(email) ||
-          phone.length === 0
+          this.employeeRoleInput === 'Admin' ||
+          this.employeeRoleInput === ''
         ) {
-          return true;
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0
+          ) {
+            return true;
+          }
+          return false;
+        } else if (
+          this.employeeRoleInput === 'Driver' ||
+          this.employeeRoleInput === 'Helper'
+        ) {
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0 ||
+            vehicle_type.length === 0 ||
+            plate_number.length === 0
+          ) {
+            return true;
+          }
+          return false;
+        } else if (this.employeeRoleInput === 'Contractor') {
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0 ||
+            driverName.length === 0
+          ) {
+            return true;
+          }
+          return false;
         }
-        return false;
       } else if (this.currentModal === 'EDIT') {
         const name = this.editEmployeeNameInput.trim();
         const role = this.editEmployeeRoleInput.trim();
         const type = this.editEmployeeTypeInput.trim();
         const email = this.editEmployeeEmailInput.trim();
         const phone = this.editEmployeeContactNumberInput.trim();
+        const date_hired = this.editEmployeeDateHiredInput.trim();
+        const vehicle_type = this.editEmployeeVehicleTypeInput.trim();
+        const plate_number = this.editEmployeePlateNumberInput.trim();
+        const driverName = this.editEmployeeDriverNameInput.trim();
 
         if (
-          name.length === 0 ||
-          role.length === 0 ||
-          type.length === 0 ||
-          email.length === 0 ||
-          !this.isEmailValid(email) ||
-          phone.length === 0
+          this.employeeRoleInput === 'Admin' ||
+          this.employeeRoleInput === ''
         ) {
-          return true;
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0
+          ) {
+            return true;
+          }
+          return false;
+        } else if (
+          this.employeeRoleInput === 'Driver' ||
+          this.employeeRoleInput === 'Helper'
+        ) {
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0 ||
+            vehicle_type.length === 0 ||
+            plate_number.length === 0
+          ) {
+            return true;
+          }
+          return false;
+        } else if (this.employeeRoleInput === 'Contractor') {
+          if (
+            name.length === 0 ||
+            date_hired.length === 0 ||
+            role.length === 0 ||
+            type.length === 0 ||
+            email.length === 0 ||
+            !this.isEmailValid(email) ||
+            phone.length === 0 ||
+            driverName.length === 0
+          ) {
+            return true;
+          }
+          return false;
         }
-        return false;
+
+        // if (
+        //   name.length === 0 ||
+        //   role.length === 0 ||
+        //   type.length === 0 ||
+        //   email.length === 0 ||
+        //   !this.isEmailValid(email) ||
+        //   phone.length === 0
+        // ) {
+        //   return true;
+        // }
+        // return false;
       }
     },
     isEmployeeRoleInputIsAdmin() {
@@ -224,7 +329,21 @@ export default {
     },
     isEditEmployeeTypeInputIsInternal() {
       return this.editEmployeeTypeInput === 'Internal';
+    }
+  },
+  watch: {
+    employeeTypeInput(newType) {
+      if (newType === 'External') {
+        this.employeeRoleInput = 'Contractor';
+      }
     },
+    editEmployeeTypeInput(newType) {
+      if (newType === 'External') {
+        this.editEmployeeRoleInput = 'Contractor';
+      } else if (newType === 'Internal') {
+        this.editEmployeeRoleInput = '';
+      }
+    }
   },
   beforeRouteLeave() {
     // When the user selects other page
@@ -265,14 +384,15 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Date Hired</th>
-            <th scope="col">Role</th>
-            <th scope="col">Vehicle type</th>
-            <th scope="col">Plate #</th>
-            <th scope="col">Email</th>
-            <th scope="col">Phone #</th>
-            <th scope="col">Actions</th>
+            <th class="align-middle" scope="col">Name</th>
+            <th class="align-middle" scope="col">Date Hired</th>
+            <th class="align-middle" scope="col">Role</th>
+            <th class="align-middle" scope="col">Driver's name</th>
+            <th class="align-middle" scope="col">Vehicle type</th>
+            <th class="align-middle" scope="col">Plate #</th>
+            <th class="align-middle" scope="col">Email</th>
+            <th class="align-middle" scope="col">Phone #</th>
+            <th class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -280,6 +400,7 @@ export default {
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">{{ employee.driver_name }}</td>
             <td class="align-middle">{{ employee.vehicle_type }}</td>
             <td class="align-middle">{{ employee.plate_number }}</td>
             <td class="align-middle">{{ employee.email }}</td>
@@ -327,6 +448,7 @@ export default {
               class="form-control"
               id="employeeName"
               aria-describedby="employeeName"
+              placeholder="Full Name"
             />
           </div>
 
@@ -342,7 +464,7 @@ export default {
               id="employeeDateHired"
               aria-describedby="employeeDateHired"
             />
-          </div>          
+          </div>
 
           <div class="mb-3">
             <label for="employeeType" class="form-label d-block text-start"
@@ -354,31 +476,67 @@ export default {
               id="employeeType"
               aria-describedby="employeeType"
             >
+              <option selected value="">Select Employee Type</option>
               <option value="Internal">Internal</option>
               <option value="External">Sub-Contractor</option>
             </select>
+          </div>
+
+          <div v-if="employeeTypeInput === 'External'" class="mb-3">
+            <label
+              for="employeeDriverName"
+              class="form-label d-block text-start"
+              >Driver's Name</label
+            >
+            <input
+              v-model="employeeDriverNameInput"
+              type="text"
+              id="employeeDriverName"
+              class="form-control"
+              aria-describedby="employeeDriverName"
+              placeholder="Driver's Full Name"
+              required
+            />
           </div>
 
           <div class="mb-3">
             <label for="employeeRole" class="form-label d-block text-start"
               >Role</label
             >
+            <input
+              v-if="employeeTypeInput === 'External'"
+              type="text"
+              v-model="employeeRoleInput"
+              id="employeeRole"
+              class="form-control"
+              disabled
+            />
             <select
+              v-else
               v-model="employeeRoleInput"
               class="form-select"
               id="employeeRole"
               aria-describedby="employeeRole"
+              :disabled="!isEditEmployeeTypeInputIsInternal"
             >
-              <option v-if="!isEmployeeTypeInputIsInternal" value="Operator">Operator</option>
+              <option selected value="">Select Role</option>
               <option value="Driver">Driver</option>
-              <option v-if="isEmployeeTypeInputIsInternal" value="Helper">Helper</option>
-              <option v-if="isEmployeeTypeInputIsInternal" value="Admin">Admin</option>
+              <option value="Helper">Helper</option>
+              <option value="Admin">Admin</option>
             </select>
           </div>
 
           <div
             class="mb-3"
-            v-if="((!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && employeeRoleInput === 'Operator')  || ((isEmployeeTypeInputIsInternal && employeeRoleInput !== '') && employeeRoleInput === 'Driver' || employeeRoleInput === 'Helper')"
+            v-if="
+              (!isEmployeeRoleInputIsAdmin &&
+                employeeRoleInput !== '' &&
+                employeeRoleInput === 'Operator') ||
+              (isEmployeeTypeInputIsInternal &&
+                employeeRoleInput !== '' &&
+                employeeRoleInput === 'Driver') ||
+              employeeRoleInput === 'Helper'
+            "
           >
             <label for="employeeRole" class="form-label d-block text-start"
               >Vehicle Type</label
@@ -389,6 +547,7 @@ export default {
               id="employeeVehicleType"
               aria-describedby="employeeVehicleType"
             >
+              <option selected value="">Select Vehicle Type</option>
               <option value="AUV">AUV</option>
               <option value="4W">4W</option>
               <option value="6W ELF">6W ELF</option>
@@ -399,7 +558,15 @@ export default {
 
           <div
             class="mb-3"
-            v-if="((!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && employeeRoleInput === 'Operator')  || ((isEmployeeTypeInputIsInternal && employeeRoleInput !== '') && employeeRoleInput === 'Driver' || employeeRoleInput === 'Helper')"
+            v-if="
+              (!isEmployeeRoleInputIsAdmin &&
+                employeeRoleInput !== '' &&
+                employeeRoleInput === 'Operator') ||
+              (isEmployeeTypeInputIsInternal &&
+                employeeRoleInput !== '' &&
+                employeeRoleInput === 'Driver') ||
+              employeeRoleInput === 'Helper'
+            "
           >
             <label
               for="employeePlateNumber"
@@ -411,15 +578,23 @@ export default {
               type="text"
               class="form-control"
               id="employeePlateNumber"
+              placeholder="Plate Number"
               aria-describedby="employeePlateNumber"
             />
           </div>
 
           <div
             class="mb-3"
-            v-if="(!isEmployeeRoleInputIsAdmin && employeeRoleInput !== '') && !isEmployeeTypeInputIsInternal && employeeRoleInput === 'Driver'"
+            v-if="
+              !isEmployeeRoleInputIsAdmin &&
+              employeeRoleInput !== '' &&
+              !isEmployeeTypeInputIsInternal &&
+              employeeRoleInput === 'Driver'
+            "
           >
-            <label for="employeeDriverOperator" class="form-label d-block text-start"
+            <label
+              for="employeeDriverOperator"
+              class="form-label d-block text-start"
               >Operator</label
             >
             <select
@@ -427,11 +602,9 @@ export default {
               class="form-select"
               id="employeeDriverOperator"
               aria-describedby="employeeDriverOperator"
-            >
-
-            </select>
+            ></select>
           </div>
-          
+
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -441,6 +614,7 @@ export default {
               type="email"
               class="form-control"
               id="employeeEmail"
+              placeholder="Email Address"
               aria-describedby="employeeEmail"
             />
           </div>
@@ -453,6 +627,7 @@ export default {
               type="text"
               class="form-control"
               id="employeeContact"
+              placeholder="Contact Number"
               aria-describedby="employeeContact"
             />
           </div>
@@ -501,19 +676,21 @@ export default {
             />
           </div>
 
-            <div class="mb-3">
-              <label for="editEmployeeDateHired" class="form-label d-block text-start"
-                >Date Hired</label
-              >
-              <input
-                required
-                v-model="editEmployeeDateHiredInput"
-                type="date"
-                class="form-control"
-                id="editEmployeeDateHired"
-                aria-describedby="editEmployeeDateHired"
-              />
-            </div>    
+          <div class="mb-3">
+            <label
+              for="editEmployeeDateHired"
+              class="form-label d-block text-start"
+              >Date Hired</label
+            >
+            <input
+              required
+              v-model="editEmployeeDateHiredInput"
+              type="date"
+              class="form-control"
+              id="editEmployeeDateHired"
+              aria-describedby="editEmployeeDateHired"
+            />
+          </div>
 
           <div class="mb-3">
             <label for="newEmployeeType" class="form-label d-block text-start"
@@ -530,24 +707,60 @@ export default {
             </select>
           </div>
 
+          <div v-if="editEmployeeTypeInput === 'External'" class="mb-3">
+            <label
+              for="editEmployeeDriverName"
+              class="form-label d-block text-start"
+              >Driver's Name</label
+            >
+            <input
+              v-model="editEmployeeDriverNameInput"
+              type="text"
+              id="editEmployeeDriverName"
+              class="form-control"
+              aria-describedby="editEmployeeDriverName"
+              placeholder="Driver's Full Name"
+              required
+            />
+          </div>
+
           <div class="mb-3">
             <label for="newEmployeeRole" class="form-label d-block text-start"
               >Role</label
             >
+            <input
+              v-if="editEmployeeTypeInput === 'External'"
+              type="text"
+              v-model="editEmployeeRoleInput"
+              id="employeeRole"
+              class="form-control"
+              disabled
+            />
             <select
+              v-else
               v-model="editEmployeeRoleInput"
               class="form-select"
-              id="newEmployeeRole"
-              aria-describedby="newEmployeeRole"
+              id="employeeRole"
+              aria-describedby="employeeRole"
+              :disabled="!isEditEmployeeTypeInputIsInternal"
             >
-              <option v-if="!isEditEmployeeTypeInputIsInternal" value="Operator">Operator</option>
+              <option selected value="">Select Role</option>
               <option value="Driver">Driver</option>
-              <option v-if="isEditEmployeeTypeInputIsInternal" value="Helper">Helper</option>
-              <option v-if="isEditEmployeeTypeInputIsInternal" value="Admin">Admin</option>
+              <option value="Helper">Helper</option>
+              <option value="Admin">Admin</option>
             </select>
           </div>
-          
-          <div class="mb-3" v-if="(!isEditEmployeeRoleInputIsAdmin && editEmployeeRoleInput === 'Operator') || (isEditEmployeeTypeInputIsInternal && (editEmployeeRoleInput === 'Driver' || editEmployeeRoleInput === 'Helper'))">
+
+          <div
+            class="mb-3"
+            v-if="
+              (!isEditEmployeeRoleInputIsAdmin &&
+                editEmployeeRoleInput === 'Operator') ||
+              (isEditEmployeeTypeInputIsInternal &&
+                (editEmployeeRoleInput === 'Driver' ||
+                  editEmployeeRoleInput === 'Helper'))
+            "
+          >
             <label
               for="newEmployeeVehicleType"
               class="form-label d-block text-start"
@@ -559,6 +772,7 @@ export default {
               id="newEmployeeVehicleType"
               aria-describedby="newEmployeeVehicleType"
             >
+              <option selected value="-">Select Vehicle Type</option>
               <option value="AUV">AUV</option>
               <option value="4W">4W</option>
               <option value="6W ELF">6W ELF</option>
@@ -567,7 +781,16 @@ export default {
             </select>
           </div>
 
-          <div class="mb-3" v-if="(!isEditEmployeeRoleInputIsAdmin  && editEmployeeRoleInput === 'Operator') || (isEditEmployeeTypeInputIsInternal && (editEmployeeRoleInput === 'Driver' || editEmployeeRoleInput === 'Helper'))">
+          <div
+            class="mb-3"
+            v-if="
+              (!isEditEmployeeRoleInputIsAdmin &&
+                editEmployeeRoleInput === 'Operator') ||
+              (isEditEmployeeTypeInputIsInternal &&
+                (editEmployeeRoleInput === 'Driver' ||
+                  editEmployeeRoleInput === 'Helper'))
+            "
+          >
             <label
               for="newEmployeePlateNumber"
               class="form-label d-block text-start"
@@ -582,7 +805,13 @@ export default {
             />
           </div>
 
-          <div class="mb-3" v-if="!isEditEmployeeTypeInputIsInternal && editEmployeeRoleInput === 'Driver'">
+          <div
+            class="mb-3"
+            v-if="
+              !isEditEmployeeTypeInputIsInternal &&
+              editEmployeeRoleInput === 'Driver'
+            "
+          >
             <label
               for="newEmployeeDriverOperator"
               class="form-label d-block text-start"
@@ -593,10 +822,8 @@ export default {
               class="form-select"
               id="newEmployeeDriverOperator"
               aria-describedby="newEmployeeDriverOperator"
-            >
-
-            </select>
-          </div>          
+            ></select>
+          </div>
 
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
@@ -682,7 +909,7 @@ export default {
 }
 
 th {
-  width: 12.5%;
+  width: 11.11%;
 }
 
 .modal-body label {

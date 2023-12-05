@@ -25,7 +25,7 @@ export default {
         (employee) => employee.id === newEmployeeDetails.id
       );
 
-      const { name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } = newEmployeeDetails;
+      const { name, role, type, date_hired, vehicle_type, plate_number, email, contact_number, driver_name } = newEmployeeDetails;
 
       const options = { day: 'numeric', month: 'short', year: '2-digit' };
 
@@ -37,6 +37,8 @@ export default {
       employee.plate_number = plate_number;
       employee.email = email
       employee.contact_number = contact_number;
+
+      employee.driver_name = driver_name;
     }
   },
   actions: {

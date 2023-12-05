@@ -26,8 +26,17 @@ function isEmailValid(email) {
 
 // CREATE NEW EMPLOYEE
 function httpPostNewEmployee(req, res) {
-  const { name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } =
-    req.body;
+  const {
+    name,
+    role,
+    type,
+    date_hired,
+    vehicle_type,
+    plate_number,
+    email,
+    contact_number,
+    driver_name
+  } = req.body;
 
   if (
     !name ||
@@ -37,16 +46,27 @@ function httpPostNewEmployee(req, res) {
     !vehicle_type ||
     !plate_number ||
     !isEmailValid(email) ||
-    !contact_number
+    !contact_number ||
+    !driver_name
   ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO employees (name, role, type, date_hired, vehicle_type, plate_number, email, contact_number ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO employees (name, role, type, date_hired, vehicle_type, plate_number, email, contact_number, driver_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     db.run(
       sql,
-      [name, role, type, date_hired, vehicle_type, plate_number, email, contact_number],
+      [
+        name,
+        role,
+        type,
+        date_hired,
+        vehicle_type,
+        plate_number,
+        email,
+        contact_number,
+        driver_name
+      ],
       (err) => {
         if (err) {
           reject(err);
@@ -76,8 +96,18 @@ function httpPostNewEmployee(req, res) {
 
 // UPDATE EMPLOYEE
 function httpEditEmployee(req, res) {
-  const { id, name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } =
-    req.body;
+  const {
+    id,
+    name,
+    role,
+    type,
+    date_hired,
+    vehicle_type,
+    plate_number,
+    email,
+    contact_number,
+    driver_name
+  } = req.body;
 
   if (
     !id ||
@@ -88,7 +118,8 @@ function httpEditEmployee(req, res) {
     !vehicle_type ||
     !plate_number ||
     !email ||
-    !contact_number
+    !contact_number ||
+    !driver_name
   ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
@@ -103,12 +134,24 @@ function httpEditEmployee(req, res) {
   updatedEmployee.plate_number = plate_number;
   updatedEmployee.email = email;
   updatedEmployee.contact_number = contact_number;
+  updatedEmployee.driver_name = driver_name;
 
-  const sql = `UPDATE employees SET name=?, role=?, type=?, date_hired=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
+  const sql = `UPDATE employees SET name=?, role=?, type=?, date_hired=?, vehicle_type=?, plate_number=?, email=?, contact_number=?, driver_name=? WHERE employees.id=?`;
 
   db.run(
     sql,
-    [name, role, type, date_hired, vehicle_type, plate_number, email, contact_number, id],
+    [
+      name,
+      role,
+      type,
+      date_hired,
+      vehicle_type,
+      plate_number,
+      email,
+      contact_number,
+      driver_name,
+      id
+    ],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });
@@ -168,16 +211,40 @@ function removeEmployeeFromDatabase(id) {
 }
 
 function addEmployeeToArchive(employee) {
-  const { id, name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } = employee;
+  const {
+    id,
+    name,
+    role,
+    type,
+    date_hired,
+    vehicle_type,
+    plate_number,
+    email,
+    contact_number
+  } = employee;
   const sql = `INSERT INTO archivedEmployee (id, name, role, type, date_hired, vehicle_type, plate_number, email, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   addNewArchivedEmployee(employee);
 
-  db.run(sql, [id, name, role, type, date_hired, vehicle_type, plate_number, email, contact_number], (err) => {
-    if (err) {
-      console.log(err);
+  db.run(
+    sql,
+    [
+      id,
+      name,
+      role,
+      type,
+      date_hired,
+      vehicle_type,
+      plate_number,
+      email,
+      contact_number
+    ],
+    (err) => {
+      if (err) {
+        console.log(err);
+      }
     }
-  });
+  );
 }
 
 module.exports = {
