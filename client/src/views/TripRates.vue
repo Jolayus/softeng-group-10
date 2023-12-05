@@ -23,6 +23,9 @@ export default {
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
       isFileSubmitValidFormat: undefined,
 
+      // Upload Input
+      uploadFileInput: '',
+
       // Search Inputs
       searchInputProvince: '',
       searchInputCity: '',
@@ -141,9 +144,10 @@ export default {
                 ten_wheeler: rawTripRate['10W']
               };
 
-              httpCreateTripRates(tripRate);
-              this.addNewTripRatesToStore(tripRate);
+              const newTripRate = await httpCreateTripRates(tripRate);
+              this.addNewTripRatesToStore(newTripRate);
             });
+          this.uploadFileInput = '';
           } catch (err) {
             this.isFileSubmitValidFormat = false;
           }
@@ -152,6 +156,7 @@ export default {
     },
 
     clearDataForUpload() {
+
       this.isFileSubmitValidFormat = undefined;
     },
 
@@ -425,6 +430,10 @@ export default {
     this.updateCurrentTripRates();
   },
   computed: {
+    isCurrentTripRatesEmpty() {
+      const branches = Object.keys(this.currentTripRates);
+      return branches.length === 0 ? true : false;
+    },
     clients() {
       return this.$store.getters['clients/clients'];
     },
@@ -442,7 +451,11 @@ export default {
         'tripRates/getTripRatesByCompanyName'
       ](this.currentClient.company_name);
 
-      return new Set(currentTripRatesBasedOnCurrentCompanyName.map((tripRate) => tripRate.province));
+      return new Set(
+        currentTripRatesBasedOnCurrentCompanyName.map(
+          (tripRate) => tripRate.province
+        )
+      );
     },
 
     cities() {
@@ -617,14 +630,17 @@ export default {
               >File:</label
             >
             <input
+              v-on:change="uploadFileInput"
               type="file"
               class="form-control"
               id="file"
               ref="fileInput"
               required
+              :disabled="!isCurrentTripRatesEmpty"
             />
           </div>
         </form>
+        <p v-if="!isCurrentTripRatesEmpty && !isFileSubmitValidFormat" class="text-danger fw-bold">Trip Rates are not empty</p>
       </div>
     </template>
     <template v-slot:modal-footer>
@@ -658,6 +674,7 @@ export default {
             Cancel
           </button>
           <button
+            v-if="isCurrentTripRatesEmpty"
             type="submit"
             class="btn btn-primary tms-btn"
             form="uploadFileForm"
@@ -714,6 +731,7 @@ export default {
               class="form-control"
               id="addTripRatesProvince"
               aria-describedby="addTripRatesProvince"
+              placeholder="Province"
             />
           </div>
           <div class="mb-3">
@@ -727,6 +745,7 @@ export default {
               class="form-control"
               id="addTripRatesCity"
               aria-describedby="addTripRatesCity"
+              placeholder="City"
             />
           </div>
           <div class="mb-3">
@@ -740,6 +759,7 @@ export default {
               id="addTripRatesAuv"
               aria-describedby="addTripRatesAuv"
               step=".01"
+              placeholder="AUV"
             />
           </div>
           <div class="mb-3">
@@ -753,6 +773,7 @@ export default {
               id="addTripRates4w"
               aria-describedby="addTripRates4w"
               step=".01"
+              placeholder="4W"
             />
           </div>
           <div class="mb-3">
@@ -766,6 +787,7 @@ export default {
               id="addTripRates6wElf"
               aria-describedby="addTripRates6wElf"
               step=".01"
+              placeholder="6W ELF"
             />
           </div>
           <div class="mb-3">
@@ -779,6 +801,7 @@ export default {
               id="addTripRates6wF"
               aria-describedby="addTripRates6wF"
               step=".01"
+              placeholder="6WF"
             />
           </div>
           <div class="mb-3">
@@ -792,6 +815,7 @@ export default {
               id="addTripRates10w"
               aria-describedby="addTripRates10w"
               step=".01"
+              placeholder="10W"
             />
           </div>
         </form>
@@ -966,6 +990,7 @@ export default {
               id="editTripRatesAuv"
               aria-describedby="editTripRatesAuv"
               step=".01"
+              placeholder="AUV"
             />
           </div>
           <div class="mb-3">
@@ -979,6 +1004,7 @@ export default {
               id="editTripRates4w"
               aria-describedby="editTripRates4w"
               step=".01"
+              placeholder="4W"
             />
           </div>
           <div class="mb-3">
@@ -994,6 +1020,7 @@ export default {
               id="editTripRates6wElf"
               aria-describedby="editTripRates6wElf"
               step=".01"
+              placeholder="6W ELF"
             />
           </div>
           <div class="mb-3">
@@ -1007,6 +1034,7 @@ export default {
               id="editTripRates6wF"
               aria-describedby="editTripRates6wF"
               step=".01"
+              placeholder="6WF"
             />
           </div>
           <div class="mb-3">
@@ -1020,6 +1048,7 @@ export default {
               id="editTripRates10w"
               aria-describedby="editTripRates10w"
               step=".01"
+              placeholder="10W"
             />
           </div>
         </form>
