@@ -2,7 +2,6 @@
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
-import { getEmployeesModel } from '../models/employees.model';
 
 export default {
   name: 'Payroll',
@@ -13,7 +12,6 @@ export default {
   },
   data() {
     return {
-      employeesModel: getEmployeesModel(),
       selectedEmployee: null,
       searchInput: '',
 
@@ -30,12 +28,12 @@ export default {
       payrollExtraPayInput: '',
 
       //payrollInternalDeductionsModal
-      payrollDedcutionsCashAdvanceInput: '',
-      payrollDedcutionsPAGIBIGInput: '',
-      payrollDedcutionsSSSInput: '',
-      payrollDedcutionsPhilHealthInput: '',
-      payrollDedcutionsLateInput: '',
-      payrollDedcutionsDamagesInput: '',
+      payrollDeductionsCashAdvanceInput: '',
+      payrollDeductionsPAGIBIGInput: '',
+      payrollDeductionsSSSInput: '',
+      payrollDeductionsPhilHealthInput: '',
+      payrollDeductionsLateInput: '',
+      payrollDeductionsDamagesInput: '',
 
       //payrollExternalSalaryModal
       payrollNoOfTripsInput: '',
@@ -47,28 +45,25 @@ export default {
       payrollOthersInput: '',
 
       //payrollExternalDeductionsModal
-      payrollDedcutionsCashAdvanceInput: '',
-      payrollDedcutionsMarineInsuranceFeeInput: '',
-      payrollDedcutionsUniformInput: '',
-      payrollDedcutionsPenaltiesInput: '',
+      payrollDeductionsCashAdvanceInput: '',
+      payrollDeductionsMarineInsuranceFeeInput: '',
+      payrollDeductionsUniformInput: '',
+      payrollDeductionsPenaltiesInput: '',
 
-
-      totalPayroll: 'P123.00',
+      totalPayroll: 'P123.00'
     };
   },
   computed: {
+    employees() {
+      return this.$store.getters['employees/employees'];
+    },
     filteredEmployees() {
-      const employees = this.employeesModel.filter((employee) =>
+      return this.employees.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
-
-      return employees;
     }
   },
-  methods: {
-
-  },
-
+  methods: {}
 };
 </script>
 
@@ -81,55 +76,119 @@ export default {
       <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
         <div class="input-group mb-3 h-100 align-items-center gap-2">
           <label for="user-input">Search:</label>
-          <input v-model="searchInput" type="text" class="form-control" placeholder="Employee's name"
-            aria-label="Recipient's username" id="user-input" aria-describedby="basic-addon2" />
+          <input
+            v-model="searchInput"
+            type="text"
+            class="form-control"
+            placeholder="Employee's name"
+            aria-label="Recipient's username"
+            id="user-input"
+            aria-describedby="basic-addon2"
+          />
         </div>
+        <button
+          type="button"
+          class="btn tms-btn text-light px-5"
+          data-bs-toggle="modal"
+          data-bs-target="#createBatchModal"
+        >
+          Create Batch
+        </button>
       </div>
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Role</th>
-            <th scope="col">Total</th>
-            <th scope="col">Actions</th>
+            <th class="align-middle" scope="col">Name</th>
+            <th class="align-middle" scope="col">Role</th>
+            <th class="align-middle" scope="col">Total</th>
+            <th class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
-            <th scope="row">{{ employee.name }}</th>
-            <td>{{ employee.role }}</td>
-            <td>
-              <button type="button" data-bs-toggle="modal" data-bs-target="#payrollBreakdownModal"
-                class="btn tms-btn text-light align-items-center h-100">
+            <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">
+              <button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollBreakdownModal"
+                class="btn tms-btn text-light align-items-center h-100"
+              >
                 {{ totalPayroll }}
               </button>
             </td>
-            <td class="align-middle">
-              <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2">
+            <td class="align-middle d-flex">
+              <button
+                v-if="employee.type === 'Internal'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollInternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+              >
                 Add Salary
               </button>
 
-              <button v-if="employee.type === 'Internal'" type="button" data-bs-toggle="modal" data-bs-target="#payrollInternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 ">
+              <button
+                v-if="employee.type === 'Internal'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollInternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
+              >
                 Add Deductions
               </button>
 
-              <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2">
+              <button
+                v-if="employee.type === 'External'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollExternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+              >
                 Add Salary
               </button>
 
-              <button v-if="employee.type === 'External'" type="button" data-bs-toggle="modal" data-bs-target="#payrollExternalDeductionsModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 ">
+              <button
+                v-if="employee.type === 'External'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollExternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
+              >
                 Add Deductions
-              </button>              
-            </td>            
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
     </main>
   </div>
+
+  <Modal id="createBatchModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="createBatchModalLabel">
+          Create Payroll Batch
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="selectEmployee" class="form-label d-block text-start">
+              Employees</label
+            >
+          </div>
+          <select class="form-select">
+            <option selected value="">Select Employee</option>
+            <option v-for="employee in employees">{{ employee.name }}</option>
+          </select>
+        </form>
+      </div>
+    </template>
+  </Modal>
 
   <Modal id="payrollInternalSalaryModal">
     <template v-slot:modal-header>
@@ -154,6 +213,7 @@ export default {
               class="form-control"
               id="payrollBasicSalary"
               aria-describedby="payrollBasicSalary"
+              placeholder="Basic Salary"
             />
           </div>
           <div class="mb-3">
@@ -168,12 +228,11 @@ export default {
               class="form-control"
               id="payrollAllowanceSalary"
               aria-describedby="payrollAllowanceSalary"
+              placeholder="Allowance Salary"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollDailyRate"
-              class="form-label d-block text-start"
+            <label for="payrollDailyRate" class="form-label d-block text-start"
               >Daily Rate</label
             >
             <input
@@ -182,6 +241,7 @@ export default {
               class="form-control"
               id="payrollDailyRate"
               aria-describedby="payrollDailyRate"
+              placeholder="Daily Rate"
             />
           </div>
           <div class="mb-3">
@@ -196,12 +256,11 @@ export default {
               class="form-control"
               id="payrollDailyAllowance"
               aria-describedby="payrollDailyAllowance"
+              placeholder="Daily Allowance"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollDaysOfWork"
-              class="form-label d-block text-start"
+            <label for="payrollDaysOfWork" class="form-label d-block text-start"
               >Days of Work</label
             >
             <input
@@ -210,6 +269,7 @@ export default {
               class="form-control"
               id="payrollDaysOfWork"
               aria-describedby="payrollDaysOfWork"
+              placeholder="Days of Work"
             />
           </div>
           <div class="mb-3">
@@ -224,6 +284,7 @@ export default {
               class="form-control"
               id="payrollSemiBasicSalary"
               aria-describedby="payrollSemiBasicSalary"
+              placeholder="Semi - Basic Salary"
             />
           </div>
           <div class="mb-3">
@@ -238,12 +299,11 @@ export default {
               class="form-control"
               id="payrollSemiAllowanceSalary"
               aria-describedby="payrollSemiAllowanceSalary"
+              placeholder="Semi - Allowance Salary"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollServiceFee"
-              class="form-label d-block text-start"
+            <label for="payrollServiceFee" class="form-label d-block text-start"
               >Service Fee</label
             >
             <input
@@ -252,6 +312,7 @@ export default {
               class="form-control"
               id="payrollServiceFee"
               aria-describedby="payrollServiceFee"
+              placeholder="Service Fee"
             />
           </div>
           <div class="mb-3">
@@ -266,12 +327,11 @@ export default {
               class="form-control"
               id="payrollOvertimePay"
               aria-describedby="payrollOvertimePay"
+              placeholder="Overtime Pay"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollExtraPay"
-              class="form-label d-block text-start"
+            <label for="payrollExtraPay" class="form-label d-block text-start"
               >Extra Pay</label
             >
             <input
@@ -280,8 +340,9 @@ export default {
               class="form-control"
               id="payrollExtraPay"
               aria-describedby="payrollExtraPay"
+              placeholder="Extra Pay"
             />
-          </div>                    
+          </div>
         </form>
       </div>
     </template>
@@ -290,9 +351,13 @@ export default {
         <button type="button" class="btn text-light" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="submit" class="btn tms-btn text-light" form="payrollInternalSalaryForm" data-bs-dismiss="modal"
-          :disabled="isFormInvalid">
-          Save Changes
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="payrollInternalSalaryForm"
+          data-bs-dismiss="modal"
+        >
+          Add Salary
         </button>
       </div>
     </template>
@@ -311,88 +376,94 @@ export default {
         <form id="payrollInternalDeductionsForm">
           <div class="mb-3">
             <label
-              for="payrollDedcutionsCashAdvance"
+              for="payrollDeductionsCashAdvance"
               class="form-label d-block text-start"
               >Cash Advance</label
             >
             <input
-              v-model="payrollDedcutionsCashAdvanceInput"
+              v-model="payrollDeductionsCashAdvanceInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsCashAdvance"
-              aria-describedby="payrollDedcutionsCashAdvance"
+              id="payrollDeductionsCashAdvance"
+              aria-describedby="payrollDeductionsCashAdvance"
+              placeholder="Cash Advance"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsHDMF"
+              for="payrollDeductionsHDMF"
               class="form-label d-block text-start"
               >PAG-IBIG Contribution</label
             >
             <input
-              v-model="payrollDedcutionsPAGIBIGInput"
+              v-model="payrollDeductionsPAGIBIGInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsHDMF"
-              aria-describedby="payrollDedcutionsHDMF"
+              id="payrollDeductionsHDMF"
+              aria-describedby="payrollDeductionsHDMF"
+              placeholder="PAG-IBIG Contribution"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsSSS"
+              for="payrollDeductionsSSS"
               class="form-label d-block text-start"
               >SSS Contribution</label
             >
             <input
-              v-model="payrollDedcutionsSSSInput"
+              v-model="payrollDeductionsSSSInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsSSS"
-              aria-describedby="payrollDedcutionsSSS"
+              id="payrollDeductionsSSS"
+              aria-describedby="payrollDeductionsSSS"
+              placeholder="SSS Contribution"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsPhilHealth"
+              for="payrollDeductionsPhilHealth"
               class="form-label d-block text-start"
               >PhilHealth Contribution</label
             >
             <input
-              v-model="payrollDedcutionsPhilHealthInput"
+              v-model="payrollDeductionsPhilHealthInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsPhilHealth"
-              aria-describedby="payrollDedcutionsPhilHealth"
-            />
-          </div>          
-          <div class="mb-3">
-            <label
-              for="payrollDedcutionsLate"
-              class="form-label d-block text-start"
-              >Late</label
-            >
-            <input
-              v-model="payrollDedcutionsLateInput"
-              type="number"
-              class="form-control"
-              id="payrollDedcutionsLate"
-              aria-describedby="payrollDedcutionsLate"
+              id="payrollDeductionsPhilHealth"
+              aria-describedby="payrollDeductionsPhilHealth"
+              placeholder="PhilHealth Contribution"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsDamages"
+              for="payrollDeductionsLate"
+              class="form-label d-block text-start"
+              >Late</label
+            >
+            <input
+              v-model="payrollDeductionsLateInput"
+              type="number"
+              class="form-control"
+              id="payrollDeductionsLate"
+              aria-describedby="payrollDeductionsLate"
+              placeholder="Late"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="payrollDeductionsDamages"
               class="form-label d-block text-start"
               >Damages</label
             >
             <input
-              v-model="payrollDedcutionsDamagesInput"
+              v-model="payrollDeductionsDamagesInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsDamages"
-              aria-describedby="payrollDedcutionsDamages"
+              id="payrollDeductionsDamages"
+              aria-describedby="payrollDeductionsDamages"
+              placeholder="Damages"
             />
-          </div>          
+          </div>
         </form>
       </div>
     </template>
@@ -401,9 +472,13 @@ export default {
         <button type="button" class="btn text-light" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="submit" class="btn tms-btn text-light" form="payrollInternalDeductionsForm" data-bs-dismiss="modal"
-          :disabled="isFormInvalid">
-          Save Changes
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="payrollInternalDeductionsForm"
+          data-bs-dismiss="modal"
+        >
+          Add Deductions
         </button>
       </div>
     </template>
@@ -421,9 +496,7 @@ export default {
       <div class="modal-body">
         <form id="payrollExternalSalaryForm">
           <div class="mb-3">
-            <label
-              for="payrollNoOfTrips"
-              class="form-label d-block text-start"
+            <label for="payrollNoOfTrips" class="form-label d-block text-start"
               >No. Of Trips</label
             >
             <input
@@ -432,6 +505,7 @@ export default {
               class="form-control"
               id="payrollNoOfTrips"
               aria-describedby="payrollNoOfTrips"
+              placeholder="No. Of Trips"
             />
           </div>
           <div class="mb-3">
@@ -446,6 +520,7 @@ export default {
               class="form-control"
               id="payrollClientTripRates"
               aria-describedby="payrollClientTripRates"
+              placeholder="Client Trip Rate"
             />
           </div>
           <div class="mb-3">
@@ -460,13 +535,12 @@ export default {
               class="form-control"
               id="payrollTotalAmountOfTrips"
               aria-describedby="payrollTotalAmountOfTrips"
+              placeholder="Total Amount of Trips"
             />
           </div>
           <!-- EXPENSES -->
           <div class="mb-3">
-            <label
-              for="payrollDropRate"
-              class="form-label d-block text-start"
+            <label for="payrollDropRate" class="form-label d-block text-start"
               >Drop Rate</label
             >
             <input
@@ -475,12 +549,11 @@ export default {
               class="form-control"
               id="payrollDropRate"
               aria-describedby="payrollDropRate"
+              placeholder="Drop Rate"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollTollFee"
-              class="form-label d-block text-start"
+            <label for="payrollTollFee" class="form-label d-block text-start"
               >Toll Fee</label
             >
             <input
@@ -489,12 +562,11 @@ export default {
               class="form-control"
               id="payrollTollFee"
               aria-describedby="payrollTollFee"
+              placeholder="Toll Fee"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollPassway"
-              class="form-label d-block text-start"
+            <label for="payrollPassway" class="form-label d-block text-start"
               >Passway</label
             >
             <input
@@ -503,12 +575,11 @@ export default {
               class="form-control"
               id="payrollPassway"
               aria-describedby="payrollPassway"
+              placeholder="Passway"
             />
           </div>
           <div class="mb-3">
-            <label
-              for="payrollOthers"
-              class="form-label d-block text-start"
+            <label for="payrollOthers" class="form-label d-block text-start"
               >Others</label
             >
             <input
@@ -517,8 +588,9 @@ export default {
               class="form-control"
               id="payrollOthers"
               aria-describedby="payrollOthers"
+              placeholder="Others"
             />
-          </div>                                 
+          </div>
         </form>
       </div>
     </template>
@@ -527,9 +599,13 @@ export default {
         <button type="button" class="btn text-light" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="submit" class="btn tms-btn text-light" form="payrollExternalSalaryForm" data-bs-dismiss="modal"
-          :disabled="isFormInvalid">
-          Save Changes
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="payrollExternalSalaryForm"
+          data-bs-dismiss="modal"
+        >
+          Add Salary
         </button>
       </div>
     </template>
@@ -548,60 +624,64 @@ export default {
         <form id="payrollExternalDeductionsForm">
           <div class="mb-3">
             <label
-              for="payrollDedcutionsCashAdvance"
+              for="payrollDeductionsCashAdvance"
               class="form-label d-block text-start"
               >Cash Advance</label
             >
             <input
-              v-model="payrollDedcutionsCashAdvanceInput"
+              v-model="payrollDeductionsCashAdvanceInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsCashAdvance"
-              aria-describedby="payrollDedcutionsCashAdvance"
+              id="payrollDeductionsCashAdvance"
+              aria-describedby="payrollDeductionsCashAdvance"
+              placeholder="Cash Advance"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsMarineInsuranceFee"
+              for="payrollDeductionsMarineInsuranceFee"
               class="form-label d-block text-start"
               >Marine Insurance Fee</label
             >
             <input
-              v-model="payrollDedcutionsMarineInsuranceFeeInput"
+              v-model="payrollDeductionsMarineInsuranceFeeInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsMarineInsuranceFee"
-              aria-describedby="payrollDedcutionsMarineInsuranceFee"
+              id="payrollDeductionsMarineInsuranceFee"
+              aria-describedby="payrollDeductionsMarineInsuranceFee"
+              placeholder="Marine Insurance Fee"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsUniform"
+              for="payrollDeductionsUniform"
               class="form-label d-block text-start"
               >Uniform</label
             >
             <input
-              v-model="payrollDedcutionsUniformInput"
+              v-model="payrollDeductionsUniformInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsUniform"
-              aria-describedby="payrollDedcutionsUniform"
+              id="payrollDeductionsUniform"
+              aria-describedby="payrollDeductionsUniform"
+              placeholder="Uniform"
             />
           </div>
           <div class="mb-3">
             <label
-              for="payrollDedcutionsPenalties"
+              for="payrollDeductionsPenalties"
               class="form-label d-block text-start"
               >Penalties</label
             >
             <input
-              v-model="payrollDedcutionsPenaltiesInput"
+              v-model="payrollDeductionsPenaltiesInput"
               type="number"
               class="form-control"
-              id="payrollDedcutionsPenalties"
-              aria-describedby="payrollDedcutionsPenalties"
+              id="payrollDeductionsPenalties"
+              aria-describedby="payrollDeductionsPenalties"
+              placeholder="Penalties"
             />
-          </div>          
+          </div>
         </form>
       </div>
     </template>
@@ -610,9 +690,13 @@ export default {
         <button type="button" class="btn text-light" data-bs-dismiss="modal">
           Close
         </button>
-        <button type="submit" class="btn tms-btn text-light" form="payrollExternalDeductionsForm" data-bs-dismiss="modal"
-          :disabled="isFormInvalid">
-          Save Changes
+        <button
+          type="submit"
+          class="btn tms-btn text-light"
+          form="payrollExternalDeductionsForm"
+          data-bs-dismiss="modal"
+        >
+          Add Deductions
         </button>
       </div>
     </template>
@@ -627,9 +711,7 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
-      <div class="modal-body">
-
-      </div>
+      <div class="modal-body"></div>
     </template>
     <template v-slot:modal-footer>
       <div class="modal-footer justify-content-center border-top-0">
@@ -639,7 +721,6 @@ export default {
       </div>
     </template>
   </Modal>
-
 </template>
 
 <style scoped>

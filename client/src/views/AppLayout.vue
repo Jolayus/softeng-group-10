@@ -45,7 +45,7 @@ export default {
       <div class="col-3 p-0 min-vh-100">
         <Sidebar @logout="onLogoutHandler" />
       </div>
-      <div class="col-9 p-0 text-center min-vh-100 d-flex flex-column">
+      <div class="col-9 pr-0 text-center min-vh-100 d-flex flex-column">
         <RouterView />
         <Footer></Footer>
       </div>
