@@ -25,11 +25,14 @@ export default {
         (employee) => employee.id === newEmployeeDetails.id
       );
 
-      const { name, role, type, vehicle_type, plate_number, email, contact_number } = newEmployeeDetails;
+      const { name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } = newEmployeeDetails;
+
+      const options = { day: 'numeric', month: 'short', year: '2-digit' };
 
       employee.name = name;
       employee.role = role;
       employee.type = type;
+      employee.date_hired = new Date(date_hired).toLocaleDateString('en-GB', options).replace(/\s/g, '-');
       employee.vehicle_type = vehicle_type;
       employee.plate_number = plate_number;
       employee.email = email

@@ -76,16 +76,15 @@ function httpPostNewEmployee(req, res) {
 
 // UPDATE EMPLOYEE
 function httpEditEmployee(req, res) {
-  const { id, name, role, type, vehicle_type, plate_number, email, contact_number } =
+  const { id, name, role, type, date_hired, vehicle_type, plate_number, email, contact_number } =
     req.body;
-
-  console.log(req.body);
 
   if (
     !id ||
     !name ||
     !role ||
     !type ||
+    !date_hired ||
     !vehicle_type ||
     !plate_number ||
     !email ||
@@ -99,16 +98,17 @@ function httpEditEmployee(req, res) {
   updatedEmployee.name = name;
   updatedEmployee.role = role;
   updatedEmployee.type = type;
+  updatedEmployee.date_hired = date_hired;
   updatedEmployee.vehicle_type = vehicle_type;
   updatedEmployee.plate_number = plate_number;
   updatedEmployee.email = email;
   updatedEmployee.contact_number = contact_number;
 
-  const sql = `UPDATE employees SET name=?, role=?, type=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
+  const sql = `UPDATE employees SET name=?, role=?, type=?, date_hired=?, vehicle_type=?, plate_number=?, email=?, contact_number=? WHERE employees.id=?`;
 
   db.run(
     sql,
-    [name, role, type, vehicle_type, plate_number, email, contact_number, id],
+    [name, role, type, date_hired, vehicle_type, plate_number, email, contact_number, id],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });

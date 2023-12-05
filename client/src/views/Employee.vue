@@ -27,7 +27,7 @@ export default {
       employeeNameInput: '',
       employeeRoleInput: '',
       employeeTypeInput: '',
-      employeeDateHired: '',
+      employeeDateHiredInput: '',
       employeeVehicleTypeInput: '',
       employeePlateNumberInput: '',
       employeeEmailInput: '',
@@ -35,9 +35,9 @@ export default {
 
       // EDIT MODAL
       editEmployeeNameInput: '',
+      editEmployeeDateHiredInput: '',
       editEmployeeRoleInput: '',
-      editEmployeeTypeInput: '',
-      editEmployeeeDateInput: '',      
+      editEmployeeTypeInput: '',    
       editEmployeeVehicleTypeInput: '',
       editEmployeePlateNumberInput: '',
       editEmployeeEmailInput: '',
@@ -62,8 +62,6 @@ export default {
     },
     async addNewEmployee() {
       const options = { day: 'numeric', month: 'short', year: '2-digit' };
-
-      console.log(this.employeeDateHiredInput)
 
       const name = this.employeeNameInput.trim();
       const role = this.employeeRoleInput.trim();
@@ -107,20 +105,30 @@ export default {
         contact_number
       } = employee;
 
+      const date = new Date(date_hired);
+
+      const year = date.getFullYear();
+      const day = date.getDate();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+      const formatDate = `${ year }-${ month }-${ day }` 
+
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
+      this.editEmployeeDateHiredInput = formatDate;
       this.editEmployeeRoleInput = role;
       this.editEmployeeTypeInput = type;
-      this.editEmployeeeDateInput = date_hired;
       this.editEmployeeVehicleTypeInput = vehicle_type;
       this.editEmployeePlateNumberInput = plate_number;
       this.editEmployeeEmailInput = email;
       this.editEmployeeContactNumberInput = contact_number;
+
     },
     async saveChanges() {
       const newDetails = {
         id: this.editEmployeeId,
         name: this.editEmployeeNameInput,
+        date_hired: this.editEmployeeDateHiredInput,
         role: this.editEmployeeRoleInput,
         type: this.editEmployeeTypeInput,
         vehicle_type:
@@ -153,7 +161,7 @@ export default {
     }
   },
   computed: {
-    employees() {
+     employees() {
       return this.$store.getters['employees/employees'];
     },
     filteredEmployees() {
@@ -492,6 +500,21 @@ export default {
               aria-describedby="newEmployeeName"
             />
           </div>
+
+            <div class="mb-3">
+              <label for="editEmployeeDateHired" class="form-label d-block text-start"
+                >Date Hired</label
+              >
+              <input
+                required
+                v-model="editEmployeeDateHiredInput"
+                type="date"
+                class="form-control"
+                id="editEmployeeDateHired"
+                aria-describedby="editEmployeeDateHired"
+              />
+            </div>    
+
           <div class="mb-3">
             <label for="newEmployeeType" class="form-label d-block text-start"
               >Type</label
@@ -610,7 +633,7 @@ export default {
           Close
         </button>
         <button
-          @click="saveChanges"
+          @click.prevent="saveChanges"
           class="btn btn-primary tms-btn"
           form="editEmployeeForm"
           data-bs-dismiss="modal"
