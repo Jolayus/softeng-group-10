@@ -25,9 +25,16 @@ export default {
       searchInput: '',
 
       currentBatchCode: '',
+      
+      employeeSelectBatchCodeInput: '',
+
+      salaryTotal: '',
+      semiSalaryTotal: '',
+      deductionsTotal: '',
+      netPayTotal: '',
 
       //Create payroll batch
-      createBatchPeriodCoverFrom: '',
+      createBatchPeriodCoverFrom: new Date().toISOString().substring(0, 10),
       createBatchPeriodCoverTo: '',
       createBatchCode: '',
       selectedEmployees: [],
@@ -66,8 +73,6 @@ export default {
       payrollDeductionsMarineInsuranceFeeInput: '',
       payrollDeductionsUniformInput: '',
       payrollDeductionsPenaltiesInput: '',
-
-      totalPayroll: 'P123.00'
     };
   },
   methods: {
@@ -91,6 +96,11 @@ export default {
     },
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;
+    },
+    onClickCreateBatchHandler() {
+      this.createBatchPeriodCoverTo = '';
+      this.createBatchCode = '';
+      this.selectedEmployees = [];
     }
   },
   computed: {
@@ -181,7 +191,7 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
-            :disabled="!isEmployeeSelectBatchCodeEmpty"
+            :disabled="isEmployeeSelectBatchCodeEmpty"
           />
         </div>
 
@@ -203,12 +213,13 @@ export default {
           class="btn tms-btn text-light px-5"
           data-bs-toggle="modal"
           data-bs-target="#createBatchModal"
+          @click="onClickCreateBatchHandler"
         >
           Create Batch
         </button>
       </div>
 
-      <div class="tab-content" id="pills-tabContent">
+<!--  <div class="tab-content" id="pills-tabContent">
         <div
           class="tab-pane fade"
           v-for="(batchCode, index) in batchCodes"
@@ -217,11 +228,12 @@ export default {
           role="tabpanel"
           :aria-labelledby="batchCode + '-tab'"
           tabindex="0"
-        >
+        > -->
           <table class="table">
             <thead class="tbl-header text-light rounded">
               <tr>
                 <th class="align-middle" scope="col">Name</th>
+                <th class="align-middle" scope="col">Type</th>
                 <th class="align-middle" scope="col">Role</th>
                 <th class="align-middle" scope="col">Total</th>
                 <th class="align-middle" scope="col">Actions</th>
@@ -230,6 +242,7 @@ export default {
             <tbody class="table-group-divider">
               <tr v-for="employee in filteredEmployees" :key="employee.id">
                 <th class="align-middle" scope="row">{{ employee.name }}</th>
+                <td class="align-middle">{{ employee.type }}</td>
                 <td class="align-middle">{{ employee.role }}</td>
                 <td class="align-middle">
                   <button
@@ -249,7 +262,7 @@ export default {
                     data-bs-target="#payrollInternalSalaryModal"
                     class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
                   >
-                    Add Salary
+                    Edit Salary
                   </button>
 
                   <button
@@ -259,7 +272,7 @@ export default {
                     data-bs-target="#payrollInternalDeductionsModal"
                     class="btn tms-btn text-light justify-content-center align-items-center h-100"
                   >
-                    Add Deductions
+                    Edit Deductions
                   </button>
 
                   <button
@@ -269,7 +282,7 @@ export default {
                     data-bs-target="#payrollExternalSalaryModal"
                     class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
                   >
-                    Add Salary
+                    Edit Salary
                   </button>
 
                   <button
@@ -279,14 +292,14 @@ export default {
                     data-bs-target="#payrollExternalDeductionsModal"
                     class="btn tms-btn text-light justify-content-center align-items-center h-100"
                   >
-                    Add Deductions
+                    Edit Deductions
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
+        <!-- </div> -->
+      <!-- </div> -->
     </main>
   </div>
 
@@ -373,6 +386,7 @@ export default {
           class="btn text-light"
           data-bs-dismiss="modal"
           :disabled="!isCreateBatchInputsValid"
+          @click="employeeSelectBatchCodeInput = createBatchCode"
         >
           Create Batch
         </button>

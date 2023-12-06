@@ -307,18 +307,6 @@ export default {
           }
           return false;
         }
-
-        // if (
-        //   name.length === 0 ||
-        //   role.length === 0 ||
-        //   type.length === 0 ||
-        //   email.length === 0 ||
-        //   !this.isEmailValid(email) ||
-        //   phone.length === 0
-        // ) {
-        //   return true;
-        // }
-        // return false;
       }
     },
     isEmployeeRoleInputIsAdmin() {
@@ -577,28 +565,6 @@ export default {
             />
           </div>
 
-          <div
-            class="mb-3"
-            v-if="
-              !isEmployeeRoleInputIsAdmin &&
-              employeeRoleInput !== '' &&
-              !isEmployeeTypeInputIsInternal &&
-              employeeRoleInput === 'Driver'
-            "
-          >
-            <label
-              for="employeeDriverOperator"
-              class="form-label d-block text-start"
-              >Operator</label
-            >
-            <select
-              v-model="employeeDriverOperatorInput"
-              class="form-select"
-              id="employeeDriverOperator"
-              aria-describedby="employeeDriverOperator"
-            ></select>
-          </div>
-
           <div class="mb-3">
             <label for="employeeEmail" class="form-label d-block text-start"
               >Email address</label
@@ -797,26 +763,6 @@ export default {
               id="newEmployeePlateNumber"
               aria-describedby="newEmployeePlateNumber"
             />
-          </div>
-
-          <div
-            class="mb-3"
-            v-if="
-              !isEditEmployeeTypeInputIsInternal &&
-              editEmployeeRoleInput === 'Driver'
-            "
-          >
-            <label
-              for="newEmployeeDriverOperator"
-              class="form-label d-block text-start"
-              >Operator</label
-            >
-            <select
-              v-model="editEmployeeDriverOperatorInput"
-              class="form-select"
-              id="newEmployeeDriverOperator"
-              aria-describedby="newEmployeeDriverOperator"
-            ></select>
           </div>
 
           <div class="mb-3">
