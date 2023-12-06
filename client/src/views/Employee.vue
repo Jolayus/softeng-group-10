@@ -169,6 +169,10 @@ export default {
     },
     onPageChange() {
       this.clearAddEmployeeInputs();
+    },
+    onClickAddEmployeeHandler() {
+        this.clearAddEmployeeInputs();
+        this.currentModal = 'ADD';
     }
   },
   computed: {
@@ -378,7 +382,7 @@ export default {
           data-bs-toggle="modal"
           data-bs-target="#employeeModal"
           class="btn tms-btn text-light d-flex align-items-center h-100"
-          @click="currentModal = 'ADD'"
+          @click="onClickAddEmployeeHandler"
         >
           Add new employee
         </button>
@@ -387,14 +391,14 @@ export default {
         <thead class="tbl-header text-light rounded">
           <tr>
             <th class="align-middle" scope="col">Name</th>
-            <th class="align-middle" scope="col">Date Hired</th>
-            <th class="align-middle" scope="col">Role</th>
+            <th class="w-8 align-middle" scope="col">Date Hired</th>
+            <th class="w-8 align-middle" scope="col">Role</th>
             <th class="align-middle" scope="col">Driver's name</th>
-            <th class="align-middle" scope="col">Vehicle type</th>
+            <th class="w-8 align-middle" scope="col">Vehicle</th>
             <th class="align-middle" scope="col">Plate #</th>
             <th class="align-middle" scope="col">Email</th>
             <th class="align-middle" scope="col">Phone #</th>
-            <th class="align-middle" scope="col">Actions</th>
+            <th class="w-8 align-middle" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -531,13 +535,7 @@ export default {
           <div
             class="mb-3"
             v-if="
-              (!isEmployeeRoleInputIsAdmin &&
-                employeeRoleInput !== '' &&
-                employeeRoleInput === 'Operator') ||
-              (isEmployeeTypeInputIsInternal &&
-                employeeRoleInput !== '' &&
-                employeeRoleInput === 'Driver') ||
-              employeeRoleInput === 'Helper'
+              !isEmployeeRoleInputIsAdmin
             "
           >
             <label for="employeeRole" class="form-label d-block text-start"
@@ -561,13 +559,7 @@ export default {
           <div
             class="mb-3"
             v-if="
-              (!isEmployeeRoleInputIsAdmin &&
-                employeeRoleInput !== '' &&
-                employeeRoleInput === 'Operator') ||
-              (isEmployeeTypeInputIsInternal &&
-                employeeRoleInput !== '' &&
-                employeeRoleInput === 'Driver') ||
-              employeeRoleInput === 'Helper'
+              !isEmployeeRoleInputIsAdmin
             "
           >
             <label
@@ -911,7 +903,11 @@ export default {
 }
 
 th {
-  width: 11.11%;
+  width: 13.59%;
+}
+
+.w-8 {
+  width: 8%;
 }
 
 .modal-body label {

@@ -135,6 +135,9 @@ export default {
         this.createBatchCode &&
         this.selectedEmployees.length
       );
+    },
+    isEmployeeSelectBatchCodeEmpty() {
+      return this.employeeSelectBatchCodeInput = '';
     }
   }
 };
@@ -146,7 +149,7 @@ export default {
       <h1>Payroll</h1>
     </header>
     <hr />
-    <ul class="nav nav-pills gap-2 mb-5" id="pills-tab" role="tablist">
+    <!-- <ul class="nav nav-pills gap-2 mb-5" id="pills-tab" role="tablist">
       <li
         v-for="(batchCode, index) in batchCodes"
         class="nav-item"
@@ -165,9 +168,9 @@ export default {
           {{ batchCode }}
         </button>
       </li>
-    </ul>
+    </ul> -->
     <main class="container flex-grow-1">
-      <div class="d-flex justify-content-between mb-4" style="max-height: 35px">
+      <div class="d-flex justify-content-between mb-4 gap-4" style="max-height: 35px">
         <div class="input-group mb-3 h-100 align-items-center gap-2">
           <label for="user-input">Search:</label>
           <input
@@ -178,8 +181,23 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
+            :disabled="!isEmployeeSelectBatchCodeEmpty"
           />
         </div>
+
+        <div class="input-group mb-3 h-100 align-items-center gap-2">
+          <label for="user-input">Batch:</label>
+          <select
+            v-model="employeeSelectBatchCodeInput"
+            class="form-select"
+            id="employeeSelectBatchCode"
+            aria-describedby="employeeSelectBatchCode"
+          >
+            <option selected value="">Select Batch Code</option>
+            <option v-for="(batchCode, index) in batchCodes" value="1">{{ batchCode }}</option>
+          </select>
+        </div>
+
         <button
           type="button"
           class="btn tms-btn text-light px-5"

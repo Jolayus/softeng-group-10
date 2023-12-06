@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <footer class="d-flex justify-content-between mt-auto">
+  <footer class="w-100 col-10 d-flex justify-content-around mt-auto">
     <div>
       <img src="../assets/company_logo.png" height="30" alt="company logo" />
       <span>RO-ED Trucking Management System</span>
