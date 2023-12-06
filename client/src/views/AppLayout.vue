@@ -42,10 +42,10 @@ export default {
 
   <div v-else class="container-fluid">
     <div class="row">
-      <div class="col-2 p-0 min-vh-100">
+      <div class="col-1 p-0 min-vh-100">
         <Sidebar @logout="onLogoutHandler" />
       </div>
-      <div class="col-10 pr-0 text-center min-vh-100 d-flex flex-column">
+      <div class="col-11 pr-0 text-center min-vh-100 d-flex flex-column">
         <RouterView />
         <Footer></Footer>
       </div>

@@ -21,9 +21,24 @@ export default {
     ArchiveIcon,
     LogoutIcon
   },
+  data() {
+    return {
+      isSideBarBeingHover: false,
+      showHeading: false
+    };
+  },
   methods: {
     onLogout() {
       this.$emit('logout');
+    }
+  },
+  watch: {
+    isSideBarBeingHover(newValue) {
+      if (newValue === true) {
+        this.showHeading = true;
+      } else {
+        this.showHeading = false;
+      }
     }
   }
 };
@@ -31,7 +46,9 @@ export default {
 
 <template>
   <aside
-    class="h-100 shadow-lg p-3 d-flex flex-column justify-content-between position-fixed"
+    @mouseover="isSideBarBeingHover = true"
+    @mouseleave="isSideBarBeingHover = false"
+    class="sidebar h-100 shadow-lg p-3 d-flex flex-column justify-content-between position-fixed"
   >
     <nav>
       <div
@@ -44,38 +61,31 @@ export default {
             alt="company logo"
           />
         </a>
-        <h1 class="m-0 h5 text-light">RO-ED Logistics and Services</h1>
+
+        <!-- <h1 class="m-0 h5 text-light" v-if="showHeading"></h1> -->
       </div>
       <ul
         class="nav flex-column justify-content-center nav-pills text-left"
         aria-orientation="vertical"
       >
-        <li class="nav-link p-0">
-          <RouterLink
-            to="/dashboard"
-            class="text-light d-flex align-items-center gap-1"
-            role="button"
-          >
-            <DashboardIcon />Dashboard
-          </RouterLink>
+        <li class="nav-link p-0 w-100">
+          <div>
+            <RouterLink to="/dashboard" class="text-light gap-2" role="button">
+              <DashboardIcon class="dashboard-icon" /><span>Dashboard</span>
+            </RouterLink>
+          </div>
         </li>
-        <li class="nav-link p-0">
-          <RouterLink
-            to="/employee"
-            class="text-light d-flex align-items-center gap-1"
-            role="button"
-          >
-            <EmployeesIcon /> Employees
-          </RouterLink>
+        <li class="nav-link p-0 w-100">
+          <div>
+            <RouterLink to="/employee" class="text-light gap-2" role="button">
+              <EmployeesIcon /><span>Employees</span>
+            </RouterLink>
+          </div>
         </li>
-        <li class="nav-link p-0">
+        <li class="nav-link p-0 w-100">
           <div class="d-flex justify-content-between dropend">
-            <RouterLink
-              to="/client"
-              class="text-light align-items-center gap-1 flex-grow-1"
-              role="button"
-            >
-              <ClientsIcon /> Clients
+            <RouterLink to="/client" class="text-light gap-2" role="button">
+              <ClientsIcon /><span>Clients</span>
             </RouterLink>
             <button
               type="button"
@@ -85,14 +95,14 @@ export default {
             >
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul class="dropdown-menu nav-pills">
+            <ul id="dropdown" class="dropdown-menu nav-pills">
               <li class="dropdown-item nav-link py-1">
                 <RouterLink
                   to="/triprates"
                   class="text-light d-flex align-items-center gap-1"
                   role="button"
                 >
-                  <TripRatesIcon /> Trip Rates
+                  <TripRatesIcon /><span>Trip Rates</span>
                 </RouterLink>
               </li>
               <li class="dropdown-item nav-link py-1">
@@ -101,30 +111,30 @@ export default {
                   class="text-light d-flex align-items-center gap-1"
                   role="button"
                 >
-                  <BillingIcon /> Billing
+                  <BillingIcon /><span>Billing</span>
                 </RouterLink>
               </li>
             </ul>
           </div>
         </li>
         <li class="nav-link p-0">
-          <RouterLink
-            to="/payroll"
-            class="text-light d-flex align-items-center gap-1"
-            role="button"
-          >
-            <PayrollIcon /> Payroll
-          </RouterLink>
+          <div>
+            <RouterLink to="/payroll" class="text-light gap-2" role="button">
+              <PayrollIcon /><span>Payroll</span>
+            </RouterLink>
+          </div>
         </li>
         <li class="nav-link p-0">
           <div class="d-flex justify-content-between dropdown">
             <button
               type="button"
-              class="text-light btn dropdown-toggle dropdown-toggle-split w-100 d-flex justify-content-between align-items-center pl-5"
+              class="archives-btn text-light btn dropdown-toggle dropdown-toggle-split w-100 d-flex align-items-center"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <div><ArchiveIcon /> Archives</div>
+              <div class="d-flex gap-2 align-items-center">
+                <ArchiveIcon /><span>Archives</span>
+              </div>
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu w-100 nav-pills">
@@ -154,10 +164,12 @@ export default {
     <div class="text-light border-top">
       <p
         @click="onLogout"
-        class="logout mt-2 mb-2 rounded d-flex align-items-center gap-1"
+        class="logout mt-2 mb-2 rounded d-flex align-items-center gap-1 p-0"
         role="button"
       >
-        <LogoutIcon /> Logout
+      <div class="d-flex gap-2">
+        <LogoutIcon /><span>Logout</span>
+      </div>
       </p>
     </div>
   </aside>
@@ -185,5 +197,122 @@ aside,
 
 .nav-link {
   background-color: #041421 !important;
+}
+
+.sidebar {
+  width: 4rem;
+  transition: width 500ms ease;
+}
+
+.sidebar .nav {
+  gap: 20px;
+  transition: gap 500ms ease;
+}
+
+.nav li {
+  width: 100%;
+}
+
+.nav div {
+  display: flex;
+}
+
+.nav li a {
+  display: flex;
+  transition: padding 400ms ease;
+  padding: 0;
+}
+
+.nav li a span,
+.nav li span {
+  display: none;
+}
+
+.sidebar .nav li div button {
+  display: none;
+}
+
+.archives-btn {
+  display: flex;
+  border: 0;
+  padding: 0;
+  transition: padding 400ms ease;
+}
+
+.archives-btn::after {
+  display: none;
+}
+
+.logout {
+  display: flex;
+}
+
+.logout span {
+  display: none;
+}
+
+.sidebar:hover {
+  width: 20rem;
+}
+
+.sidebar:hover .nav {
+  gap: 0;
+}
+
+.sidebar:hover div {
+  justify-content: flex-start;
+}
+
+.sidebar:hover .logout span {
+  display: block;
+}
+
+.sidebar:hover .nav li a span {
+  display: block;
+}
+
+.sidebar:hover .nav li a,
+.sidebar:hover .archives-btn {
+  padding: 0.8rem;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.sidebar:hover .logout {
+  height: 100%;
+}
+
+.sidebar:hover .archives-btn {
+  padding-left: 0.8rem;
+}
+
+.sidebar:hover .nav li div button {
+  display: inline-block;
+}
+
+.sidebar:hover .archives-btn {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar:hover .archives-btn::after {
+  display: block;
+}
+
+.sidebar:hover .archives-btn span {
+  display: block;
+}
+
+.sidebar:hover .logout {
+  justify-content: flex-start;
+}
+
+svg {
+  width: 32px;
+  transition: width 600ms ease;
+}
+
+.sidebar:hover svg {
+  width: 20px;
 }
 </style>
