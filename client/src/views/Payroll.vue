@@ -137,7 +137,7 @@ export default {
       );
     },
     isEmployeeSelectBatchCodeEmpty() {
-      return this.employeeSelectBatchCodeInput = '';
+      return this.employeeSelectBatchCodeInput === '';
     }
   }
 };
@@ -194,7 +194,7 @@ export default {
             aria-describedby="employeeSelectBatchCode"
           >
             <option selected value="">Select Batch Code</option>
-            <option v-for="(batchCode, index) in batchCodes" value="1">{{ batchCode }}</option>
+            <option v-for="(batchCode, index) in batchCodes" :value="batchCode">{{ batchCode }}</option> 
           </select>
         </div>
 
