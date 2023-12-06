@@ -25,13 +25,11 @@ export default {
       searchInput: '',
 
       currentBatchCode: '',
-      
-      employeeSelectBatchCodeInput: '',
 
       salaryTotal: '',
       semiSalaryTotal: '',
       deductionsTotal: '',
-      netPayTotal: '',
+      totalPayroll: '',
 
       //Create payroll batch
       createBatchPeriodCoverFrom: new Date().toISOString().substring(0, 10),
@@ -146,8 +144,8 @@ export default {
         this.selectedEmployees.length
       );
     },
-    isEmployeeSelectBatchCodeEmpty() {
-      return this.employeeSelectBatchCodeInput === '';
+    isEmployeeCurrentBatchCodeEmpty() {
+      return this.currentBatchCode === '';
     }
   }
 };
@@ -159,26 +157,6 @@ export default {
       <h1>Payroll</h1>
     </header>
     <hr />
-    <!-- <ul class="nav nav-pills gap-2 mb-5" id="pills-tab" role="tablist">
-      <li
-        v-for="(batchCode, index) in batchCodes"
-        class="nav-item"
-        role="presentation"
-      >
-        <button
-          class="nav-link text-light px-5"
-          :class="{ active: index === 0 }"
-          :aria-selected="index === 0 ? true : false"
-          data-bs-toggle="pill"
-          type="button"
-          role="tab"
-          :aria-controls="batchCode"
-          @click="tabChangeHandler(batchCode)"
-        >
-          {{ batchCode }}
-        </button>
-      </li>
-    </ul> -->
     <main class="container flex-grow-1">
       <div class="d-flex justify-content-between mb-4 gap-4" style="max-height: 35px">
         <div class="input-group mb-3 h-100 align-items-center gap-2">
@@ -191,17 +169,17 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
-            :disabled="isEmployeeSelectBatchCodeEmpty"
+            :disabled="isEmployeeCurrentBatchCodeEmpty"
           />
         </div>
 
         <div class="input-group mb-3 h-100 align-items-center gap-2">
-          <label for="user-input">Batch:</label>
+          <label for="employeeCurrentBatchCode">Batch:</label>
           <select
-            v-model="employeeSelectBatchCodeInput"
+            v-model="currentBatchCode"
             class="form-select"
-            id="employeeSelectBatchCode"
-            aria-describedby="employeeSelectBatchCode"
+            id="employeeCurrentBatchCode"
+            aria-describedby="employeeCurrentBatchCode"
           >
             <option selected value="">Select Batch Code</option>
             <option v-for="(batchCode, index) in batchCodes" :value="batchCode">{{ batchCode }}</option> 
@@ -219,87 +197,75 @@ export default {
         </button>
       </div>
 
-<!--  <div class="tab-content" id="pills-tabContent">
-        <div
-          class="tab-pane fade"
-          v-for="(batchCode, index) in batchCodes"
-          :class="{ active: index === 0, show: index === 0 }"
-          :id="batchCode"
-          role="tabpanel"
-          :aria-labelledby="batchCode + '-tab'"
-          tabindex="0"
-        > -->
-          <table class="table">
-            <thead class="tbl-header text-light rounded">
-              <tr>
-                <th class="align-middle" scope="col">Name</th>
-                <th class="align-middle" scope="col">Type</th>
-                <th class="align-middle" scope="col">Role</th>
-                <th class="align-middle" scope="col">Total</th>
-                <th class="align-middle" scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr v-for="employee in filteredEmployees" :key="employee.id">
-                <th class="align-middle" scope="row">{{ employee.name }}</th>
-                <td class="align-middle">{{ employee.type }}</td>
-                <td class="align-middle">{{ employee.role }}</td>
-                <td class="align-middle">
-                  <button
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#payrollBreakdownModal"
-                    class="btn tms-btn text-light align-items-center h-100"
-                  >
-                    {{ totalPayroll }}
-                  </button>
-                </td>
-                <td class="align-middle d-flex">
-                  <button
-                    v-if="employee.type === 'Internal'"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#payrollInternalSalaryModal"
-                    class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
-                  >
-                    Edit Salary
-                  </button>
+      <table class="table">
+        <thead class="tbl-header text-light rounded">
+          <tr>
+            <th class="align-middle" scope="col">Name</th>
+            <th class="align-middle" scope="col">Type</th>
+            <th class="align-middle" scope="col">Role</th>
+            <th class="align-middle" scope="col">Total</th>
+            <th class="align-middle" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <tr v-for="employee in filteredEmployees" :key="employee.id">
+            <th class="align-middle" scope="row">{{ employee.name }}</th>
+            <td class="align-middle">{{ employee.type }}</td>
+            <td class="align-middle">{{ employee.role }}</td>
+            <td class="align-middle">
+              <button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollBreakdownModal"
+                class="btn tms-btn text-light align-items-center h-100"
+              >
+                {{ totalPayroll }}
+              </button>
+            </td>
+            <td class="align-middle d-flex">
+              <button
+                v-if="employee.type === 'Internal'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollInternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+              >
+                Edit Salary
+              </button>
 
-                  <button
-                    v-if="employee.type === 'Internal'"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#payrollInternalDeductionsModal"
-                    class="btn tms-btn text-light justify-content-center align-items-center h-100"
-                  >
-                    Edit Deductions
-                  </button>
+              <button
+                v-if="employee.type === 'Internal'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollInternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
+              >
+                Edit Deductions
+              </button>
 
-                  <button
-                    v-if="employee.type === 'External'"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#payrollExternalSalaryModal"
-                    class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
-                  >
-                    Edit Salary
-                  </button>
+              <button
+                v-if="employee.type === 'External'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollExternalSalaryModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+              >
+                Edit Salary
+              </button>
 
-                  <button
-                    v-if="employee.type === 'External'"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#payrollExternalDeductionsModal"
-                    class="btn tms-btn text-light justify-content-center align-items-center h-100"
-                  >
-                    Edit Deductions
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        <!-- </div> -->
-      <!-- </div> -->
+              <button
+                v-if="employee.type === 'External'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollExternalDeductionsModal"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
+              >
+                Edit Deductions
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </main>
   </div>
 
