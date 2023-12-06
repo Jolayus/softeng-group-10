@@ -24,21 +24,11 @@ export default {
   data() {
     return {
       isSideBarBeingHover: false,
-      showHeading: false
     };
   },
   methods: {
     onLogout() {
       this.$emit('logout');
-    }
-  },
-  watch: {
-    isSideBarBeingHover(newValue) {
-      if (newValue === true) {
-        this.showHeading = true;
-      } else {
-        this.showHeading = false;
-      }
     }
   }
 };
@@ -62,29 +52,28 @@ export default {
           />
         </a>
 
-        <!-- <h1 class="m-0 h5 text-light" v-if="showHeading"></h1> -->
       </div>
       <ul
         class="nav flex-column justify-content-center nav-pills text-left"
         aria-orientation="vertical"
       >
-        <li class="nav-link p-0 w-100">
-          <div>
-            <RouterLink to="/dashboard" class="text-light gap-2" role="button">
+        <li class="nav-link p-0">
+          <div class="w-100">
+            <RouterLink to="/dashboard" class="router-link text-light gap-2" role="button">
               <DashboardIcon class="dashboard-icon" /><span>Dashboard</span>
             </RouterLink>
           </div>
         </li>
         <li class="nav-link p-0 w-100">
           <div>
-            <RouterLink to="/employee" class="text-light gap-2" role="button">
+            <RouterLink to="/employee" class="router-link text-light gap-2" role="button">
               <EmployeesIcon /><span>Employees</span>
             </RouterLink>
           </div>
         </li>
         <li class="nav-link p-0 w-100">
           <div class="d-flex justify-content-between dropend">
-            <RouterLink to="/client" class="text-light gap-2" role="button">
+            <RouterLink to="/client" class="router-link text-light gap-2" role="button">
               <ClientsIcon /><span>Clients</span>
             </RouterLink>
             <button
@@ -119,7 +108,7 @@ export default {
         </li>
         <li class="nav-link p-0">
           <div>
-            <RouterLink to="/payroll" class="text-light gap-2" role="button">
+            <RouterLink to="/payroll" class="router-link text-light gap-2" role="button">
               <PayrollIcon /><span>Payroll</span>
             </RouterLink>
           </div>
@@ -314,5 +303,9 @@ svg {
 
 .sidebar:hover svg {
   width: 20px;
+}
+
+.router-link {
+  width: 300px;
 }
 </style>
