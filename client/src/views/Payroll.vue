@@ -5,7 +5,7 @@ import Modal from '../components/Modal.vue';
 
 class Batch {
   constructor(batchCode, batchPeriodCoverFrom, batchPeriodCoverTo, employeeId) {
-    this.batchCode = batchCode;
+    this.batchCode = new Date().getFullYear() + ' - ' + batchCode;
     this.batchPeriodCoverFrom = batchPeriodCoverFrom;
     this.batchPeriodCoverTo = batchPeriodCoverTo;
     this.employeeId = employeeId;
@@ -70,7 +70,7 @@ export default {
       payrollDeductionsCashAdvanceInput: '',
       payrollDeductionsMarineInsuranceFeeInput: '',
       payrollDeductionsUniformInput: '',
-      payrollDeductionsPenaltiesInput: '',
+      payrollDeductionsPenaltiesInput: ''
     };
   },
   methods: {
@@ -158,7 +158,10 @@ export default {
     </header>
     <hr />
     <main class="container flex-grow-1">
-      <div class="d-flex justify-content-between mb-4 gap-4" style="max-height: 35px">
+      <div
+        class="d-flex justify-content-between mb-4 gap-4"
+        style="max-height: 35px"
+      >
         <div class="input-group mb-3 h-100 align-items-center gap-2">
           <label for="user-input">Search:</label>
           <input
@@ -182,7 +185,9 @@ export default {
             aria-describedby="employeeCurrentBatchCode"
           >
             <option selected value="">Select Batch Code</option>
-            <option v-for="(batchCode, index) in batchCodes" :value="batchCode">{{ batchCode }}</option> 
+            <option v-for="(batchCode, index) in batchCodes" :value="batchCode">
+              {{ batchCode }}
+            </option>
           </select>
         </div>
 
@@ -294,6 +299,7 @@ export default {
                     v-model="createBatchPeriodCoverFrom"
                     type="date"
                     class="form-control"
+                    disabled
                   />
                 </div>
                 <div class="col-6">
@@ -311,12 +317,15 @@ export default {
             <label for="payrolLBatchInput" class="form-label d-block text-start"
               >Batch</label
             >
-            <input
-              v-model.trim="createBatchCode"
-              type="text"
-              class="form-control"
-              placeholder="Batch"
-            />
+            <div class="d-flex align-items-center gap-1">
+              <span>2023-</span>
+              <input
+                v-model.trim="createBatchCode"
+                type="text"
+                class="form-control"
+                placeholder="Batch"
+              />
+            </div>
           </div>
 
           <div class="mb-3">
