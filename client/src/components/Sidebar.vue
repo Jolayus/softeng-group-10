@@ -8,6 +8,7 @@ import BillingIcon from './Icons/BillingIcon.vue';
 import PayrollIcon from './Icons/PayrollIcon.vue';
 import ArchiveIcon from './Icons/ArchiveIcon.vue';
 import LogoutIcon from './Icons/LogoutIcon.vue';
+import { toHandlers } from 'vue';
 
 export default {
   name: 'Sidebar',
@@ -30,7 +31,7 @@ export default {
     onLogout() {
       this.$emit('logout');
     }
-  }
+  },
 };
 </script>
 
@@ -51,6 +52,13 @@ export default {
             alt="company logo"
           />
         </a>
+
+
+          <h1 class="m-0 h5 text-light">
+            RO-ED
+          </h1>
+
+          
 
       </div>
       <ul
@@ -78,13 +86,13 @@ export default {
             </RouterLink>
             <button
               type="button"
-              class="text-light btn dropdown-toggle dropdown-toggle-split"
+              class="clients-btn text-light btn dropdown-toggle dropdown-toggle-split"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul id="dropdown" class="dropdown-menu nav-pills">
+            <ul id="dropdown" class="dropdown-menu clients-dropdown nav-pills">
               <li class="dropdown-item nav-link py-1">
                 <RouterLink
                   to="/triprates"
@@ -126,7 +134,7 @@ export default {
               </div>
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
-            <ul class="dropdown-menu w-100 nav-pills">
+            <ul class="archives-dropdown dropdown-menu w-100 nav-pills">
               <li class="dropdown-item nav-link py-1">
                 <RouterLink
                   to="/archivedemployee"
@@ -190,12 +198,12 @@ aside,
 
 .sidebar {
   width: 4rem;
-  transition: width 500ms ease;
+  transition: width 800ms ease;
 }
 
 .sidebar .nav {
   gap: 20px;
-  transition: gap 500ms ease;
+  transition: gap 100ms ease;
 }
 
 .nav li {
@@ -208,7 +216,7 @@ aside,
 
 .nav li a {
   display: flex;
-  transition: padding 400ms ease;
+  transition: padding 800ms ease;
   padding: 0;
 }
 
@@ -225,7 +233,7 @@ aside,
   display: flex;
   border: 0;
   padding: 0;
-  transition: padding 400ms ease;
+  transition: padding 800ms ease;
 }
 
 .archives-btn::after {
@@ -298,7 +306,7 @@ aside,
 
 svg {
   width: 32px;
-  transition: width 600ms ease;
+  transition: width 800ms ease;
 }
 
 .sidebar:hover svg {
@@ -307,5 +315,35 @@ svg {
 
 .router-link {
   width: 300px;
+}
+
+.nav-link div .clients-dropdown,
+.nav-link div .archives-dropdown {
+  display: none;
+}
+
+.nav-link div .clients-btn:hover ~ .clients-dropdown,
+.nav-link div .clients-dropdown:hover {
+  display: block;
+  position: absolute;
+  right: 0;
+  transform: translateX(100%);
+}
+
+.nav-link div .archives-btn:hover ~ .archives-dropdown,
+.nav-link div .archives-dropdown:hover {
+  display: block;
+  position: absolute;
+  inset: 0px auto auto 0px;
+  margin: 0px;
+  transform: translate(0px, 50px);
+}
+
+h1 {
+  display: none;
+}
+
+.sidebar:hover h1 {
+  display: block;
 }
 </style>
