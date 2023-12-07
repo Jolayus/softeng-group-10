@@ -137,11 +137,15 @@ export default {
       }
     },
     isCreateBatchInputsValid() {
+      const currentDate = new Date();
+      const timeDifference = new Date(this.createBatchPeriodCoverTo).getTime() - currentDate.getTime() ;
+
       return (
         this.createBatchPeriodCoverFrom &&
         this.createBatchPeriodCoverTo &&
         this.createBatchCode &&
-        this.selectedEmployees.length
+        this.selectedEmployees.length &&
+        timeDifference > 0
       );
     },
     isEmployeeCurrentBatchCodeEmpty() {
