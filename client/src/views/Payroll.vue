@@ -12,6 +12,37 @@ class Batch {
   }
 }
 
+class Salary {
+  constructor(
+    employeeId,
+    basicSalary,
+    allowanceSalary,
+    dailyRate,
+    dailyAllowance,
+    daysOfWork,
+    semiBasicSalary,
+    semiAllowanceSalary,
+    overtimePay,
+    total
+  ) {
+    this.employeeId = employeeId;
+    this.basicSalary = basicSalary;
+    this.allowanceSalary = allowanceSalary;
+    this.dailyRate = dailyRate;
+    this.dailyAllowance = dailyAllowance;
+    this.daysOfWork = daysOfWork;
+
+    this.semiBasicSalary = semiBasicSalary;
+    this.semiAllowanceSalary = semiAllowanceSalary;
+    this.overtimePay = overtimePay;
+    this.total = total;
+  }
+
+  getTotal() {
+    return this.total;
+  }
+}
+
 export default {
   name: 'Payroll',
   components: {
@@ -31,6 +62,9 @@ export default {
       deductionsTotal: '',
       totalPayroll: '',
 
+      // PAYROLL
+      payrollCurrentEmployee: null,
+
       //Create payroll batch
       createBatchPeriodCoverFrom: new Date().toISOString().substring(0, 10),
       createBatchPeriodCoverTo: '',
@@ -38,24 +72,27 @@ export default {
       selectedEmployees: [],
 
       //payrollInternalSalaryModal
-      payrollBasicSalaryInput: '',
-      payrollAllowanceSalaryInput: '',
-      payrollDailyRateInput: '',
-      payrollDailyAllowanceInput: '',
-      payrollDaysOfWorkInput: '',
-      payrollSemiBasicSalaryInput: '',
-      payrollSemiAllowanceSalaryInput: '',
-      payrollServiceFeeInput: '',
-      payrollOvertimePayInput: '',
-      payrollExtraPayInput: '',
+      payrollBasicSalaryInput: 0,
+      payrollAllowanceSalaryInput: 0,
+      payrollDailyRateInput: 0,
+      payrollDailyAllowanceInput: 0,
+      payrollDaysOfWorkInput: 0,
+      // payrollSemiBasicSalaryInput: '',
+      // payrollSemiAllowanceSalaryInput: '',
+      payrollServiceFeeInput: 0,
+      payrollOvertimePayInput: 0,
+      // payrollExtraPayInput: 0,
+      payrollOtherPayInput: 0,
+      payrollTotal: 0,
 
       //payrollInternalDeductionsModal
-      payrollDeductionsCashAdvanceInput: '',
-      payrollDeductionsPAGIBIGInput: '',
-      payrollDeductionsSSSInput: '',
-      payrollDeductionsPhilHealthInput: '',
-      payrollDeductionsLateInput: '',
-      payrollDeductionsDamagesInput: '',
+      payrollDeductionsCashAdvanceInput: 0,
+      payrollDeductionsHDMF: 0,
+      // payrollDeductionsPAGIBIGInput: '',
+      payrollDeductionsSSSInput: 0,
+      // payrollDeductionsPhilHealthInput: '',
+      payrollDeductionsLateInput: 0,
+      payrollDeductionsDamagesInput: 0,
 
       //payrollExternalSalaryModal
       payrollNoOfTripsInput: '',
@@ -72,6 +109,26 @@ export default {
       payrollDeductionsUniformInput: '',
       payrollDeductionsPenaltiesInput: ''
     };
+  },
+
+  // THIS CODE IS FOR DEMO PURPOSES ONLY, WILL DELETE IT LATER
+  // ( DEFAULT VALUES FOR INPUTS, FOR EASY TESTING )
+  mounted() {
+    this.payrollBasicSalaryInput = 20000;
+    this.payrollAllowanceSalaryInput = 0;
+    this.payrollDailyRateInput = 909.09;
+    this.payrollDailyAllowanceInput = 0;
+    this.payrollDaysOfWorkInput = 11;
+    this.payrollSemiBasicSalaryInput =
+      this.payrollDailyRateInput * this.payrollDaysOfWorkInput;
+    this.payrollSemiAllowanceSalaryInput =
+      this.payrollDailyAllowanceInput * this.payrollDaysOfWorkInput;
+    this.payrollOvertimePayInput = 0;
+    this.payrollTotal =
+      this.payrollSemiBasicSalaryInput +
+      this.payrollSemiAllowanceSalaryInput +
+      this.payrollOvertimePayInput +
+      this.payrollOtherPayInput;
   },
   methods: {
     submitCreateBatchHandler() {
@@ -99,6 +156,33 @@ export default {
       this.createBatchPeriodCoverTo = '';
       this.createBatchCode = '';
       this.selectedEmployees = [];
+    },
+    onSubmitSalaryForm() {
+      (this.payrollTotal =
+        this.payrollSemiBasicSalaryInput +
+        this.payrollSemiAllowanceSalaryInput +
+        this.payrollOvertimePayInput),
+        this.payrollOtherPayInput;
+
+      const newSalary = new Salary(
+        this.payrollCurrentEmployee.id,
+        this.payrollBasicSalaryInput,
+        this.payrollAllowanceSalaryInput,
+        this.payrollDailyRateInput,
+        this.payrollDailyAllowanceInput,
+        this.payrollDaysOfWorkInput,
+        this.payrollSemiBasicSalaryInput,
+        this.payrollSemiAllowanceSalaryInput,
+        this.payrollOvertimePayInput,
+        this.payrollTotal
+      );
+
+      this.$store.dispatch('salaries/addSalary', newSalary);
+
+      const targetEmployee = this.employees.find(
+        (employee) => employee.id === newSalary.employeeId
+      );
+      targetEmployee.salary = newSalary;
     }
   },
   computed: {
@@ -126,10 +210,24 @@ export default {
     isThereBatchCodeExists() {
       return this.batchCodes.length;
     },
+    salaries() {
+      this.$store.getters['salaries/salaries'];
+    },
     filteredEmployees() {
-      return this.currentEmployeesByBatchCode.filter((employee) =>
+      const employees = this.currentEmployeesByBatchCode.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
+
+      if (this.salaries && this.salaries.length > 0) {
+        this.salaries.forEach((salary) => {
+          const targetEmployee = employees.find(
+            (employee) => employee.id === salary.employeeId
+          );
+          targetEmployee.salary = salary;
+        });
+      }
+
+      return employees;
     },
     periodCovered() {
       if (this.createBatchPeriodCoverFrom && this.createBatchPeriodCoverTo) {
@@ -138,7 +236,9 @@ export default {
     },
     isCreateBatchInputsValid() {
       const currentDate = new Date();
-      const timeDifference = new Date(this.createBatchPeriodCoverTo).getTime() - currentDate.getTime() ;
+      const timeDifference =
+        new Date(this.createBatchPeriodCoverTo).getTime() -
+        currentDate.getTime();
 
       return (
         this.createBatchPeriodCoverFrom &&
@@ -150,7 +250,8 @@ export default {
     },
     isEmployeeCurrentBatchCodeEmpty() {
       return this.currentBatchCode === '';
-    }
+    },
+    salary() {}
   }
 };
 </script>
@@ -228,7 +329,9 @@ export default {
                 data-bs-target="#payrollBreakdownModal"
                 class="btn tms-btn text-light align-items-center h-100"
               >
-                {{ totalPayroll }}
+                {{
+                  employee.salary === undefined ? 0.0 : employee.salary.total
+                }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -238,6 +341,7 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalSalaryModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+                @click="payrollCurrentEmployee = employee"
               >
                 Edit Salary
               </button>
@@ -388,7 +492,7 @@ export default {
             <label
               for="payrollBasicSalary"
               class="form-label d-block text-start"
-              >Basic Salary</label
+              >Basic</label
             >
             <input
               v-model="payrollBasicSalaryInput"
@@ -396,14 +500,14 @@ export default {
               class="form-control"
               id="payrollBasicSalary"
               aria-describedby="payrollBasicSalary"
-              placeholder="Basic Salary"
+              placeholder="Basic"
             />
           </div>
           <div class="mb-3">
             <label
               for="payrollAllowanceSalary"
               class="form-label d-block text-start"
-              >Allowance Salary</label
+              >Allowance</label
             >
             <input
               v-model="payrollAllowanceSalaryInput"
@@ -411,7 +515,7 @@ export default {
               class="form-control"
               id="payrollAllowanceSalary"
               aria-describedby="payrollAllowanceSalary"
-              placeholder="Allowance Salary"
+              placeholder="Allowance"
             />
           </div>
           <div class="mb-3">
@@ -455,7 +559,7 @@ export default {
               placeholder="Days of Work"
             />
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label
               for="payrollSemiBasicSalary"
               class="form-label d-block text-start"
@@ -469,8 +573,8 @@ export default {
               aria-describedby="payrollSemiBasicSalary"
               placeholder="Semi - Basic Salary"
             />
-          </div>
-          <div class="mb-3">
+          </div> -->
+          <!-- <div class="mb-3">
             <label
               for="payrollSemiAllowanceSalary"
               class="form-label d-block text-start"
@@ -484,7 +588,7 @@ export default {
               aria-describedby="payrollSemiAllowanceSalary"
               placeholder="Semi - Allowance Salary"
             />
-          </div>
+          </div> -->
           <div class="mb-3">
             <label for="payrollServiceFee" class="form-label d-block text-start"
               >Service Fee</label
@@ -513,7 +617,7 @@ export default {
               placeholder="Overtime Pay"
             />
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label for="payrollExtraPay" class="form-label d-block text-start"
               >Extra Pay</label
             >
@@ -525,6 +629,20 @@ export default {
               aria-describedby="payrollExtraPay"
               placeholder="Extra Pay"
             />
+          </div> -->
+
+          <div class="mb-3">
+            <label for="payrollExtraPay" class="form-label d-block text-start"
+              >Others
+            </label>
+            <input
+              v-model="payrollOtherPayInput"
+              type="number"
+              class="form-control"
+              id="payrollOtherPay"
+              aria-describedby="payrollOtherPay"
+              placeholder="Others"
+            />
           </div>
         </form>
       </div>
@@ -535,12 +653,12 @@ export default {
           Close
         </button>
         <button
-          type="submit"
+          type="button"
           class="btn tms-btn text-light"
-          form="payrollInternalSalaryForm"
           data-bs-dismiss="modal"
+          @click="onSubmitSalaryForm"
         >
-          Add Salary
+          Edit Salary
         </button>
       </div>
     </template>
@@ -572,7 +690,24 @@ export default {
               placeholder="Cash Advance"
             />
           </div>
+
           <div class="mb-3">
+            <label
+              for="payrollDeductionsHDMF"
+              class="form-label d-block text-start"
+              >HDMF</label
+            >
+            <input
+              v-model="payrollDeductionsHDMF"
+              type="number"
+              class="form-control"
+              id="payrollDeductionsHDMF"
+              aria-describedby="payrollDeductionsHDMF"
+              placeholder="HDMF"
+            />
+          </div>
+
+          <!-- <div class="mb-3">
             <label
               for="payrollDeductionsHDMF"
               class="form-label d-block text-start"
@@ -586,7 +721,8 @@ export default {
               aria-describedby="payrollDeductionsHDMF"
               placeholder="PAG-IBIG Contribution"
             />
-          </div>
+          </div> -->
+
           <div class="mb-3">
             <label
               for="payrollDeductionsSSS"
@@ -602,7 +738,7 @@ export default {
               placeholder="SSS Contribution"
             />
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label
               for="payrollDeductionsPhilHealth"
               class="form-label d-block text-start"
@@ -616,7 +752,7 @@ export default {
               aria-describedby="payrollDeductionsPhilHealth"
               placeholder="PhilHealth Contribution"
             />
-          </div>
+          </div> -->
           <div class="mb-3">
             <label
               for="payrollDeductionsLate"

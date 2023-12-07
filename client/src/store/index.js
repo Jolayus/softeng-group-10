@@ -8,6 +8,7 @@ import archivedClientsModule from './modules/archivedClients';
 import billingsModule from './modules/billings';
 import billingTripsModule from './modules/billingTrips';
 import payrollBatchesModule from './modules/payrollBatches';
+import payrollSalariesModule from './modules/payrollSalaries';
 
 const store = createStore({
   modules: {
@@ -18,7 +19,8 @@ const store = createStore({
     archivedClients: archivedClientsModule,
     billings: billingsModule,
     billingTrips: billingTripsModule,
-    batches: payrollBatchesModule
+    batches: payrollBatchesModule,
+    salaries: payrollSalariesModule
   }
 });
 
