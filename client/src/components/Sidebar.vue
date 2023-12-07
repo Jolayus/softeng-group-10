@@ -54,7 +54,7 @@ export default {
         </a>
 
 
-          <h1 class="m-0 h5 text-light">
+          <h1 class="m-0 h6 fw-bold text-light">
             RO-ED
           </h1>
 
@@ -340,10 +340,12 @@ svg {
 }
 
 h1 {
-  display: none;
+  height: 20px;
+  opacity: 0;
+  transition: opacity 400ms ease;
 }
 
 .sidebar:hover h1 {
-  display: block;
+  opacity: 1;
 }
 </style>
