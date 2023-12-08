@@ -59,6 +59,11 @@ export default {
   getters: {
     employees(state) {
       return state.employees;
+    },
+    getEmployeeById(state) {
+      return function (id) {
+        return state.employees.find((employee) => employee.id === id);
+      }
     }
   }
 };

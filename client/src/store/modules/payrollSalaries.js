@@ -12,19 +12,34 @@ export default {
     addSalary(state, newSalary) {
       state.salaries.push(newSalary);
     },
-    editSalary(state, newDetails) {
-      const updatedSalary = state.salaries.find((salary) => salary.employeeId === newDetails.employeeId);
+    editSalary(state, { newDetails, employee }) {
+      const updatedSalary = state.salaries.find(
+        (salary) => salary.employeeId === newDetails.employeeId
+      );
 
-      const { basicSalary, allowanceSalary, dailyRate, dailyAllowance, daysOfWork, semiBasicSalary, semiAllowanceSalary, total, overtimePay } = newDetails;
-      
+      const {
+        basicSalary,
+        allowanceSalary,
+        dailyRate,
+        dailyAllowance,
+        daysOfWork,
+        semiBasicSalary,
+        semiAllowanceSalary,
+        total,
+        overtimePay
+      } = newDetails;
+
       updatedSalary.basicSalary = basicSalary;
       updatedSalary.allowanceSalary = allowanceSalary;
       updatedSalary.dailyRate = dailyRate;
       updatedSalary.dailyAllowance = dailyAllowance;
+      updatedSalary.daysOfWork = daysOfWork;
       updatedSalary.semiBasicSalary = semiBasicSalary;
       updatedSalary.semiAllowanceSalary = semiAllowanceSalary;
       updatedSalary.overtimePay = overtimePay;
       updatedSalary.total = total;
+
+      employee.salary = updatedSalary;
     }
   },
   actions: {
@@ -32,7 +47,11 @@ export default {
       context.commit('addSalary', newSalary);
     },
     editSalary(context, newDetails) {
-      context.commit('editSalary', newDetails);
+      const employee = context.rootGetters['employees/getEmployeeById'](
+        newDetails.employeeId
+      );
+
+      context.commit('editSalary', { newDetails, employee });
     }
   },
   getters: {
@@ -41,13 +60,15 @@ export default {
     },
     isSalaryAlreadyExist(state) {
       return function (employeeId) {
-        const idx = state.salaries.find((salary) => salary.employeeId === employeeId);
+        const idx = state.salaries.find(
+          (salary) => salary.employeeId === employeeId
+        );
 
         if (idx >= 0) {
           return true;
         }
         return false;
-      }
+      };
     }
   }
-}
+};

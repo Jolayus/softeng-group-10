@@ -23,6 +23,7 @@ class Salary {
     semiBasicSalary,
     semiAllowanceSalary,
     overtimePay,
+    others,
     total
   ) {
     this.employeeId = employeeId;
@@ -35,11 +36,8 @@ class Salary {
     this.semiBasicSalary = semiBasicSalary;
     this.semiAllowanceSalary = semiAllowanceSalary;
     this.overtimePay = overtimePay;
+    this.others = others;
     this.total = total;
-  }
-
-  getTotal() {
-    return this.total;
   }
 }
 
@@ -77,8 +75,8 @@ export default {
       payrollDailyRateInput: 0,
       payrollDailyAllowanceInput: 0,
       payrollDaysOfWorkInput: 0,
-      // payrollSemiBasicSalaryInput: '',
-      // payrollSemiAllowanceSalaryInput: '',
+      payrollSemiBasicSalaryInput: 0,
+      payrollSemiAllowanceSalaryInput: 0,
       payrollServiceFeeInput: 0,
       payrollOvertimePayInput: 0,
       // payrollExtraPayInput: 0,
@@ -110,26 +108,6 @@ export default {
       payrollDeductionsPenaltiesInput: ''
     };
   },
-
-  // THIS CODE IS FOR DEMO PURPOSES ONLY, WILL DELETE IT LATER
-  // ( DEFAULT VALUES FOR INPUTS, FOR EASY TESTING )
-  mounted() {
-    this.payrollBasicSalaryInput = 20000;
-    this.payrollAllowanceSalaryInput = 0;
-    this.payrollDailyRateInput = 909.09;
-    this.payrollDailyAllowanceInput = 0;
-    this.payrollDaysOfWorkInput = 11;
-    this.payrollSemiBasicSalaryInput =
-      this.payrollDailyRateInput * this.payrollDaysOfWorkInput;
-    this.payrollSemiAllowanceSalaryInput =
-      this.payrollDailyAllowanceInput * this.payrollDaysOfWorkInput;
-    this.payrollOvertimePayInput = 0;
-    this.payrollTotal =
-      this.payrollSemiBasicSalaryInput +
-      this.payrollSemiAllowanceSalaryInput +
-      this.payrollOvertimePayInput +
-      this.payrollOtherPayInput;
-  },
   methods: {
     submitCreateBatchHandler() {
       this.selectedEmployees.forEach((employeeId) => {
@@ -141,13 +119,48 @@ export default {
         );
         this.storeCreateBatch(newBatch);
 
+        const salary = new Salary(employeeId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        this.storeCreateSalary(salary);
+
+        const targetEmployee =
+          this.$store.getters['employees/getEmployeeById'](employeeId);
+
+        targetEmployee.salary = salary;
+
         if (!this.isThereBatchCodeExists) {
           this.currentBatchCode = newBatch.batchCode;
         }
       });
     },
+    onSubmitSalaryForm() {
+      const employeeId = this.payrollCurrentEmployee.id;
+      const newDetails = new Salary(
+        employeeId,
+        this.payrollBasicSalaryInput,
+        this.payrollAllowanceSalaryInput,
+        this.payrollDailyRateInput,
+        this.payrollDailyAllowanceInput,
+        this.payrollDaysOfWorkInput,
+        this.payrollSemiBasicSalaryInput,
+        this.payrollSemiAllowanceSalaryInput,
+        this.payrollOvertimePayInput,
+        this.payrollOtherPayInput,
+        this.computedPayrollTotal
+      );
+
+      const targetEmployee =
+        this.$store.getters['employees/getEmployeeById'](employeeId);
+      this.$store.dispatch('salaries/editSalary', newDetails);
+
+      targetEmployee.salary = newDetails;
+    },
     storeCreateBatch(newBatch) {
       this.$store.dispatch('batches/addBatch', newBatch);
+    },
+    storeCreateSalary(newSalary) {
+      console.log(newSalary);
+      this.$store.dispatch('salaries/addSalary', newSalary);
     },
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;
@@ -157,32 +170,8 @@ export default {
       this.createBatchCode = '';
       this.selectedEmployees = [];
     },
-    onSubmitSalaryForm() {
-      (this.payrollTotal =
-        this.payrollSemiBasicSalaryInput +
-        this.payrollSemiAllowanceSalaryInput +
-        this.payrollOvertimePayInput),
-        this.payrollOtherPayInput;
-
-      const newSalary = new Salary(
-        this.payrollCurrentEmployee.id,
-        this.payrollBasicSalaryInput,
-        this.payrollAllowanceSalaryInput,
-        this.payrollDailyRateInput,
-        this.payrollDailyAllowanceInput,
-        this.payrollDaysOfWorkInput,
-        this.payrollSemiBasicSalaryInput,
-        this.payrollSemiAllowanceSalaryInput,
-        this.payrollOvertimePayInput,
-        this.payrollTotal
-      );
-
-      this.$store.dispatch('salaries/addSalary', newSalary);
-
-      const targetEmployee = this.employees.find(
-        (employee) => employee.id === newSalary.employeeId
-      );
-      targetEmployee.salary = newSalary;
+    setPayrollCurrentEmployee(employee) {
+      this.payrollCurrentEmployee = employee;
     }
   },
   computed: {
@@ -211,21 +200,12 @@ export default {
       return this.batchCodes.length;
     },
     salaries() {
-      this.$store.getters['salaries/salaries'];
+      return this.$store.getters['salaries/salaries'];
     },
     filteredEmployees() {
       const employees = this.currentEmployeesByBatchCode.filter((employee) =>
         employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
       );
-
-      if (this.salaries && this.salaries.length > 0) {
-        this.salaries.forEach((salary) => {
-          const targetEmployee = employees.find(
-            (employee) => employee.id === salary.employeeId
-          );
-          targetEmployee.salary = salary;
-        });
-      }
 
       return employees;
     },
@@ -251,7 +231,34 @@ export default {
     isEmployeeCurrentBatchCodeEmpty() {
       return this.currentBatchCode === '';
     },
-    salary() {}
+    computedPayrollTotal() {
+      return (this.payrollTotal =
+        this.payrollSemiBasicSalaryInput +
+        this.payrollSemiAllowanceSalaryInput +
+        this.payrollServiceFeeInput +
+        this.payrollOvertimePayInput +
+        this.payrollOtherPayInput);
+    }
+  },
+  watch: {
+    payrollDaysOfWorkInput(newDaysOfWork) {
+      this.payrollSemiBasicSalaryInput =
+        this.payrollDailyRateInput * newDaysOfWork;
+      this.payrollSemiAllowanceSalaryInput =
+        this.payrollDailyAllowanceInput * newDaysOfWork;
+    },
+    payrollDailyRateInput(newDailyRate) {
+      this.payrollSemiBasicSalaryInput =
+        this.payrollDaysOfWorkInput * newDailyRate;
+    },
+    payrollDailyAllowanceInput(newDailyAllowance) {
+      this.payrollSemiAllowanceSalaryInput =
+        this.payrollDaysOfWorkInput * newDailyAllowance;
+    },
+
+    payrollCurrentEmployee(newEmployee) {
+      console.log(newEmployee);
+    }
   }
 };
 </script>
@@ -328,10 +335,9 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollBreakdownModal"
                 class="btn tms-btn text-light align-items-center h-100"
+                @click="setPayrollCurrentEmployee(employee)"
               >
-                {{
-                  employee.salary === undefined ? 0.0 : employee.salary.total
-                }}
+                {{ employee.salary === undefined ? 0 : employee.salary.total }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -341,7 +347,7 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalSalaryModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
-                @click="payrollCurrentEmployee = employee"
+                @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Salary
               </button>
@@ -352,6 +358,7 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalDeductionsModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100"
+                @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Deductions
               </button>
@@ -1021,7 +1028,7 @@ export default {
     </template>
   </Modal>
 
-  <Modal id="payrollBreakdownModal">
+  <Modal id="payrollBreakdownModal" :isForPayrollBreakdown="true">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
         <h1 class="modal-title fs-5" id="editEmployeeLabel">
@@ -1030,7 +1037,45 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
-      <div class="modal-body"></div>
+      <div class="modal-body d-flex justify-content-around">
+        <div v-if="payrollCurrentEmployee" class="salary-breakdown d-flex flex-column align-items-start">
+          <h2>Salary</h2>
+          <p><span class="fw-bold text-secondary">Employee's name: </span> {{ payrollCurrentEmployee.name }}</p>
+          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.role }}</p>
+          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.date_hired }}</p>
+          <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
+          <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
+          <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
+          
+          <p><span class="fw-bold text-secondary">Daily Allowance: </span> {{ payrollCurrentEmployee.salary.dailyAllowance }}</p>
+
+          <p><span class="fw-bold text-secondary">No. Of Days: </span> {{ payrollCurrentEmployee.salary.daysOfWork }}</p>
+
+          <p><span class="fw-bold text-warning">Semi Basic Salary: </span> {{ payrollCurrentEmployee.salary.semiBasicSalary }}</p>
+
+          <p><span class="fw-bold text-warning">Semi Allowance Salary: </span> {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}</p>
+
+          <p><span class="fw-bold text-warning">Overtime Pay: </span> {{ payrollCurrentEmployee.salary.overtimePay }}</p>
+
+          <p><span class="fw-bold text-warning">Others: </span> {{ payrollCurrentEmployee.salary.others }}</p>
+
+        </div>
+        <div v-if="payrollCurrentEmployee" class="deduction-breakdown d-flex flex-column align-items-start">
+          <h2>Salary</h2>
+          <p><span class="fw-bold text-secondary">Employee's name: </span> {{ payrollCurrentEmployee.name }}</p>
+          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.role }}</p>
+          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.date_hired }}</p>
+          <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
+          <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
+          <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
+          <p><span class="fw-bold text-secondary">Daily Allowance: </span> {{ payrollCurrentEmployee.salary.dailyAllowance }}</p>
+          <p><span class="fw-bold text-secondary">No. Of Days: </span> {{ payrollCurrentEmployee.salary.daysOfWork }}</p>
+          <p><span class="fw-bold text-warning">Semi Basic Salary: </span> {{ payrollCurrentEmployee.salary.semiBasicSalary }}</p>
+          <p><span class="fw-bold text-warning">Semi Allowance Salary: </span> {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}</p>
+          <p><span class="fw-bold text-warning">Overtime Pay: </span> {{ payrollCurrentEmployee.salary.overtimePay }}</p>
+          <p><span class="fw-bold text-warning">Others: </span> {{ payrollCurrentEmployee.salary.others }}</p>
+        </div>
+      </div>
     </template>
     <template v-slot:modal-footer>
       <div class="modal-footer justify-content-center border-top-0">
