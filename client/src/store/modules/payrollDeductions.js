@@ -17,13 +17,16 @@ export default {
         (deduction) => deduction.employeeId === newDetails.employeeId
       );
 
-      const { cashAdvance, SSSContrib, philhealth, SSSLoan, total } =
+      const { cashAdvance, pagibig, SSSContrib, philhealth, late, damages, others, total } =
         newDetails;
 
       updatedDeduction.cashAdvance = cashAdvance;
+      updatedDeduction.pagibig = pagibig;
       updatedDeduction.SSSContrib = SSSContrib;
       updatedDeduction.philhealth = philhealth;
-      updatedDeduction.SSSLoan = SSSLoan;
+      updatedDeduction.late = late;
+      updatedDeduction.damages = damages;
+      updatedDeduction.others = others;
       updatedDeduction.total = total;
 
       employee.deduction = updatedDeduction;

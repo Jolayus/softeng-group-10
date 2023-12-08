@@ -67,6 +67,44 @@ class Deduction {
   }
 }
 
+class SalaryExternal {
+  constructor(
+    employeeId,
+    noOfTrips,
+    clientTripRates,
+    totalAmountOfTrips,
+    dropRate,
+    tollFee,
+    passway,
+    others
+  ) {
+    this.employeeId = employeeId;
+    this.noOfTrips = noOfTrips;
+    this.clientTripRates = clientTripRates;
+    this.totalAmountOfTrips = totalAmountOfTrips;
+    this.dropRate = dropRate;
+    this.tollFee = tollFee;
+    this.passway = passway;
+    this.others = others;
+  }
+}
+
+class DeductionExternal {
+  constructor(
+    employeeId,
+    cashAdvance,
+    marineInsuranceFee,
+    uniform,
+    penalties
+  ) {
+    this.employeeId = employeeId;
+    this.cashAdvance = cashAdvance;
+    this.marineInsuranceFee = marineInsuranceFee;
+    this.uniform = uniform;
+    this.penalties = penalties;
+  }
+}
+
 export default {
   name: 'Payroll',
   components: {
@@ -114,19 +152,21 @@ export default {
       deductionTotal: 0,
 
       //payrollExternalSalaryModal
-      payrollNoOfTripsInput: '',
-      payrollClientTripRatesInput: '',
-      payrollTotalAmountOfTripsInput: '',
-      payrollDropRateInput: '',
-      payrollTollFeeInput: '',
-      payrollPasswayInput: '',
-      payrollOthersInput: '',
+      payrollNoOfTripsInput: 0,
+      payrollClientTripRatesInput: 0,
+      payrollTotalAmountOfTripsInput: 0,
+      payrollDropRateInput: 0,
+      payrollTollFeeInput: 0,
+      payrollPasswayInput: 0,
+      payrollOthersInput: 0,
+      payrollExternalTotal: 0,
 
       //payrollExternalDeductionsModal
-      payrollDeductionsExternalCashAdvanceInput: '',
-      payrollDeductionsMarineInsuranceFeeInput: '',
-      payrollDeductionsUniformInput: '',
-      payrollDeductionsPenaltiesInput: ''
+      payrollDeductionsExternalCashAdvanceInput: 0,
+      payrollDeductionsMarineInsuranceFeeInput: 0,
+      payrollDeductionsUniformInput: 0,
+      payrollDeductionsPenaltiesInput: 0,
+      deductionExternalTotal: 0,
     };
   },
   methods: {
@@ -141,7 +181,10 @@ export default {
         this.storeCreateBatch(newBatch);
 
         const salary = new Salary(employeeId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        const deduction = new Deduction(employeeId, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        const deduction = new Deduction(employeeId, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        // const salaryExternal = new SalaryExternal(employeeId, 0, 0, 0, 0, 0, 0, 0);
+        // const deductionExternal = new DeductionExternal(employeeId, 0, 0, 0, 0);
 
         this.storeCreateSalary(salary);
         this.storeCreateDeduction(deduction);
@@ -182,6 +225,27 @@ export default {
 
       targetEmployee.salary = newDetails;
     },
+    // onSubmitSalaryExternalForm() {
+    //   const employeeId = this.payrollCurrentEmployee.id;
+    //   const newDetails = new SalaryExternal(
+    //     employeeId,
+    //     this.payrollNoOfTripsInput,
+    //     this.payrollClientTripRatesInput,
+    //     this.payrollTotalAmountOfTripsInput,
+    //     this.payrollDropRateInput,
+    //     this.payrollTollFeeInput,
+    //     this.payrollPasswayInput,
+    //     this.payrollOthersInput,
+    //     this.computedPayrollExternalTotal
+
+    //   );
+
+    //   const targetEmployee =
+    //   this.$store.getters[''](employeeId);
+    //   this.$store.dispatch('', newDetails);
+
+    //   targetEmployee.salary = newDetails;
+    // },
     onSubmitDeductionForm() {
       const employeeId = this.payrollCurrentEmployee.id;
       const newDetails = new Deduction(
@@ -197,12 +261,28 @@ export default {
       );
 
       const targetEmployee =
-        this.$store.getters['employees/getEmployeeById'](employeeId);
-      this.$store.dispatch('deductions/editDeduction', newDetails);
+        this.$store.getters[''](employeeId);
+      this.$store.dispatch('', newDetails);
 
       targetEmployee.deduction = newDetails;
-      console.log(targetEmployee);
     },
+    // onSubmitDeductionExternalForm() {
+    //   const employeeId = this.payrollCurrentEmployee.id;
+    //   const newDetails = new DeductionExternal(
+    //     employeeId,
+    //     this.payrollDeductionsExternalCashAdvanceInput,
+    //     this.payrollDeductionsMarineInsuranceFeeInput,
+    //     this.payrollDeductionsUniformInput,
+    //     this.payrollDeductionsPenaltiesInput,
+    //     this.computedDeductionsExternalTotal
+    //   );
+
+    //   const targetEmployee =
+    //   this.$store.getters[''](employeeId);
+    //   this.$store.dispatch('', newDetails);
+
+    //   targetEmployee.deduction = newDetails;
+    // },
     storeCreateBatch(newBatch) {
       this.$store.dispatch('batches/addBatch', newBatch);
     },
@@ -212,6 +292,12 @@ export default {
     storeCreateDeduction(newDeduction) {
       this.$store.dispatch('deductions/addDeduction', newDeduction);
     },
+    // storeCreateSalaryExternal(newSalaryExternal) {
+    //   this.$store.dispatch('', newSalaryExternal);
+    // },
+    // storeCreateDeductionExternal(newDeductionExternal) {
+    //   this.$store.dispatch('', newDeductionExternal);
+    // },        
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;
     },
@@ -298,6 +384,14 @@ export default {
         this.payrollOvertimePayInput +
         this.payrollOtherPayInput);
     },
+    // computedPayrollExternalTotal() {
+    //   return (this.payrollExternalTotal =
+    //     this.payrollTotalAmountOfTripsInput +
+    //     this.payrollDropRateInput +
+    //     this.payrollTollFeeInput +
+    //     this.payrollPasswayInput +
+    //     this.payrollOthersInput);
+    // },
     computedDeductionsTotal() {
       return (this.deductionTotal =
         this.payrollDeductionsCashAdvanceInput +
@@ -308,10 +402,13 @@ export default {
         this.payrollDeductionsDamagesInput +
         this.payrollDeductionsOtherPayInput);
     },
-    displayNetPay() {
-      const netPay = this.getNetPay(this.employee);
-      return isNaN(netPay) ? 'P0.00' : netPay;
-    }
+    // computedDeductionsExternalTotal() {
+    //   return (this.deductionExternalTotal =
+    //     this.payrollDeductionsExternalCashAdvanceInput +
+    //     this.payrollDeductionsMarineInsuranceFeeInput +
+    //     this.payrollDeductionsUniformInput +
+    //     this.payrollDeductionsPenaltiesInput);
+    // }
   },
   watch: {
     payrollDaysOfWorkInput(newDaysOfWork) {
@@ -412,13 +509,25 @@ export default {
             <td class="align-middle">{{ employee.role }}</td>
             <td class="align-middle">
               <button
+                v-if="employee.type === 'Internal'"
                 type="button"
                 data-bs-toggle="modal"
-                data-bs-target="#payrollBreakdownModal"
+                data-bs-target="#payrollInternalBreakdownModal"
                 class="btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
-                {{ displayNetPay  }}
+                {{ getNetPay(employee)  }}
+              </button>
+
+              <button
+                v-if="employee.type === 'External'"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#payrollExternalBreakdownModal"
+                class="btn tms-btn text-light align-items-center h-100"
+                @click="setPayrollCurrentEmployee(employee)"
+              >
+                {{ getNetPay(employee) }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -450,6 +559,7 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollExternalSalaryModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+                @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Salary
               </button>
@@ -460,6 +570,7 @@ export default {
                 data-bs-toggle="modal"
                 data-bs-target="#payrollExternalDeductionsModal"
                 class="btn tms-btn text-light justify-content-center align-items-center h-100"
+                @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Deductions
               </button>
@@ -1003,6 +1114,7 @@ export default {
           class="btn tms-btn text-light"
           form="payrollExternalSalaryForm"
           data-bs-dismiss="modal"
+          @click = ""
         >
           Add Salary
         </button>
@@ -1101,7 +1213,7 @@ export default {
     </template>
   </Modal>
 
-  <Modal id="payrollBreakdownModal" :isForPayrollBreakdown="true">
+  <Modal id="payrollInternalBreakdownModal" :isForPayrollBreakdown="true">
     <template v-slot:modal-header>
       <div class="modal-header justify-content-center border-bottom-0">
         <h1 class="modal-title fs-5" id="editEmployeeLabel">
@@ -1203,6 +1315,107 @@ export default {
           <p>
             <span class="fw-bold text-danger">Total Deductions: </span>
             {{ payrollCurrentEmployee.deduction.total }}
+          </p>
+        </div>
+      </div>
+      <div>
+        <p class="fw-bold h4">
+          <span class="text-success">Net pay:</span>
+          {{ getNetPay(payrollCurrentEmployee) }}
+        </p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="payrollExternalBreakdownModal" :isForPayrollBreakdown="true">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="editEmployeeLabel">
+          Payroll Breakdown
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="d-flex justify-content-around" v-if="payrollCurrentEmployee">
+        <p>
+          <span class="fw-bold text-success">Employee's name: </span>
+          {{ payrollCurrentEmployee.name }} - {{ payrollCurrentEmployee.role }}
+        </p>
+        <p>
+          <span class="fw-bold text-success">Date Hired: </span>
+          {{ payrollCurrentEmployee.date_hired }}
+        </p>
+      </div>
+      <div class="modal-body d-flex justify-content-around">
+        <div
+          v-if="payrollCurrentEmployee"
+          class="salary-breakdown d-flex flex-column align-items-start"
+        >
+          <h2>Salary</h2>
+          <p v-if ="isEmployeeRoleIsAdmin">
+            <span class="fw-bold text-primary">No of Trips: </span>
+            {{ payrollCurrentEmployee.salaryExternal.noOfTrips }}
+          </p>
+          <p v-if ="isEmployeeRoleIsAdmin">
+            <span class="fw-bold text-primary">Client Trip Rate: </span>
+            {{ payrollCurrentEmployee.salaryExternal.clientTripRates }}
+          </p>
+          <p>
+            <span class="fw-bold text-primary">Total Amount of Trips: </span>
+            {{ payrollCurrentEmployee.salaryExternal.totalAmountOfTrips }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Drop Rate: </span>
+            {{ payrollCurrentEmployee.salaryExternal.dropRate }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Toll Fee: </span>
+            {{ payrollCurrentEmployee.salaryExternal.tollFee }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Passway: </span>
+            {{ payrollCurrentEmployee.salaryExternal.passway }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Others: </span>
+            {{ payrollCurrentEmployee.salaryExternal.others }}
+          </p>
+          <p>
+            <span class="fw-bold text-info">Total Salary: </span>
+            {{ payrollCurrentEmployee.salaryExternal.total }}
+          </p>
+        </div>
+        <div
+          v-if="payrollCurrentEmployee"
+          class="deduction-breakdown d-flex flex-column align-items-start"
+        >
+          <h2>Deductions</h2>
+          <p>
+            <span class="fw-bold text-secondary">Cash Advance: </span>
+            {{ payrollCurrentEmployee.deductionExternal.cashAdvance }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Marine Insurance Fee: </span>
+            {{ payrollCurrentEmployee.deductionExternal.marineInsuranceFee }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Uniform: </span>
+            {{ payrollCurrentEmployee.deductionExternal.uniform }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Penalties: </span>
+            {{ payrollCurrentEmployee.deductionExternal.penalties }}
+          </p>
+          <p>
+            <span class="fw-bold text-danger">Total Deductions: </span>
+            {{ payrollCurrentEmployee.deductionExternal.total }}
           </p>
         </div>
       </div>

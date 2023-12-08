@@ -25,8 +25,10 @@ export default {
         daysOfWork,
         semiBasicSalary,
         semiAllowanceSalary,
-        total,
-        overtimePay
+        serviceFee,
+        overtimePay,
+        others,
+        total
       } = newDetails;
 
       updatedSalary.basicSalary = basicSalary;
@@ -36,7 +38,9 @@ export default {
       updatedSalary.daysOfWork = daysOfWork;
       updatedSalary.semiBasicSalary = semiBasicSalary;
       updatedSalary.semiAllowanceSalary = semiAllowanceSalary;
+      updatedSalary.serviceFee = serviceFee;
       updatedSalary.overtimePay = overtimePay;
+      updatedSalary.others = others;
       updatedSalary.total = total;
 
       employee.salary = updatedSalary;
