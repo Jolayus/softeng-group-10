@@ -231,9 +231,10 @@ export default {
       this.payrollCurrentEmployee = employee;
     },
     getNetPay(employee) {
-      const { salary, deduction } = employee;
-      console.log(salary, deduction);
+      if (employee) {
+        const { salary, deduction } = employee;
       return salary.total - deduction.total;
+      }
     }
   },
   computed: {
@@ -755,7 +756,6 @@ export default {
     <template v-slot:modal-body>
       <div class="modal-body">
         <form id="payrollInternalDeductionsForm">
-
           <div class="mb-3">
             <label
               for="payrollDeductionsCashAdvance"
@@ -1231,7 +1231,9 @@ export default {
       </div>
       <div>
         <p class="fw-bold h4">
-          <span class="text-success">Net pay:</span> {{ getNetPay(payrollCurrentEmployee) }}</p>
+          <span class="text-success">Net pay:</span>
+          {{ getNetPay(payrollCurrentEmployee) }}
+        </p>
       </div>
     </template>
     <template v-slot:modal-footer>
