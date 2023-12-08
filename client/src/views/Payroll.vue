@@ -41,6 +41,32 @@ class Salary {
   }
 }
 
+class Deduction {
+  constructor(
+    employeeId,
+    cashAdvance,
+    HDMF,
+    pagibig,
+    SSS,
+    philhealth,
+    late,
+    damages,
+    others,
+    total
+  ) {
+    this.employeeId = employeeId;
+    this.cashAdvance = cashAdvance;
+    this.HDMF = HDMF;
+    this.pagibig = pagibig;
+    this.SSS = SSS;
+    this.philhealth = philhealth;
+    this.late = late;
+    this.damages = damages;
+    this.others = others;
+    this.total = total;
+  }
+}
+
 export default {
   name: 'Payroll',
   components: {
@@ -85,12 +111,14 @@ export default {
 
       //payrollInternalDeductionsModal
       payrollDeductionsCashAdvanceInput: 0,
-      payrollDeductionsHDMF: 0,
-      // payrollDeductionsPAGIBIGInput: '',
+      payrollDeductionsHDMFInput: 0,
+      payrollDeductionsPAGIBIGInput: 0,
       payrollDeductionsSSSInput: 0,
-      // payrollDeductionsPhilHealthInput: '',
+      payrollDeductionsPhilHealthInput: 0,
       payrollDeductionsLateInput: 0,
       payrollDeductionsDamagesInput: 0,
+      payrollDeductionsOtherPayInput: 0,
+      deductionTotal: 0,
 
       //payrollExternalSalaryModal
       payrollNoOfTripsInput: '',
@@ -102,7 +130,7 @@ export default {
       payrollOthersInput: '',
 
       //payrollExternalDeductionsModal
-      payrollDeductionsCashAdvanceInput: '',
+      payrollDeductionsExternalCashAdvanceInput: '',
       payrollDeductionsMarineInsuranceFeeInput: '',
       payrollDeductionsUniformInput: '',
       payrollDeductionsPenaltiesInput: ''
@@ -120,17 +148,22 @@ export default {
         this.storeCreateBatch(newBatch);
 
         const salary = new Salary(employeeId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        const deduction = new Deduction(employeeId, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         this.storeCreateSalary(salary);
+        this.storeCreateDeduction(deduction);
 
         const targetEmployee =
           this.$store.getters['employees/getEmployeeById'](employeeId);
 
         targetEmployee.salary = salary;
+        targetEmployee.deduction = deduction;
 
         if (!this.isThereBatchCodeExists) {
           this.currentBatchCode = newBatch.batchCode;
         }
+
+        console.log(targetEmployee);
       });
     },
     onSubmitSalaryForm() {
@@ -155,12 +188,36 @@ export default {
 
       targetEmployee.salary = newDetails;
     },
+    onSubmitDeductionForm() {
+      const employeeId = this.payrollCurrentEmployee.id;
+      const newDetails = new Deduction(
+        employeeId,
+        this.payrollDeductionsCashAdvanceInput,
+        this.payrollDeductionsHDMFInput,
+        this.payrollDeductionsPAGIBIGInput,
+        this.payrollDeductionsSSSInput,
+        this.payrollDeductionsPhilHealthInput,
+        this.payrollDeductionsLateInput,
+        this.payrollDeductionsDamagesInput,
+        this.payrollDeductionsOtherPayInput,
+        this.computedDeductionsTotal
+      );
+
+      const targetEmployee =
+        this.$store.getters['employees/getEmployeeById'](employeeId);
+      this.$store.dispatch('deductions/editDeduction', newDetails);
+
+      targetEmployee.deduction = newDetails;
+      console.log(targetEmployee);
+    },
     storeCreateBatch(newBatch) {
       this.$store.dispatch('batches/addBatch', newBatch);
     },
     storeCreateSalary(newSalary) {
-      console.log(newSalary);
       this.$store.dispatch('salaries/addSalary', newSalary);
+    },
+    storeCreateDeduction(newDeduction) {
+      this.$store.dispatch('deductions/addDeduction', newDeduction);
     },
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;
@@ -172,6 +229,11 @@ export default {
     },
     setPayrollCurrentEmployee(employee) {
       this.payrollCurrentEmployee = employee;
+    },
+    getNetPay(employee) {
+      const { salary, deduction } = employee;
+      console.log(salary, deduction);
+      return salary.total - deduction.total;
     }
   },
   computed: {
@@ -238,6 +300,17 @@ export default {
         this.payrollServiceFeeInput +
         this.payrollOvertimePayInput +
         this.payrollOtherPayInput);
+    },
+    computedDeductionsTotal() {
+      return (this.deductionTotal =
+        this.payrollDeductionsCashAdvanceInput +
+        this.payrollDeductionsHDMFInput +
+        this.payrollDeductionsPAGIBIGInput +
+        this.payrollDeductionsSSSInput +
+        this.payrollDeductionsPhilHealthInput +
+        this.payrollDeductionsLateInput +
+        this.payrollDeductionsDamagesInput +
+        this.payrollDeductionsOtherPayInput);
     }
   },
   watch: {
@@ -320,7 +393,7 @@ export default {
             <th class="align-middle" scope="col">Name</th>
             <th class="align-middle" scope="col">Type</th>
             <th class="align-middle" scope="col">Role</th>
-            <th class="align-middle" scope="col">Total</th>
+            <th class="align-middle" scope="col">Net Pay</th>
             <th class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
@@ -337,7 +410,7 @@ export default {
                 class="btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
-                {{ employee.salary === undefined ? 0 : employee.salary.total }}
+                {{ getNetPay(employee) }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -682,6 +755,7 @@ export default {
     <template v-slot:modal-body>
       <div class="modal-body">
         <form id="payrollInternalDeductionsForm">
+
           <div class="mb-3">
             <label
               for="payrollDeductionsCashAdvance"
@@ -705,7 +779,7 @@ export default {
               >HDMF</label
             >
             <input
-              v-model="payrollDeductionsHDMF"
+              v-model="payrollDeductionsHDMFInput"
               type="number"
               class="form-control"
               id="payrollDeductionsHDMF"
@@ -714,9 +788,9 @@ export default {
             />
           </div>
 
-          <!-- <div class="mb-3">
+          <div class="mb-3">
             <label
-              for="payrollDeductionsHDMF"
+              for="payrollDeductionsPAGIBIG"
               class="form-label d-block text-start"
               >PAG-IBIG Contribution</label
             >
@@ -724,11 +798,11 @@ export default {
               v-model="payrollDeductionsPAGIBIGInput"
               type="number"
               class="form-control"
-              id="payrollDeductionsHDMF"
-              aria-describedby="payrollDeductionsHDMF"
+              id="payrollDeductionsPAGIBIG"
+              aria-describedby="payrollDeductionsPAGIBIG"
               placeholder="PAG-IBIG Contribution"
             />
-          </div> -->
+          </div>
 
           <div class="mb-3">
             <label
@@ -745,7 +819,8 @@ export default {
               placeholder="SSS Contribution"
             />
           </div>
-          <!-- <div class="mb-3">
+
+          <div class="mb-3">
             <label
               for="payrollDeductionsPhilHealth"
               class="form-label d-block text-start"
@@ -759,7 +834,8 @@ export default {
               aria-describedby="payrollDeductionsPhilHealth"
               placeholder="PhilHealth Contribution"
             />
-          </div> -->
+          </div>
+
           <div class="mb-3">
             <label
               for="payrollDeductionsLate"
@@ -790,6 +866,22 @@ export default {
               placeholder="Damages"
             />
           </div>
+
+          <div class="mb-3">
+            <label
+              for="payrollDeductionsOtherPay"
+              class="form-label d-block text-start"
+              >Others</label
+            >
+            <input
+              v-model="payrollDeductionsDamagesInput"
+              type="number"
+              class="form-control"
+              id="payrollDeductionsOtherPay"
+              aria-describedby="payrollDeductionsOtherPay"
+              placeholder="Others"
+            />
+          </div>
         </form>
       </div>
     </template>
@@ -801,8 +893,8 @@ export default {
         <button
           type="submit"
           class="btn tms-btn text-light"
-          form="payrollInternalDeductionsForm"
           data-bs-dismiss="modal"
+          @click="onSubmitDeductionForm"
         >
           Add Deductions
         </button>
@@ -955,7 +1047,7 @@ export default {
               >Cash Advance</label
             >
             <input
-              v-model="payrollDeductionsCashAdvanceInput"
+              v-model="payrollDeductionsExternalCashAdvanceInput"
               type="number"
               class="form-control"
               id="payrollDeductionsCashAdvance"
@@ -1037,35 +1129,109 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
-      <div class="d-flex justify-content-around">
-        <p><span class="fw-bold text-success">Employee's name: </span> {{ payrollCurrentEmployee.name }} - {{ payrollCurrentEmployee.role }}</p>
-      <p><span class="fw-bold text-success">Date Hired: </span> {{ payrollCurrentEmployee.date_hired }}</p>
+      <div class="d-flex justify-content-around" v-if="payrollCurrentEmployee">
+        <p>
+          <span class="fw-bold text-success">Employee's name: </span>
+          {{ payrollCurrentEmployee.name }} - {{ payrollCurrentEmployee.role }}
+        </p>
+        <p>
+          <span class="fw-bold text-success">Date Hired: </span>
+          {{ payrollCurrentEmployee.date_hired }}
+        </p>
       </div>
       <div class="modal-body d-flex justify-content-around">
-        <div v-if="payrollCurrentEmployee" class="salary-breakdown d-flex flex-column align-items-start">
+        <div
+          v-if="payrollCurrentEmployee"
+          class="salary-breakdown d-flex flex-column align-items-start"
+        >
           <h2>Salary</h2>
-          <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
-          <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
-          <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
-          <p><span class="fw-bold text-secondary">Daily Allowance: </span> {{ payrollCurrentEmployee.salary.dailyAllowance }}</p>
-          <p><span class="fw-bold text-secondary">No. Of Days: </span> {{ payrollCurrentEmployee.salary.daysOfWork }}</p>
-          <p><span class="fw-bold text-warning">Semi Basic Salary: </span> {{ payrollCurrentEmployee.salary.semiBasicSalary }}</p>
-          <p><span class="fw-bold text-warning">Semi Allowance Salary: </span> {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}</p>
-          <p><span class="fw-bold text-warning">Overtime Pay: </span> {{ payrollCurrentEmployee.salary.overtimePay }}</p>
-          <p><span class="fw-bold text-warning">Others: </span> {{ payrollCurrentEmployee.salary.others }}</p>
+          <p>
+            <span class="fw-bold text-primary">Basic Salary: </span>
+            {{ payrollCurrentEmployee.salary.basicSalary }}
+          </p>
+          <p>
+            <span class="fw-bold text-primary">Allowance: </span>
+            {{ payrollCurrentEmployee.salary.allowanceSalary }}
+          </p>
+          <p>
+            <span class="fw-bold text-primary">Daily Rate: </span>
+            {{ payrollCurrentEmployee.salary.dailyRate }}
+          </p>
+          <p>
+            <span class="fw-bold text-primary">Daily Allowance: </span>
+            {{ payrollCurrentEmployee.salary.dailyAllowance }}
+          </p>
+          <p>
+            <span class="fw-bold text-primary">No. Of Days: </span>
+            {{ payrollCurrentEmployee.salary.daysOfWork }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Semi Basic Salary: </span>
+            {{ payrollCurrentEmployee.salary.semiBasicSalary }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Semi Allowance Salary: </span>
+            {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Overtime Pay: </span>
+            {{ payrollCurrentEmployee.salary.overtimePay }}
+          </p>
+          <p>
+            <span class="fw-bold text-warning">Others: </span>
+            {{ payrollCurrentEmployee.salary.others }}
+          </p>
+          <p>
+            <span class="fw-bold text-info">Total Salary: </span>
+            {{ payrollCurrentEmployee.salary.total }}
+          </p>
         </div>
-        <div v-if="payrollCurrentEmployee" class="deduction-breakdown d-flex flex-column align-items-start">
-          <h2>Salary</h2>
-          <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
-          <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
-          <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
-          <p><span class="fw-bold text-secondary">Daily Allowance: </span> {{ payrollCurrentEmployee.salary.dailyAllowance }}</p>
-          <p><span class="fw-bold text-secondary">No. Of Days: </span> {{ payrollCurrentEmployee.salary.daysOfWork }}</p>
-          <p><span class="fw-bold text-warning">Semi Basic Salary: </span> {{ payrollCurrentEmployee.salary.semiBasicSalary }}</p>
-          <p><span class="fw-bold text-warning">Semi Allowance Salary: </span> {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}</p>
-          <p><span class="fw-bold text-warning">Overtime Pay: </span> {{ payrollCurrentEmployee.salary.overtimePay }}</p>
-          <p><span class="fw-bold text-warning">Others: </span> {{ payrollCurrentEmployee.salary.others }}</p>
+        <div
+          v-if="payrollCurrentEmployee"
+          class="deduction-breakdown d-flex flex-column align-items-start"
+        >
+          <h2>Deductions</h2>
+          <p>
+            <span class="fw-bold text-secondary">Cash Advance: </span>
+            {{ payrollCurrentEmployee.deduction.cashAdvance }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">HDMF: </span>
+            {{ payrollCurrentEmployee.deduction.HDMF }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">PAGIBIG: </span>
+            {{ payrollCurrentEmployee.deduction.pagibig }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">SSS: </span>
+            {{ payrollCurrentEmployee.deduction.SSS }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Philhealth: </span>
+            {{ payrollCurrentEmployee.deduction.philhealth }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Late: </span>
+            {{ payrollCurrentEmployee.deduction.late }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Damages: </span>
+            {{ payrollCurrentEmployee.deduction.damages }}
+          </p>
+          <p>
+            <span class="fw-bold text-secondary">Others: </span>
+            {{ payrollCurrentEmployee.deduction.others }}
+          </p>
+          <p>
+            <span class="fw-bold text-danger">Total Deductions: </span>
+            {{ payrollCurrentEmployee.deduction.total }}
+          </p>
         </div>
+      </div>
+      <div>
+        <p class="fw-bold h4">
+          <span class="text-success">Net pay:</span> {{ getNetPay(payrollCurrentEmployee) }}</p>
       </div>
     </template>
     <template v-slot:modal-footer>

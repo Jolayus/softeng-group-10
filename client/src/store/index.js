@@ -9,6 +9,7 @@ import billingsModule from './modules/billings';
 import billingTripsModule from './modules/billingTrips';
 import payrollBatchesModule from './modules/payrollBatches';
 import payrollSalariesModule from './modules/payrollSalaries';
+import payrollDeductionsModule from './modules/payrollDeductions';
 
 const store = createStore({
   modules: {
@@ -20,7 +21,8 @@ const store = createStore({
     billings: billingsModule,
     billingTrips: billingTripsModule,
     batches: payrollBatchesModule,
-    salaries: payrollSalariesModule
+    salaries: payrollSalariesModule,
+    deductions: payrollDeductionsModule
   }
 });
 
