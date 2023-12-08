@@ -22,6 +22,7 @@ class Salary {
     daysOfWork,
     semiBasicSalary,
     semiAllowanceSalary,
+    serviceFee,
     overtimePay,
     others,
     total
@@ -35,6 +36,7 @@ class Salary {
 
     this.semiBasicSalary = semiBasicSalary;
     this.semiAllowanceSalary = semiAllowanceSalary;
+    this.serviceFee = serviceFee;
     this.overtimePay = overtimePay;
     this.others = others;
     this.total = total;
@@ -45,7 +47,6 @@ class Deduction {
   constructor(
     employeeId,
     cashAdvance,
-    HDMF,
     pagibig,
     SSS,
     philhealth,
@@ -56,7 +57,6 @@ class Deduction {
   ) {
     this.employeeId = employeeId;
     this.cashAdvance = cashAdvance;
-    this.HDMF = HDMF;
     this.pagibig = pagibig;
     this.SSS = SSS;
     this.philhealth = philhealth;
@@ -81,11 +81,6 @@ export default {
 
       currentBatchCode: '',
 
-      salaryTotal: '',
-      semiSalaryTotal: '',
-      deductionsTotal: '',
-      totalPayroll: '',
-
       // PAYROLL
       payrollCurrentEmployee: null,
 
@@ -105,13 +100,11 @@ export default {
       payrollSemiAllowanceSalaryInput: 0,
       payrollServiceFeeInput: 0,
       payrollOvertimePayInput: 0,
-      // payrollExtraPayInput: 0,
       payrollOtherPayInput: 0,
       payrollTotal: 0,
 
       //payrollInternalDeductionsModal
       payrollDeductionsCashAdvanceInput: 0,
-      payrollDeductionsHDMFInput: 0,
       payrollDeductionsPAGIBIGInput: 0,
       payrollDeductionsSSSInput: 0,
       payrollDeductionsPhilHealthInput: 0,
@@ -177,6 +170,7 @@ export default {
         this.payrollDaysOfWorkInput,
         this.payrollSemiBasicSalaryInput,
         this.payrollSemiAllowanceSalaryInput,
+        this.payrollServiceFeeInput,
         this.payrollOvertimePayInput,
         this.payrollOtherPayInput,
         this.computedPayrollTotal
@@ -193,7 +187,6 @@ export default {
       const newDetails = new Deduction(
         employeeId,
         this.payrollDeductionsCashAdvanceInput,
-        this.payrollDeductionsHDMFInput,
         this.payrollDeductionsPAGIBIGInput,
         this.payrollDeductionsSSSInput,
         this.payrollDeductionsPhilHealthInput,
@@ -305,7 +298,6 @@ export default {
     computedDeductionsTotal() {
       return (this.deductionTotal =
         this.payrollDeductionsCashAdvanceInput +
-        this.payrollDeductionsHDMFInput +
         this.payrollDeductionsPAGIBIGInput +
         this.payrollDeductionsSSSInput +
         this.payrollDeductionsPhilHealthInput +
@@ -321,6 +313,14 @@ export default {
       this.payrollSemiAllowanceSalaryInput =
         this.payrollDailyAllowanceInput * newDaysOfWork;
     },
+    payrollBasicSalaryInput() {
+      this.payrollDailyRateInput =
+        this.payrollBasicSalaryInput / 26;
+    },
+    payrollAllowanceSalaryInput() {
+      this.payrollDailyAllowanceInput =
+        this.payrollAllowanceSalaryInput / 26;
+    },        
     payrollDailyRateInput(newDailyRate) {
       this.payrollSemiBasicSalaryInput =
         this.payrollDaysOfWorkInput * newDailyRate;
@@ -640,7 +640,7 @@ export default {
               placeholder="Days of Work"
             />
           </div>
-          <!-- <div class="mb-3">
+          <div class="mb-3">
             <label
               for="payrollSemiBasicSalary"
               class="form-label d-block text-start"
@@ -654,8 +654,8 @@ export default {
               aria-describedby="payrollSemiBasicSalary"
               placeholder="Semi - Basic Salary"
             />
-          </div> -->
-          <!-- <div class="mb-3">
+          </div>
+          <div class="mb-3">
             <label
               for="payrollSemiAllowanceSalary"
               class="form-label d-block text-start"
@@ -669,7 +669,7 @@ export default {
               aria-describedby="payrollSemiAllowanceSalary"
               placeholder="Semi - Allowance Salary"
             />
-          </div> -->
+          </div>
           <div class="mb-3">
             <label for="payrollServiceFee" class="form-label d-block text-start"
               >Service Fee</label
@@ -698,20 +698,6 @@ export default {
               placeholder="Overtime Pay"
             />
           </div>
-          <!-- <div class="mb-3">
-            <label for="payrollExtraPay" class="form-label d-block text-start"
-              >Extra Pay</label
-            >
-            <input
-              v-model="payrollExtraPayInput"
-              type="number"
-              class="form-control"
-              id="payrollExtraPay"
-              aria-describedby="payrollExtraPay"
-              placeholder="Extra Pay"
-            />
-          </div> -->
-
           <div class="mb-3">
             <label for="payrollExtraPay" class="form-label d-block text-start"
               >Others
@@ -769,22 +755,6 @@ export default {
               id="payrollDeductionsCashAdvance"
               aria-describedby="payrollDeductionsCashAdvance"
               placeholder="Cash Advance"
-            />
-          </div>
-
-          <div class="mb-3">
-            <label
-              for="payrollDeductionsHDMF"
-              class="form-label d-block text-start"
-              >HDMF</label
-            >
-            <input
-              v-model="payrollDeductionsHDMFInput"
-              type="number"
-              class="form-control"
-              id="payrollDeductionsHDMF"
-              aria-describedby="payrollDeductionsHDMF"
-              placeholder="HDMF"
             />
           </div>
 
@@ -1194,10 +1164,6 @@ export default {
           <p>
             <span class="fw-bold text-secondary">Cash Advance: </span>
             {{ payrollCurrentEmployee.deduction.cashAdvance }}
-          </p>
-          <p>
-            <span class="fw-bold text-secondary">HDMF: </span>
-            {{ payrollCurrentEmployee.deduction.HDMF }}
           </p>
           <p>
             <span class="fw-bold text-secondary">PAGIBIG: </span>
