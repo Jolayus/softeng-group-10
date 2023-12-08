@@ -1037,34 +1037,25 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
+      <div class="d-flex justify-content-around">
+        <p><span class="fw-bold text-success">Employee's name: </span> {{ payrollCurrentEmployee.name }} - {{ payrollCurrentEmployee.role }}</p>
+      <p><span class="fw-bold text-success">Date Hired: </span> {{ payrollCurrentEmployee.date_hired }}</p>
+      </div>
       <div class="modal-body d-flex justify-content-around">
         <div v-if="payrollCurrentEmployee" class="salary-breakdown d-flex flex-column align-items-start">
           <h2>Salary</h2>
-          <p><span class="fw-bold text-secondary">Employee's name: </span> {{ payrollCurrentEmployee.name }}</p>
-          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.role }}</p>
-          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.date_hired }}</p>
           <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
           <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
           <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
-          
           <p><span class="fw-bold text-secondary">Daily Allowance: </span> {{ payrollCurrentEmployee.salary.dailyAllowance }}</p>
-
           <p><span class="fw-bold text-secondary">No. Of Days: </span> {{ payrollCurrentEmployee.salary.daysOfWork }}</p>
-
           <p><span class="fw-bold text-warning">Semi Basic Salary: </span> {{ payrollCurrentEmployee.salary.semiBasicSalary }}</p>
-
           <p><span class="fw-bold text-warning">Semi Allowance Salary: </span> {{ payrollCurrentEmployee.salary.semiAllowanceSalary }}</p>
-
           <p><span class="fw-bold text-warning">Overtime Pay: </span> {{ payrollCurrentEmployee.salary.overtimePay }}</p>
-
           <p><span class="fw-bold text-warning">Others: </span> {{ payrollCurrentEmployee.salary.others }}</p>
-
         </div>
         <div v-if="payrollCurrentEmployee" class="deduction-breakdown d-flex flex-column align-items-start">
           <h2>Salary</h2>
-          <p><span class="fw-bold text-secondary">Employee's name: </span> {{ payrollCurrentEmployee.name }}</p>
-          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.role }}</p>
-          <p><span class="fw-bold text-secondary">Role: </span> {{ payrollCurrentEmployee.date_hired }}</p>
           <p><span class="fw-bold text-secondary">Basic Salary: </span> {{ payrollCurrentEmployee.salary.basicSalary }}</p>
           <p><span class="fw-bold text-secondary">Allowance: </span> {{ payrollCurrentEmployee.salary.allowanceSalary }}</p>
           <p><span class="fw-bold text-secondary">Daily Rate: </span> {{ payrollCurrentEmployee.salary.dailyRate }}</p>
