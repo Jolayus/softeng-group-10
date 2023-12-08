@@ -255,6 +255,9 @@ export default {
     isThereBatchCodeExists() {
       return this.batchCodes.length;
     },
+    isEmployeeRoleIsAdmin() {
+      return this.payrollCurrentEmployee && this.payrollCurrentEmployee.role === 'Admin';
+    },
     salaries() {
       return this.$store.getters['salaries/salaries'];
     },
@@ -304,6 +307,10 @@ export default {
         this.payrollDeductionsLateInput +
         this.payrollDeductionsDamagesInput +
         this.payrollDeductionsOtherPayInput);
+    },
+    displayNetPay() {
+      const netPay = this.getNetPay(this.employee);
+      return isNaN(netPay) ? 'P0.00' : netPay;
     }
   },
   watch: {
@@ -411,7 +418,7 @@ export default {
                 class="btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
-                {{ getNetPay(employee) }}
+                {{ displayNetPay  }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -569,7 +576,7 @@ export default {
     <template v-slot:modal-body>
       <div class="modal-body">
         <form id="payrollInternalSalaryForm">
-          <div class="mb-3">
+          <div v-if ="isEmployeeRoleIsAdmin" class="mb-3">
             <label
               for="payrollBasicSalary"
               class="form-label d-block text-start"
@@ -584,7 +591,7 @@ export default {
               placeholder="Basic"
             />
           </div>
-          <div class="mb-3">
+          <div v-if ="isEmployeeRoleIsAdmin" class="mb-3">
             <label
               for="payrollAllowanceSalary"
               class="form-label d-block text-start"
@@ -610,6 +617,7 @@ export default {
               id="payrollDailyRate"
               aria-describedby="payrollDailyRate"
               placeholder="Daily Rate"
+              :disabled = "isEmployeeRoleIsAdmin"
             />
           </div>
           <div class="mb-3">
@@ -625,6 +633,7 @@ export default {
               id="payrollDailyAllowance"
               aria-describedby="payrollDailyAllowance"
               placeholder="Daily Allowance"
+              :disabled = "isEmployeeRoleIsAdmin"
             />
           </div>
           <div class="mb-3">
@@ -653,6 +662,7 @@ export default {
               id="payrollSemiBasicSalary"
               aria-describedby="payrollSemiBasicSalary"
               placeholder="Semi - Basic Salary"
+              disabled
             />
           </div>
           <div class="mb-3">
@@ -668,6 +678,7 @@ export default {
               id="payrollSemiAllowanceSalary"
               aria-describedby="payrollSemiAllowanceSalary"
               placeholder="Semi - Allowance Salary"
+              disabled
             />
           </div>
           <div class="mb-3">
@@ -1115,11 +1126,11 @@ export default {
           class="salary-breakdown d-flex flex-column align-items-start"
         >
           <h2>Salary</h2>
-          <p>
+          <p v-if ="isEmployeeRoleIsAdmin">
             <span class="fw-bold text-primary">Basic Salary: </span>
             {{ payrollCurrentEmployee.salary.basicSalary }}
           </p>
-          <p>
+          <p v-if ="isEmployeeRoleIsAdmin">
             <span class="fw-bold text-primary">Allowance: </span>
             {{ payrollCurrentEmployee.salary.allowanceSalary }}
           </p>
