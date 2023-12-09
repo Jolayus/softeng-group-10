@@ -79,6 +79,11 @@ export default {
         }
         return false;
       };
+    },
+    getSalaryByEmployeeId(state) {
+      return function (employeeId) {
+        return state.salaries.find((salary) => salary.employeeId === employeeId);
+      }
     }
   }
 };

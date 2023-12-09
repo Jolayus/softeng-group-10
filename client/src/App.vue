@@ -12,9 +12,9 @@ export default {
     await this.$store.dispatch('tripRates/loadTripRates');
     await this.$store.dispatch('billingTrips/loadBillingTrips');
     await this.$store.dispatch('billings/loadBillings');
-    await this.$store.dispatch('batches/loadBatches');
     await this.$store.dispatch('salaries/loadSalaries');
     await this.$store.dispatch('deductions/loadDeductions');
+    await this.$store.dispatch('batches/loadBatches');
   }
 };
 </script>

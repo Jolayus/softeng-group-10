@@ -75,6 +75,11 @@ export default {
         }
         return false;
       };
+    },
+    getDeductionByEmployeeId(state) {
+      return function (employeeId) {
+        return state.deductions.find((deduction) => deduction.employeeId === employeeId);
+      }
     }
   }
 };

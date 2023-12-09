@@ -19,6 +19,22 @@ export default {
     async loadBatches(context) {
       const batches = await httpGetAllBatches();
       context.commit('setBatches', batches);
+
+      batches.forEach((batch) => {
+        const { employeeId } = batch;
+
+        const targetEmployee =
+          context.rootGetters['employees/getEmployeeById'](employeeId);
+        const targetSalary =
+          context.rootGetters['salaries/getSalaryByEmployeeId'](employeeId);
+        const targetDeductions =
+          context.rootGetters['deductions/getDeductionByEmployeeId'](
+            employeeId
+          );
+
+        targetEmployee.salary = targetSalary;
+        targetEmployee.deduction = targetDeductions;
+      });
     },
     addBatch(context, newBatch) {
       context.commit('addBatch', newBatch);
