@@ -12,6 +12,8 @@ const { loadBillingTrips } = require('./models/billingTrips.model');
 const { loadBatches } = require('./models/batches.model');
 const { loadSalaries } = require('./models/salaries.model');
 const { loadDeductions } = require('./models/deductions.model');
+const { loadExternalSalaries } = require('./models/externalSalaries.model');
+const { loadExternalDeductions } = require('./models/externalDeductions.model');
 
 const PORT = process.env.PORT || 8000;
 
@@ -28,6 +30,8 @@ async function startServer() {
   await loadBatches();
   await loadSalaries();
   await loadDeductions();
+  await loadExternalSalaries();
+  await loadExternalDeductions();
 
   server.listen(PORT, () => {
     console.log(`Listening on port: ${PORT}`);

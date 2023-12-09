@@ -1,3 +1,6 @@
+import { httpGetAllExternalSalaries } from '../../requests/requests';
+
+
 export default {
   namespaced: true,
   state() {
@@ -41,6 +44,10 @@ export default {
     }
   },
   actions: {
+    async loadExternalSalaries(context) {
+      const loadedExternalSalaries = await httpGetAllExternalSalaries();
+      context.commit('setSalaries', loadedExternalSalaries);
+    },
     addSalary(context, newSalary) {
       context.commit('addSalary', newSalary);
     },

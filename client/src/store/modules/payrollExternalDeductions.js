@@ -1,3 +1,5 @@
+import { httpGetAllExternalDeductions } from '../../requests/requests';
+
 export default {
   namespaced: true,
   state() {
@@ -30,6 +32,10 @@ export default {
     }
   },
   actions: {
+    async loadExternalDeductions(context) {
+      const loadedExternalDeductions = await httpGetAllExternalDeductions();
+      context.commit('setDeductions', loadedExternalDeductions);
+    },
     addDeduction(context, newDeduction) {
       context.commit('addDeduction', newDeduction);
     },

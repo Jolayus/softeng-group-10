@@ -14,6 +14,8 @@ const billingTripsRouter = require('./routes/billingTrips/billingTrips.router');
 const batchesRouter = require('./routes/batches/batches.router');
 const salariesRouter = require('./routes/salaries/salaries.router');
 const deductionsRouter = require('./routes/deductions/deductions.router');
+const externalSalariesRouter = require('./routes/externalSalaries/externalSalaries.router');
+const externalDeductionsRouter = require('./routes/externalDeductions/externalDeductions.router');
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.use('/billingtrips', billingTripsRouter);
 app.use('/batches', batchesRouter);
 app.use('/salaries', salariesRouter);
 app.use('/deductions', deductionsRouter);
+app.use('/externalSalaries', externalSalariesRouter);
+app.use('/externalDeductions', externalDeductionsRouter);
 
 if (process.env.MODE === 'production') {
   // Serve all our client side files

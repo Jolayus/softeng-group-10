@@ -233,18 +233,15 @@ export default {
 
       httpPostNewExternalSalary(externalSalary).then((newExternalSalary) => {
         this.storeCreateExternalSalary(externalSalary);
-      employee.salary = externalSalary;
-
+        employee.salary = externalSalary;
       });
 
       httpPostNewExternalDeduction(externalDeduction).then(
         (newExternalDeduction) => {
           this.storeCreateExternalDeduction(externalDeduction);
-      employee.deduction = externalDeduction;
-
+          employee.deduction = externalDeduction;
         }
       );
-
     },
     isEmployeeInternal(employee) {
       if (employee === null) {
@@ -356,8 +353,6 @@ export default {
       this.payrollCurrentEmployee = employee;
     },
     getNetPay(employee) {
-      console.log(employee);
-
       if (employee && employee.salary && employee.deduction) {
         const { salary, deduction } = employee;
         return (salary.total - deduction.total).toFixed(2);
