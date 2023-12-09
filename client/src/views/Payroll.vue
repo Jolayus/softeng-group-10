@@ -213,7 +213,7 @@ export default {
           if (this.isEmployeeInternal(targetEmployee)) {
             this.addDefautlSalaryAndDeduction(targetEmployee, batch.id);
           } else {
-            this.addDefaultExternalSalaryAndDeduction(targetEmployee);
+            this.addDefaultExternalSalaryAndDeduction(targetEmployee, batch.id);
           }
         });
 
@@ -247,22 +247,33 @@ export default {
         this.storeCreatePayrollEmployee(newPayrollEmployee);
       });
     },
-    addDefaultExternalSalaryAndDeduction(employee) {
+    async addDefaultExternalSalaryAndDeduction(employee, batchId) {
       const { id } = employee;
+
       const externalSalary = new ExternalSalary(id, 0, 0, 0, 0, 0, 0, 0, 0);
       const externalDeduction = new ExternalDeduction(id, 0, 0, 0, 0, 0);
 
-      httpPostNewExternalSalary(externalSalary).then((newExternalSalary) => {
-        this.storeCreateExternalSalary(newExternalSalary);
-        employee.salary = newExternalSalary;
-      });
+      const newExternalSalary = await httpPostNewExternalSalary(externalSalary);
+      this.storeCreateExternalSalary(newExternalSalary);
+      employee.salary = newExternalSalary;
 
-      httpPostNewExternalDeduction(externalDeduction).then(
-        (newExternalDeduction) => {
-          this.storeCreateExternalDeduction(newExternalDeduction);
-          employee.deduction = newExternalDeduction;
-        }
+      const newExternalDeduction = await httpPostNewExternalDeduction(
+        externalDeduction
       );
+      this.storeCreateExternalDeduction(newExternalDeduction);
+      employee.deduction = newExternalDeduction;
+
+      const payrollEmployee = new PayrollEmployee(
+        batchId,
+        employee.id,
+        employee.salary.id,
+        employee.deduction.id,
+        employee.type
+      );
+
+      httpPostNewPayrollEmployee(payrollEmployee).then((newPayrollEmployee) => {
+        this.storeCreatePayrollEmployee(newPayrollEmployee);
+      });
     },
     isEmployeeInternal(employee) {
       if (employee === null) {
@@ -443,8 +454,6 @@ export default {
           employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
         );
 
-        console.log(employees);
-
         return employees;
       }
 
@@ -549,14 +558,8 @@ export default {
           serviceFee
         } = currentEmployee.salary;
 
-        const {
-          SSS,
-          cashAdvance,
-          damages,
-          late,
-          pagibig,
-          philhealth,
-        } = currentEmployee.deduction
+        const { SSS, cashAdvance, damages, late, pagibig, philhealth } =
+          currentEmployee.deduction;
 
         this.payrollBasicSalaryInput = basicSalary;
         this.payrollAllowanceSalaryInput = allowanceSalary;
@@ -570,14 +573,42 @@ export default {
         this.payrollOtherPayInput = others;
         this.payrollTotal = total;
 
-        this.payrollDeductionsCashAdvanceInput = cashAdvance
-        this.payrollDeductionsPAGIBIGInput = pagibig
-        this.payrollDeductionsSSSInput = SSS
-        this.payrollDeductionsPhilHealthInput = philhealth
-        this.payrollDeductionsLateInput = late
-        this.payrollDeductionsDamagesInput = damages
+        this.payrollDeductionsCashAdvanceInput = cashAdvance;
+        this.payrollDeductionsPAGIBIGInput = pagibig;
+        this.payrollDeductionsSSSInput = SSS;
+        this.payrollDeductionsPhilHealthInput = philhealth;
+        this.payrollDeductionsLateInput = late;
+        this.payrollDeductionsDamagesInput = damages;
         this.payrollDeductionsOtherPayInput = currentEmployee.deduction.others;
         this.deductionTotal = currentEmployee.deduction.total;
+      } else if (currentEmployee.type.toLowerCase() === 'external') {
+        const {
+          clientTripRates,
+          dropRate,
+          noOfTrips,
+          others,
+          passway,
+          tollFee,
+          total,
+          totalAmountOfTrips
+        } = currentEmployee.salary;
+        const { cashAdvance, marineInsuranceFee, penalties, uniform } =
+          currentEmployee.deduction;
+
+        this.payrollNoOfTripsInput = noOfTrips;
+        this.payrollClientTripRatesInput = clientTripRates;
+        this.payrollTotalAmountOfTripsInput = totalAmountOfTrips;
+        this.payrollDropRateInput = dropRate;
+        this.payrollTollFeeInput = tollFee;
+        this.payrollPasswayInput = passway;
+        this.payrollOthersInput = others;
+        this.payrollExternalTotal = total;
+
+        this.payrollDeductionsExternalCashAdvanceInput = cashAdvance;
+        this.payrollDeductionsMarineInsuranceFeeInput = marineInsuranceFee;
+        this.payrollDeductionsUniformInput = uniform;
+        this.payrollDeductionsPenaltiesInput = penalties;
+        this.deductionExternalTotal = currentEmployee.deduction.total;
       }
     }
   }

@@ -40,7 +40,6 @@ export default {
       const copy = JSON.parse(JSON.stringify(employee));
       copy.batchCodeId = batchCodeId;
 
-      console.log(employee);
 
       context.commit('addPayrollEmployee', copy);
     }
