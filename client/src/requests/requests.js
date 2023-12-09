@@ -331,7 +331,8 @@ async function httpGetAllExternalSalaries() {
 }
 
 async function httpPostNewExternalSalary(newExternalSalary) {
-  const response = await fetch(`${API_URL}/salaries`, {
+  console.log(newExternalSalary);
+  const response = await fetch(`${API_URL}/externalSalaries`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

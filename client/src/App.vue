@@ -15,6 +15,7 @@ export default {
     await this.$store.dispatch('salaries/loadSalaries');
     await this.$store.dispatch('deductions/loadDeductions');
     await this.$store.dispatch('externalSalaries/loadExternalSalaries');
+    await this.$store.dispatch('externalDeductions/loadExternalDeductions');
     await this.$store.dispatch('batches/loadBatches');
   }
 };

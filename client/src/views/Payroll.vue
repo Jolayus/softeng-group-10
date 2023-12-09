@@ -232,14 +232,14 @@ export default {
       const externalDeduction = new ExternalDeduction(id, 0, 0, 0, 0, 0);
 
       httpPostNewExternalSalary(externalSalary).then((newExternalSalary) => {
-        this.storeCreateExternalSalary(externalSalary);
-        employee.salary = externalSalary;
+        this.storeCreateExternalSalary(newExternalSalary);
+        employee.salary = newExternalSalary;
       });
 
       httpPostNewExternalDeduction(externalDeduction).then(
         (newExternalDeduction) => {
-          this.storeCreateExternalDeduction(externalDeduction);
-          employee.deduction = externalDeduction;
+          this.storeCreateExternalDeduction(newExternalDeduction);
+          employee.deduction = newExternalDeduction;
         }
       );
     },

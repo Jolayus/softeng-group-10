@@ -25,15 +25,33 @@ export default {
 
         const targetEmployee =
           context.rootGetters['employees/getEmployeeById'](employeeId);
-        const targetSalary =
-          context.rootGetters['salaries/getSalaryByEmployeeId'](employeeId);
-        const targetDeductions =
-          context.rootGetters['deductions/getDeductionByEmployeeId'](
-            employeeId
-          );
+
+        let targetSalary;
+        let targetDeduction;
+
+        if (targetEmployee.type.toLowerCase() === 'internal') {
+          targetSalary =
+            context.rootGetters['salaries/getSalaryByEmployeeId'](employeeId);
+          targetDeduction =
+            context.rootGetters['deductions/getDeductionByEmployeeId'](
+              employeeId
+            );
+        } else {
+          targetSalary =
+            context.rootGetters[
+              'externalSalaries/getExternalSalaryByEmployeeId'
+            ](employeeId);
+
+          targetDeduction =
+            context.rootGetters[
+              'externalDeductions/getExternalDeductionByEmployeeId'
+            ](employeeId);
+
+          console.log(targetDeduction);
+        }
 
         targetEmployee.salary = targetSalary;
-        targetEmployee.deduction = targetDeductions;
+        targetEmployee.deduction = targetDeduction;
       });
     },
     addBatch(context, newBatch) {

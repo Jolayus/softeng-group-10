@@ -49,6 +49,7 @@ export default {
       context.commit('setSalaries', loadedExternalSalaries);
     },
     addSalary(context, newSalary) {
+      console.log(newSalary);
       context.commit('addSalary', newSalary);
     },
     editSalary(context, newDetails) {
@@ -74,6 +75,11 @@ export default {
         }
         return false;
       };
+    },
+    getExternalSalaryByEmployeeId(state) {
+      return function (employeeId) {
+        return state.salaries.find((salary) => salary.employeeId === employeeId);
+      }
     }
   }
 };
