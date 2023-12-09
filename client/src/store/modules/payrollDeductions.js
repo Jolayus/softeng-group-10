@@ -1,3 +1,5 @@
+import { httpGetAllDeductions } from '../../requests/requests';
+
 export default {
   namespaced: true,
   state() {
@@ -17,8 +19,16 @@ export default {
         (deduction) => deduction.employeeId === newDetails.employeeId
       );
 
-      const { cashAdvance, pagibig, SSSContrib, philhealth, late, damages, others, total } =
-        newDetails;
+      const {
+        cashAdvance,
+        pagibig,
+        SSSContrib,
+        philhealth,
+        late,
+        damages,
+        others,
+        total
+      } = newDetails;
 
       updatedDeduction.cashAdvance = cashAdvance;
       updatedDeduction.pagibig = pagibig;
@@ -35,6 +45,10 @@ export default {
     }
   },
   actions: {
+    async loadDeductions(context) {
+      const loadedDeductions = await httpGetAllDeductions();
+      context.commit('setDeductions', loadedDeductions);
+    },
     addDeduction(context, newDeduction) {
       context.commit('addDeduction', newDeduction);
     },

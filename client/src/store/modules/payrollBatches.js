@@ -1,3 +1,5 @@
+import { httpGetAllBatches } from '../../requests/requests';
+
 export default {
   namespaced: true,
   state() {
@@ -14,6 +16,10 @@ export default {
     }
   },
   actions: {
+    async loadBatches(context) {
+      const batches = await httpGetAllBatches();
+      context.commit('setBatches', batches);
+    },
     addBatch(context, newBatch) {
       context.commit('addBatch', newBatch);
     }

@@ -3,6 +3,12 @@ import SearchIcon from '../components/Icons/SearchIcon.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
 
+import {
+  httpPostNewBatch,
+  httpPostNewSalary,
+  httpPostNewDeduction
+} from '../requests/requests';
+
 class Batch {
   constructor(batchCode, batchPeriodCoverFrom, batchPeriodCoverTo, employeeId) {
     this.batchCode = new Date().getFullYear() + ' - ' + batchCode;
@@ -181,15 +187,20 @@ export default {
           this.createBatchPeriodCoverTo,
           employeeId
         );
-        this.storeCreateBatch(newBatch);
 
-        const targetEmployee = this.getEmployeeById(employeeId);
+        httpPostNewBatch(newBatch).then((batch) => {
+          this.storeCreateBatch(batch);
 
-        if (this.isEmployeeInternal(targetEmployee)) {
-          this.addDefautlSalaryAndDeduction(targetEmployee);
-        } else {
-          this.addDefaultExternalSalaryAndDeduction(targetEmployee);
-        }
+          console.log(batch);
+
+          const targetEmployee = this.getEmployeeById(employeeId);
+
+          if (this.isEmployeeInternal(targetEmployee)) {
+            this.addDefautlSalaryAndDeduction(targetEmployee);
+          } else {
+            this.addDefaultExternalSalaryAndDeduction(targetEmployee);
+          }
+        });
 
         if (!this.isThereBatchCodeExists) {
           this.currentBatchCode = newBatch.batchCode;
@@ -200,12 +211,17 @@ export default {
       const { id } = employee;
       const salary = new Salary(id, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       const deduction = new Deduction(id, 0, 0, 0, 0, 0, 0, 0, 0);
-      this.storeCreateSalary(salary);
-      this.storeCreateDeduction(deduction);
+
+      httpPostNewSalary(salary).then((newSalary) => {
+        this.storeCreateSalary(newSalary);
+      });
+
+      httpPostNewDeduction(deduction).then((newDeduction) => {
+        this.storeCreateDeduction(deduction);
+      });
 
       employee.salary = salary;
       employee.deduction = deduction;
-      console.log(employee);
     },
     addDefaultExternalSalaryAndDeduction(employee) {
       const { id } = employee;
@@ -320,7 +336,9 @@ export default {
       this.payrollCurrentEmployee = employee;
     },
     getNetPay(employee) {
-      if (employee) {
+      console.log(employee);
+
+      if (employee && employee.salary && employee.deduction) {
         const { salary, deduction } = employee;
         return (salary.total - deduction.total).toFixed(2);
       }
@@ -350,9 +368,10 @@ export default {
       });
     },
     currentEmployeesByBatchCode() {
-      return this.employees.filter((employee) =>
+      const employees = this.employees.filter((employee) =>
         this.employeeIdsByCurrentBatchCode.includes(employee.id)
       );
+      return employees;
     },
     isThereBatchCodeExists() {
       return this.batchCodes.length;

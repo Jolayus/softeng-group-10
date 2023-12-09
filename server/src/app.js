@@ -11,6 +11,9 @@ const archivedEmployeesRouter = require('./routes/archivedEmployees/archivedEmpl
 const archivedClientsRouter = require('./routes/archivedClients/archivedClients.router');
 const billingsRouter = require('./routes/billings/billings.router');
 const billingTripsRouter = require('./routes/billingTrips/billingTrips.router');
+const batchesRouter = require('./routes/batches/batches.router');
+const salariesRouter = require('./routes/salaries/salaries.router');
+const deductionsRouter = require('./routes/deductions/deductions.router');
 
 const app = express();
 
@@ -29,6 +32,9 @@ app.use('/archivedEmployees', archivedEmployeesRouter);
 app.use('/archivedClients', archivedClientsRouter);
 app.use('/billings', billingsRouter);
 app.use('/billingtrips', billingTripsRouter);
+app.use('/batches', batchesRouter);
+app.use('/salaries', salariesRouter);
+app.use('/deductions', deductionsRouter);
 
 if (process.env.MODE === 'production') {
   // Serve all our client side files

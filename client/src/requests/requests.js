@@ -240,6 +240,66 @@ async function httpDeleteBillingTrips(billingId) {
   return await response.json();
 }
 
+// BATCHES
+async function httpGetAllBatches() {
+  const response = await fetch(`${API_URL}/batches`);
+  const batches = response.json();
+
+  return batches;
+}
+
+async function httpPostNewBatch(newBatch) {
+  const response = await fetch(`${API_URL}/batches`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newBatch)
+  });
+
+  return await response.json();
+}
+
+// SALARIES
+async function httpGetAllSalaries() {
+  const response = await fetch(`${API_URL}/salaries`);
+  const salaries = response.json();
+
+  return salaries;
+}
+
+async function httpPostNewSalary(newSalary) {
+  const response = await fetch(`${API_URL}/salaries`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newSalary)
+  });
+
+  return await response.json();
+}
+
+// DEDUCTIONS
+async function httpGetAllDeductions() {
+  const response = await fetch(`${API_URL}/deductions`);
+  const deductions = response.json();
+
+  return deductions;
+}
+
+async function httpPostNewDeduction(newDeduction) {
+  const response = await fetch(`${API_URL}/deductions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newDeduction)
+  });
+
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -262,5 +322,11 @@ export {
   httpDeleteBilling,
   httpGetAllBillingTrips,
   httpPostBillingTrip,
-  httpDeleteBillingTrips
+  httpDeleteBillingTrips,
+  httpGetAllBatches,
+  httpPostNewBatch,
+  httpGetAllSalaries,
+  httpPostNewSalary,
+  httpGetAllDeductions,
+  httpPostNewDeduction
 };

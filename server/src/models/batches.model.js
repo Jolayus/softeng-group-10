@@ -26,9 +26,7 @@ function addNewBatch(newBatch) {
 }
 
 module.exports = {
-  loadEmployees,
-  getAllEmployees,
-  getEmployeeById,
-  addNewEmployee,
-  removeEmployee
+  loadBatches,
+  getAllBatches,
+  addNewBatch
 };
