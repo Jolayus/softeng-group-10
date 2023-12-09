@@ -25,8 +25,39 @@ function addNewExternalSalary(newExternalSalary) {
   return externalSalaries.push(newExternalSalary);
 }
 
+function getExternalSalaryById(id) {
+  return externalSalaries.find((salary) => salary.id === id);
+}
+
+function editExternalSalary(newDetails) {
+  const {
+    noOfTrips,
+    clientTripRates,
+    totalAmountOfTrips,
+    dropRate,
+    tollFee,
+    passway,
+    others,
+    total,
+    id
+  } = newDetails;
+
+  const updatedSalary = getExternalSalaryById(id);
+  updatedSalary.noOfTrips = noOfTrips;
+  updatedSalary.clientTripRates = clientTripRates;
+  updatedSalary.dropRate = dropRate;
+  updatedSalary.tollFee = tollFee;
+  updatedSalary.passway = passway;
+  updatedSalary.others = others;
+  updatedSalary.total = total;
+
+  return updatedSalary;
+}
+
+
 module.exports = {
   loadExternalSalaries,
   getAllExternalSalaries,
-  addNewExternalSalary
+  addNewExternalSalary,
+  editExternalSalary
 };

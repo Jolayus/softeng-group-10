@@ -47,7 +47,6 @@ export default {
               'externalDeductions/getExternalDeductionByEmployeeId'
             ](employeeId);
 
-          console.log(targetDeduction);
         }
 
         targetEmployee.salary = targetSalary;

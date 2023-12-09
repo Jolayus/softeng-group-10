@@ -343,6 +343,17 @@ async function httpPostNewExternalSalary(newExternalSalary) {
   return await response.json();
 }
 
+async function httpUpdateExternalSalary(newDetails) {
+  const response = await fetch(`${API_URL}/externalSalaries`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newDetails)
+  });
+  return await response.json();
+}
+
 // EXTERNAL DEDUCTIONS
 async function httpGetAllExternalDeductions() {
   const response = await fetch(`${API_URL}/externalDeductions`);
@@ -360,6 +371,17 @@ async function httpPostNewExternalDeduction(newExternalDeduction) {
     body: JSON.stringify(newExternalDeduction)
   });
 
+  return await response.json();
+}
+
+async function httpUpdateExternalDeduction(newDetails) {
+  const response = await fetch(`${API_URL}/externalDeductions`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newDetails)
+  });
   return await response.json();
 }
 
@@ -396,6 +418,8 @@ export {
   httpUpdateDeduction,
   httpGetAllExternalSalaries,
   httpPostNewExternalSalary,
+  httpUpdateExternalSalary,
   httpGetAllExternalDeductions,
-  httpPostNewExternalDeduction
+  httpPostNewExternalDeduction,
+  httpUpdateExternalDeduction
 };

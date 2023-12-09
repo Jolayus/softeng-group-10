@@ -2,7 +2,8 @@ const db = require('../../../database/db');
 
 const {
   getAllExternalSalaries,
-  addNewExternalSalary
+  addNewExternalSalary,
+  editExternalSalary
 } = require('../../models/externalSalaries.model');
 
 function httpGetAllExternalSalaries(req, res) {
@@ -64,7 +65,46 @@ function httpPostNewExternalSalary(req, res) {
     });
 }
 
+function httpEditExternalSalary(req, res) {
+  const {
+    noOfTrips,
+    clientTripRates,
+    totalAmountOfTrips,
+    dropRate,
+    tollFee,
+    passway,
+    others,
+    total,
+    id
+  } = req.body;
+
+  const updatedSalary = editExternalSalary(req.body);
+
+  const sql = `UPDATE externalSalary SET noOfTrips=?, clientTripRates=?, totalAmountOfTrips=?, dropRate=?, tollFee=?, passway=?, others=?, total=? WHERE externalSalary.id=?`;
+  db.run(
+    sql,
+    [
+      noOfTrips,
+      clientTripRates,
+      totalAmountOfTrips,
+      dropRate,
+      tollFee,
+      passway,
+      others,
+      total,
+      id
+    ],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+    }
+  );
+  return res.status(200).json(updatedSalary);
+}
+
 module.exports = {
   httpGetAllExternalSalaries,
-  httpPostNewExternalSalary
+  httpPostNewExternalSalary,
+  httpEditExternalSalary
 };
