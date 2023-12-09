@@ -25,8 +25,33 @@ function addNewExternalDeduction(newExternalDeduction) {
   return externalDeductions.push(newExternalDeduction);
 }
 
+function getExternalDeductionById(id) {
+  return externalDeductions.find((deduction) => deduction.id === id);
+}
+
+function editExternalDeduction(newDetails) {
+  const {
+    cashAdvance,
+    marineInsuranceFee,
+    uniform,
+    penalties,
+    total,
+    id
+  } = newDetails;
+
+  const updatedDeduction = getExternalDeductionById(id);
+  updatedDeduction.cashAdvance = cashAdvance;
+  updatedDeduction.marineInsuranceFee = marineInsuranceFee;
+  updatedDeduction.uniform = uniform;
+  updatedDeduction.penalties = penalties;
+  updatedDeduction.total = total;
+
+  return updatedDeduction;
+}
+
 module.exports = {
   loadExternalDeductions,
   getAllExternalDeductions,
-  addNewExternalDeduction
+  addNewExternalDeduction,
+  editExternalDeduction
 };

@@ -11,7 +11,8 @@ import {
   httpUpdateDeduction,
   httpPostNewExternalSalary,
   httpPostNewExternalDeduction,
-  httpUpdateExternalSalary
+  httpUpdateExternalSalary,
+  httpUpdateExternalDeduction
 } from '../requests/requests';
 
 class Batch {
@@ -330,9 +331,17 @@ export default {
         this.computedDeductionsExternalTotal
       );
 
-      console.log(newDetails);
-      this.$store.dispatch('externalDeductions/editDeduction', newDetails);
-      this.payrollCurrentEmployee.deduction = newDetails;
+      newDetails.id = this.payrollCurrentEmployee.deduction.id;
+
+      httpUpdateExternalDeduction(newDetails).then(
+        (updatedExternalDeduction) => {
+          this.$store.dispatch(
+            'externalDeductions/editDeduction',
+            updatedExternalDeduction
+          );
+          this.payrollCurrentEmployee.deduction = updatedExternalDeduction;
+        }
+      );
     },
     storeCreateBatch(newBatch) {
       this.$store.dispatch('batches/addBatch', newBatch);

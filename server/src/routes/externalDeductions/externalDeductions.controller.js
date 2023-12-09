@@ -2,7 +2,8 @@ const db = require('../../../database/db');
 
 const {
   getAllExternalDeductions,
-  addNewExternalDeduction
+  addNewExternalDeduction,
+  editExternalDeduction
 } = require('../../models/externalDeductions.model');
 
 function httpGetAllExternalDeductions(req, res) {
@@ -51,7 +52,27 @@ function httpPostNewExternalDeduction(req, res) {
     });
 }
 
+function httpEditExternalDeduction(req, res) {
+  const { cashAdvance, marineInsuranceFee, uniform, penalties, total, id } =
+    req.body;
+
+  const updatedDeduction = editExternalDeduction(req.body);
+
+  const sql = `UPDATE externalDeduction SET cashAdvance=?, marineInsuranceFee=?, uniform=?, penalties=?, total=? WHERE externalDeduction.id=?`;
+  db.run(
+    sql,
+    [cashAdvance, marineInsuranceFee, uniform, penalties, total, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+    }
+  );
+  return res.status(200).json(updatedDeduction);
+}
+
 module.exports = {
   httpGetAllExternalDeductions,
-  httpPostNewExternalDeduction
+  httpPostNewExternalDeduction,
+  httpEditExternalDeduction
 };
