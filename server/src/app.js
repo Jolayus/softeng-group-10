@@ -16,6 +16,7 @@ const salariesRouter = require('./routes/salaries/salaries.router');
 const deductionsRouter = require('./routes/deductions/deductions.router');
 const externalSalariesRouter = require('./routes/externalSalaries/externalSalaries.router');
 const externalDeductionsRouter = require('./routes/externalDeductions/externalDeductions.router');
+const payrollEmployeesRouter = require('./routes/payrollEmployees/payrollEmployees.router');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/salaries', salariesRouter);
 app.use('/deductions', deductionsRouter);
 app.use('/externalSalaries', externalSalariesRouter);
 app.use('/externalDeductions', externalDeductionsRouter);
+app.use('/payrollEmployees', payrollEmployeesRouter);
 
 if (process.env.MODE === 'production') {
   // Serve all our client side files

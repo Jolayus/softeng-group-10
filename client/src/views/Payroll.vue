@@ -12,7 +12,8 @@ import {
   httpPostNewExternalSalary,
   httpPostNewExternalDeduction,
   httpUpdateExternalSalary,
-  httpUpdateExternalDeduction
+  httpUpdateExternalDeduction,
+  httpPostNewPayrollEmployee
 } from '../requests/requests';
 
 class Batch {
@@ -120,6 +121,16 @@ class ExternalDeduction {
   }
 }
 
+class PayrollEmployee {
+  constructor(batchCodeId, employeeId, salaryId, deductionId, type) {
+    this.batchCodeId = batchCodeId;
+    this.employeeId = employeeId;
+    this.salaryId = salaryId;
+    this.deductionId = deductionId;
+    this.type = type;
+  }
+}
+
 export default {
   name: 'Payroll',
   components: {
@@ -204,6 +215,20 @@ export default {
           } else {
             this.addDefaultExternalSalaryAndDeduction(targetEmployee);
           }
+
+          const payrollEmployee = new PayrollEmployee(
+            batch.id,
+            targetEmployee.id,
+            targetEmployee.salary.id,
+            targetEmployee.deduction.id,
+            targetEmployee.type
+          );
+
+          httpPostNewPayrollEmployee(payrollEmployee).then(
+            (newPayrollEmployee) => {
+              this.storeCreatePayrollEmployee(newPayrollEmployee);
+            }
+          );
         });
 
         if (!this.isThereBatchCodeExists) {
@@ -355,6 +380,12 @@ export default {
     },
     storeCreateExternalDeduction(newDeduction) {
       this.$store.dispatch('externalDeductions/addDeduction', newDeduction);
+    },
+    storeCreatePayrollEmployee(newPayrollEmployee) {
+      this.$store.dispatch(
+        'payrollEmployees/addPayrollEmployee',
+        newPayrollEmployee
+      );
     },
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;

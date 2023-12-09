@@ -12,6 +12,7 @@ import payrollSalariesModule from './modules/payrollSalaries';
 import payrollDeductionsModule from './modules/payrollDeductions';
 import payrollExternalSalariesModule from './modules/payrollExternalSalaries';
 import payrollExternalDeductionsModule from './modules/payrollExternalDeductions';
+import payrollEmployeesModule from './modules/payrollEmployees';
 
 const store = createStore({
   modules: {
@@ -26,7 +27,8 @@ const store = createStore({
     salaries: payrollSalariesModule,
     deductions: payrollDeductionsModule,
     externalSalaries: payrollExternalSalariesModule,
-    externalDeductions: payrollExternalDeductionsModule
+    externalDeductions: payrollExternalDeductionsModule,
+    payrollEmployees: payrollEmployeesModule
   }
 });
 

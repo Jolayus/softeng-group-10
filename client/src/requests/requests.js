@@ -385,6 +385,26 @@ async function httpUpdateExternalDeduction(newDetails) {
   return await response.json();
 }
 
+// PAYROLL EMPLOYEES
+async function httpGetAllPayrollEmployees() {
+  const response = await fetch(`${API_URL}/payrollEmployees`);
+  const payrollEmployees = response.json();
+
+  return payrollEmployees;
+}
+
+async function httpPostNewPayrollEmployee(newPayrollEmployee) {
+  const response = await fetch(`${API_URL}/payrollEmployees`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newPayrollEmployee)
+  });
+
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -421,5 +441,7 @@ export {
   httpUpdateExternalSalary,
   httpGetAllExternalDeductions,
   httpPostNewExternalDeduction,
-  httpUpdateExternalDeduction
+  httpUpdateExternalDeduction,
+  httpGetAllPayrollEmployees,
+  httpPostNewPayrollEmployee
 };
