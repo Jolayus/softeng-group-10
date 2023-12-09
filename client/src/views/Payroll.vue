@@ -8,7 +8,9 @@ import {
   httpPostNewSalary,
   httpUpdateSalary,
   httpPostNewDeduction,
-  httpUpdateDeduction
+  httpUpdateDeduction,
+  httpPostNewExternalSalary,
+  httpPostNewExternalDeduction
 } from '../requests/requests';
 
 class Batch {
@@ -216,25 +218,33 @@ export default {
 
       httpPostNewSalary(salary).then((newSalary) => {
         this.storeCreateSalary(newSalary);
+        employee.salary = salary;
       });
 
       httpPostNewDeduction(deduction).then((newDeduction) => {
         this.storeCreateDeduction(deduction);
+        employee.deduction = deduction;
       });
-
-      employee.salary = salary;
-      employee.deduction = deduction;
     },
     addDefaultExternalSalaryAndDeduction(employee) {
       const { id } = employee;
       const externalSalary = new ExternalSalary(id, 0, 0, 0, 0, 0, 0, 0, 0);
       const externalDeduction = new ExternalDeduction(id, 0, 0, 0, 0, 0);
 
-      this.storeCreateExternalSalary(externalSalary);
-      this.storeCreateExternalDeduction(externalDeduction);
-
+      httpPostNewExternalSalary(externalSalary).then((newExternalSalary) => {
+        this.storeCreateExternalSalary(externalSalary);
       employee.salary = externalSalary;
+
+      });
+
+      httpPostNewExternalDeduction(externalDeduction).then(
+        (newExternalDeduction) => {
+          this.storeCreateExternalDeduction(externalDeduction);
       employee.deduction = externalDeduction;
+
+        }
+      );
+
     },
     isEmployeeInternal(employee) {
       if (employee === null) {
