@@ -13,16 +13,36 @@ export default {
     },
     addPayrollEmployee(state, newPayrollEmployee) {
       state.payrollEmployees.push(newPayrollEmployee);
-      console.log(state.payrollEmployees);
     }
   },
   actions: {
     async loadPayrollEmployees(context) {
       const loadedPayrollEmployees = await httpGetAllPayrollEmployees();
-      context.commit('setPayrollEmployees', loadedPayrollEmployees);
+
+      loadedPayrollEmployees.forEach((payrollEmployee) => {
+        const { employeeId, batchCodeId } = payrollEmployee;
+        const employee =
+          context.rootGetters['employees/getEmployeeById'](employeeId);
+
+        const copy = JSON.parse(JSON.stringify(employee));
+        copy.batchCodeId = batchCodeId;
+
+        context.commit('addPayrollEmployee', copy);
+      });
     },
     addPayrollEmployee(context, newPayrollEmployee) {
-      context.commit('addPayrollEmployee', newPayrollEmployee);
+      const { employeeId, batchCodeId, salaryId, deductionId, type } =
+        newPayrollEmployee;
+
+      const employee =
+        context.rootGetters['employees/getEmployeeById'](employeeId);
+
+      const copy = JSON.parse(JSON.stringify(employee));
+      copy.batchCodeId = batchCodeId;
+
+      console.log(employee);
+
+      context.commit('addPayrollEmployee', copy);
     }
   },
   getters: {

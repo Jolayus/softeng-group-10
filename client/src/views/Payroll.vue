@@ -211,24 +211,10 @@ export default {
           const targetEmployee = this.getEmployeeById(employeeId);
 
           if (this.isEmployeeInternal(targetEmployee)) {
-            this.addDefautlSalaryAndDeduction(targetEmployee);
+            this.addDefautlSalaryAndDeduction(targetEmployee, batch.id);
           } else {
             this.addDefaultExternalSalaryAndDeduction(targetEmployee);
           }
-
-          const payrollEmployee = new PayrollEmployee(
-            batch.id,
-            targetEmployee.id,
-            targetEmployee.salary.id,
-            targetEmployee.deduction.id,
-            targetEmployee.type
-          );
-
-          httpPostNewPayrollEmployee(payrollEmployee).then(
-            (newPayrollEmployee) => {
-              this.storeCreatePayrollEmployee(newPayrollEmployee);
-            }
-          );
         });
 
         if (!this.isThereBatchCodeExists) {
@@ -236,19 +222,29 @@ export default {
         }
       });
     },
-    addDefautlSalaryAndDeduction(employee) {
+    async addDefautlSalaryAndDeduction(employee, batchId) {
       const { id } = employee;
       const salary = new Salary(id, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       const deduction = new Deduction(id, 0, 0, 0, 0, 0, 0, 0, 0);
 
-      httpPostNewSalary(salary).then((newSalary) => {
-        this.storeCreateSalary(newSalary);
-        employee.salary = newSalary;
-      });
+      const newSalary = await httpPostNewSalary(salary);
+      this.storeCreateSalary(newSalary);
+      employee.salary = newSalary;
 
-      httpPostNewDeduction(deduction).then((newDeduction) => {
-        this.storeCreateDeduction(newDeduction);
-        employee.deduction = newDeduction;
+      const newDeduction = await httpPostNewDeduction(deduction);
+      this.storeCreateDeduction(newDeduction);
+      employee.deduction = newDeduction;
+
+      const payrollEmployee = new PayrollEmployee(
+        batchId,
+        employee.id,
+        employee.salary.id,
+        employee.deduction.id,
+        employee.type
+      );
+
+      httpPostNewPayrollEmployee(payrollEmployee).then((newPayrollEmployee) => {
+        this.storeCreatePayrollEmployee(newPayrollEmployee);
       });
     },
     addDefaultExternalSalaryAndDeduction(employee) {
@@ -421,19 +417,6 @@ export default {
     batchCodes() {
       return this.$store.getters['batches/batchCodes'];
     },
-    employeeIdsByCurrentBatchCode() {
-      return this.batches.map((batch) => {
-        if (batch.batchCode === this.currentBatchCode) {
-          return batch.employeeId;
-        }
-      });
-    },
-    currentEmployeesByBatchCode() {
-      const employees = this.employees.filter((employee) =>
-        this.employeeIdsByCurrentBatchCode.includes(employee.id)
-      );
-      return employees;
-    },
     isThereBatchCodeExists() {
       return this.batchCodes.length;
     },
@@ -447,11 +430,28 @@ export default {
       return this.$store.getters['salaries/salaries'];
     },
     filteredEmployees() {
-      const employees = this.currentEmployeesByBatchCode.filter((employee) =>
-        employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
+      const currentBatch = this.batches.find(
+        (batch) => batch.batchCode === this.currentBatchCode
       );
 
-      return employees;
+      if (currentBatch) {
+        const payrollEmployees = this.payrollEmployees.filter(
+          (payrollEmployee) => payrollEmployee.batchCodeId === currentBatch.id
+        );
+
+        const employees = payrollEmployees.filter((employee) =>
+          employee.name.toLowerCase().includes(this.searchInput.toLowerCase())
+        );
+
+        console.log(employees);
+
+        return employees;
+      }
+
+      return [];
+    },
+    payrollEmployees() {
+      return this.$store.getters['payrollEmployees/payrollEmployees'];
     },
     periodCovered() {
       if (this.createBatchPeriodCoverFrom && this.createBatchPeriodCoverTo) {
@@ -532,6 +532,53 @@ export default {
     payrollDailyAllowanceInput(newDailyAllowance) {
       this.payrollSemiAllowanceSalaryInput =
         this.payrollDaysOfWorkInput * newDailyAllowance;
+    },
+    payrollCurrentEmployee(currentEmployee) {
+      if (currentEmployee.type.toLowerCase() === 'internal') {
+        const {
+          allowanceSalary,
+          basicSalary,
+          dailyAllowance,
+          dailyRate,
+          daysOfWork,
+          others,
+          overtimePay,
+          semiAllowanceSalary,
+          semiBasicSalary,
+          total,
+          serviceFee
+        } = currentEmployee.salary;
+
+        const {
+          SSS,
+          cashAdvance,
+          damages,
+          late,
+          pagibig,
+          philhealth,
+        } = currentEmployee.deduction
+
+        this.payrollBasicSalaryInput = basicSalary;
+        this.payrollAllowanceSalaryInput = allowanceSalary;
+        this.payrollDailyRateInput = dailyRate;
+        this.payrollDailyAllowanceInput = dailyAllowance;
+        this.payrollDaysOfWorkInput = daysOfWork;
+        this.payrollSemiBasicSalaryInput = semiBasicSalary;
+        this.payrollSemiAllowanceSalaryInput = semiAllowanceSalary;
+        this.payrollServiceFeeInput = serviceFee;
+        this.payrollOvertimePayInput = overtimePay;
+        this.payrollOtherPayInput = others;
+        this.payrollTotal = total;
+
+        this.payrollDeductionsCashAdvanceInput = cashAdvance
+        this.payrollDeductionsPAGIBIGInput = pagibig
+        this.payrollDeductionsSSSInput = SSS
+        this.payrollDeductionsPhilHealthInput = philhealth
+        this.payrollDeductionsLateInput = late
+        this.payrollDeductionsDamagesInput = damages
+        this.payrollDeductionsOtherPayInput = currentEmployee.deduction.others;
+        this.deductionTotal = currentEmployee.deduction.total;
+      }
     }
   }
 };
@@ -608,7 +655,7 @@ export default {
             <th class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
-        <tbody class="table-group-divider">
+        <tbody class="table-group-divider" v-if="currentBatchCode.length > 0">
           <tr v-for="employee in filteredEmployees" :key="employee.id">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.type }}</td>

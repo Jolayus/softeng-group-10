@@ -18,8 +18,6 @@ export default {
     await this.$store.dispatch('externalDeductions/loadExternalDeductions');
     await this.$store.dispatch('batches/loadBatches');
     await this.$store.dispatch('payrollEmployees/loadPayrollEmployees');
-
-    console.log(this.$store.getters['payrollEmployees/payrollEmployees']);
   }
 };
 </script>
