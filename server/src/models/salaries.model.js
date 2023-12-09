@@ -47,6 +47,7 @@ function editSalary(newDetails) {
   } = newDetails;
 
   const updatedSalary = getSalaryById(id);
+
   updatedSalary.basicSalary = basicSalary;
   updatedSalary.allowanceSalary = allowanceSalary;
   updatedSalary.dailyRate = dailyRate;

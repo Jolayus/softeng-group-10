@@ -197,8 +197,6 @@ export default {
         httpPostNewBatch(newBatch).then((batch) => {
           this.storeCreateBatch(batch);
 
-          console.log(batch);
-
           const targetEmployee = this.getEmployeeById(employeeId);
 
           if (this.isEmployeeInternal(targetEmployee)) {
@@ -220,12 +218,12 @@ export default {
 
       httpPostNewSalary(salary).then((newSalary) => {
         this.storeCreateSalary(newSalary);
-        employee.salary = salary;
+        employee.salary = newSalary;
       });
 
       httpPostNewDeduction(deduction).then((newDeduction) => {
-        this.storeCreateDeduction(deduction);
-        employee.deduction = deduction;
+        this.storeCreateDeduction(newDeduction);
+        employee.deduction = newDeduction;
       });
     },
     addDefaultExternalSalaryAndDeduction(employee) {
