@@ -327,6 +327,9 @@ export default {
     },
     getEmployeeById(id) {
       return this.$store.getters['employees/getEmployeeById'](id);
+    },
+    deleteBatch() {
+      // TODO
     }
   },
   computed: {
@@ -424,6 +427,9 @@ export default {
         this.payrollDeductionsMarineInsuranceFeeInput +
         this.payrollDeductionsUniformInput +
         this.payrollDeductionsPenaltiesInput);
+    },
+    isThereACurrentBatch() {
+      return this.currentBatchCode === '';
     }
   },
   watch: {
@@ -499,6 +505,16 @@ export default {
           @click="onClickCreateBatchHandler"
         >
           Create Batch
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger text-light px-5"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteBatchVerif"
+          :disabled="isThereACurrentBatch"
+        >
+          Delete Batch
         </button>
       </div>
 
@@ -1298,7 +1314,11 @@ export default {
           </p>
         </div>
         <div
-          v-if="payrollCurrentEmployee && payrollCurrentEmployee.deduction && isEmployeeInternal(payrollCurrentEmployee)"
+          v-if="
+            payrollCurrentEmployee &&
+            payrollCurrentEmployee.deduction &&
+            isEmployeeInternal(payrollCurrentEmployee)
+          "
           class="deduction-breakdown d-flex flex-column align-items-start"
         >
           <h2>Deductions</h2>
@@ -1361,33 +1381,28 @@ export default {
       </div>
     </template>
     <template v-slot:modal-body>
-      <div
-        class="d-flex justify-content-around"
-        v-if="
-          payrollCurrentEmployee 
-        "
-      >
+      <div class="d-flex justify-content-around" v-if="payrollCurrentEmployee">
         <div>
           <p class="text-start">
-          <span class="fw-bold text-success">Employee's name: </span>
-          {{ payrollCurrentEmployee.name }} - {{ payrollCurrentEmployee.role }}
-        </p>
-        <p class="text-start">
-          <span class="fw-bold text-success">Driver's name</span>
-          {{ payrollCurrentEmployee.driver_name }}
-        </p>
+            <span class="fw-bold text-success">Employee's name: </span>
+            {{ payrollCurrentEmployee.name }} -
+            {{ payrollCurrentEmployee.role }}
+          </p>
+          <p class="text-start">
+            <span class="fw-bold text-success">Driver's name</span>
+            {{ payrollCurrentEmployee.driver_name }}
+          </p>
         </div>
         <div>
           <p class="text-start">
-          <span class="fw-bold text-success">Date Hired: </span>
-          {{ payrollCurrentEmployee.date_hired }}
-        </p>
-        <p class="text-start">
-          <span class="fw-bold text-success">Plate Number: </span>
-          {{ payrollCurrentEmployee.plate_number }}
-        </p>
+            <span class="fw-bold text-success">Date Hired: </span>
+            {{ payrollCurrentEmployee.date_hired }}
+          </p>
+          <p class="text-start">
+            <span class="fw-bold text-success">Plate Number: </span>
+            {{ payrollCurrentEmployee.plate_number }}
+          </p>
         </div>
-
       </div>
       <div class="modal-body d-flex justify-content-around">
         <div
@@ -1472,6 +1487,35 @@ export default {
       <div class="modal-footer justify-content-center border-top-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Close
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="deleteBatchVerif">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="deleteBatchVerifLabel">
+          Delete Batch
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the selected batch?</p>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer justify-content-center border-top-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary tms-btn"
+          data-bs-dismiss="modal"
+        >
+          Delete
         </button>
       </div>
     </template>
