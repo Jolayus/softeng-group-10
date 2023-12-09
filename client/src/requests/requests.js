@@ -311,6 +311,17 @@ async function httpPostNewDeduction(newDeduction) {
   return await response.json();
 }
 
+async function httpUpdateDeduction(newDetails) {
+  const response = await fetch(`${API_URL}/deductions`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newDetails)
+  });
+  return await response.json();
+}
+
 export {
   httpGetEmployees,
   httpCreateEmployee,
@@ -340,5 +351,6 @@ export {
   httpPostNewSalary,
   httpUpdateSalary,
   httpGetAllDeductions,
-  httpPostNewDeduction
+  httpPostNewDeduction,
+  httpUpdateDeduction
 };

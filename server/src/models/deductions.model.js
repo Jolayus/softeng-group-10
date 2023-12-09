@@ -25,8 +25,42 @@ function addNewDeduction(newDeduction) {
   return deductions.push(newDeduction);
 }
 
+function getDeductionById(id) {
+  return deductions.find((deduction) => deduction.id === id);
+}
+
+function editDeduction(newDetails) {
+  const {
+    cashAdvance,
+    pagibig,
+    SSS,
+    philhealth,
+    late,
+    damages,
+    others,
+    total,
+    id
+  } = newDetails;
+
+  const updatedDeduction = getDeductionById(id);
+  console.log(deductions);
+  console.log(id);
+
+  updatedDeduction.cashAdvance = cashAdvance;
+  updatedDeduction.pagibig = pagibig;
+  updatedDeduction.SSS = SSS;
+  updatedDeduction.philhealth = philhealth;
+  updatedDeduction.late = late;
+  updatedDeduction.damages = damages;
+  updatedDeduction.others = others;
+  updatedDeduction.total = total;
+
+  return updatedDeduction;
+}
+
 module.exports = {
   loadDeductions,
   getAllDeductions,
-  addNewDeduction
+  addNewDeduction,
+  editDeduction
 };

@@ -7,7 +7,8 @@ import {
   httpPostNewBatch,
   httpPostNewSalary,
   httpUpdateSalary,
-  httpPostNewDeduction
+  httpPostNewDeduction,
+  httpUpdateDeduction
 } from '../requests/requests';
 
 class Batch {
@@ -260,8 +261,6 @@ export default {
 
       newDetails.id = this.payrollCurrentEmployee.salary.id;
 
-      console.log(newDetails);
-
       httpUpdateSalary(newDetails).then((updatedSalary) => {
         this.$store.dispatch('salaries/editSalary', updatedSalary);
         this.payrollCurrentEmployee.salary = updatedSalary;
@@ -298,8 +297,12 @@ export default {
         this.computedDeductionsTotal
       );
 
-      this.$store.dispatch('deductions/editDeduction', newDetails);
-      this.payrollCurrentEmployee.deduction = newDetails;
+      newDetails.id = this.payrollCurrentEmployee.deduction.id;
+
+      httpUpdateDeduction(newDetails).then((updatedDeduction) => {
+        this.$store.dispatch('deductions/editDeduction', updatedDeduction);
+        this.payrollCurrentEmployee.deduction = updatedDeduction;
+      });
     },
     onSubmitExternalDeductionForm() {
       const employeeId = this.payrollCurrentEmployee.id;

@@ -2,7 +2,8 @@ const db = require('../../../database/db');
 
 const {
   getAllDeductions,
-  addNewDeduction
+  addNewDeduction,
+  editDeduction
 } = require('../../models/deductions.model');
 
 function httpGetAllDeductions(req, res) {
@@ -21,7 +22,6 @@ function httpPostNewDeduction(req, res) {
     others,
     total
   } = req.body;
-
 
   const promise = new Promise((resolve, reject) => {
     const sql = `INSERT INTO deduction (employeeId, cashAdvance, pagibig, SSS, philhealth, late, damages, others, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -65,7 +65,36 @@ function httpPostNewDeduction(req, res) {
     });
 }
 
+function httpEditSalary(req, res) {
+  const {
+    cashAdvance,
+    pagibig,
+    SSS,
+    philhealth,
+    late,
+    damages,
+    others,
+    total,
+    id
+  } = req.body;
+
+  const updatedDeduction = editDeduction(req.body);
+
+  const sql = `UPDATE deduction SET cashAdvance=?, pagibig=?, SSS=?, philhealth=?, late=?, damages=?, others=?, total=? WHERE deduction.id=?`;
+  db.run(
+    sql,
+    [cashAdvance, pagibig, SSS, philhealth, late, damages, others, total, id],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+    }
+  );
+  return res.status(200).json(updatedDeduction);
+}
+
 module.exports = {
   httpGetAllDeductions,
-  httpPostNewDeduction
+  httpPostNewDeduction,
+  httpEditSalary
 };
