@@ -151,7 +151,7 @@ export default {
       //Create payroll batch
       createBatchPeriodCoverFrom: new Date().toISOString().substring(0, 10),
       createBatchPeriodCoverTo: '',
-      createBatchCode: '',
+      createBatchCode: 0,
       selectedEmployees: [],
 
       //payrollInternalSalaryModal
@@ -399,7 +399,7 @@ export default {
     },
     onClickCreateBatchHandler() {
       this.createBatchPeriodCoverTo = '';
-      this.createBatchCode = '';
+      this.createBatchCode = 0;
       this.selectedEmployees = [];
     },
     setPayrollCurrentEmployee(employee) {
@@ -478,7 +478,8 @@ export default {
         this.createBatchPeriodCoverTo &&
         this.createBatchCode &&
         this.selectedEmployees.length &&
-        timeDifference > 0
+        timeDifference > 0 &&
+        !this.isBatchCodeAlreadyExist
       );
     },
     isEmployeeCurrentBatchCodeEmpty() {
@@ -519,6 +520,14 @@ export default {
     },
     isThereACurrentBatch() {
       return this.currentBatchCode === '';
+    },
+    isBatchCodeAlreadyExist() {1
+      const currentBatch =
+        String(new Date().getFullYear()) + ' - ' + this.createBatchCode;
+      const idx = this.batches.findIndex((batch) => {
+        return batch.batchCode === currentBatch;
+      });
+      return idx >= 0 ? true : false;
     }
   },
   watch: {
@@ -811,12 +820,15 @@ export default {
             <div class="d-flex align-items-center gap-1">
               <span>2023-</span>
               <input
-                v-model.trim="createBatchCode"
-                type="text"
+                v-model="createBatchCode"
+                type="number"
                 class="form-control"
                 placeholder="Batch"
               />
             </div>
+            <p class="fw-bold text-danger" v-if="isBatchCodeAlreadyExist">
+              The provided batch code is already exist!
+            </p>
           </div>
 
           <div class="mb-3">
