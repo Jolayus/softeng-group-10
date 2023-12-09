@@ -685,7 +685,7 @@ export default {
           </div>
 
           <div class="mb-3">
-            <label for="newEmployeeRole" class="form-label d-block text-start"
+            <label for="employeeRole" class="form-label d-block text-start"
               >Role</label
             >
             <input
