@@ -1,6 +1,6 @@
 const db = require('../../../database/db');
 
-const { getAllSalaries, addNewSalary } = require('../../models/salaries.model');
+const { getAllSalaries, addNewSalary, editSalary } = require('../../models/salaries.model');
 
 function httpGetAllSalaries(req, res) {
   return res.status(200).json(getAllSalaries());
@@ -67,7 +67,54 @@ function httpPostNewSalary(req, res) {
     });
 }
 
+function httpEditSalary(req, res) {
+  const {
+    id,
+    employeeId,
+    basicSalary,
+    allowanceSalary,
+    dailyRate,
+    dailyAllowance,
+    daysOfWork,
+    semiBasicSalary,
+    semiAllowanceSalary,
+    serviceFee,
+    overtimePay,
+    others,
+    total
+  } = req.body;
+
+  console.log(req.body)
+  const updatedSalary = editSalary(req.body);
+
+  const sql = `UPDATE salary SET basicSalary=?, allowanceSalary=?, dailyRate=?, dailyAllowance=?, daysOfWork=?, semiBasicSalary=?, semiAllowanceSalary=?, serviceFee=?, overtimePay=?, others=?, total=? WHERE salary.id=?`;
+  db.run(
+    sql,
+    [
+      basicSalary,
+      allowanceSalary,
+      dailyRate,
+      dailyAllowance,
+      daysOfWork,
+      semiBasicSalary,
+      semiAllowanceSalary,
+      serviceFee,
+      overtimePay,
+      others,
+      total,
+      id
+    ],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+    }
+  );
+  return res.status(200).json(updatedSalary);
+}
+
 module.exports = {
   httpGetAllSalaries,
-  httpPostNewSalary
+  httpPostNewSalary,
+  httpEditSalary
 };

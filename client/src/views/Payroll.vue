@@ -6,6 +6,7 @@ import Modal from '../components/Modal.vue';
 import {
   httpPostNewBatch,
   httpPostNewSalary,
+  httpUpdateSalary,
   httpPostNewDeduction
 } from '../requests/requests';
 
@@ -257,8 +258,14 @@ export default {
         this.computedPayrollTotal
       );
 
-      this.$store.dispatch('salaries/editSalary', newDetails);
-      this.payrollCurrentEmployee.salary = newDetails;
+      newDetails.id = this.payrollCurrentEmployee.salary.id;
+
+      console.log(newDetails);
+
+      httpUpdateSalary(newDetails).then((updatedSalary) => {
+        this.$store.dispatch('salaries/editSalary', updatedSalary);
+        this.payrollCurrentEmployee.salary = updatedSalary;
+      });
     },
     onSubmitExternalSalaryForm() {
       const employeeId = this.payrollCurrentEmployee.id;

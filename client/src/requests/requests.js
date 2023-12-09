@@ -280,6 +280,17 @@ async function httpPostNewSalary(newSalary) {
   return await response.json();
 }
 
+async function httpUpdateSalary(newDetails) {
+  const response = await fetch(`${API_URL}/salaries`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newDetails)
+  });
+  return await response.json();
+}
+
 // DEDUCTIONS
 async function httpGetAllDeductions() {
   const response = await fetch(`${API_URL}/deductions`);
@@ -327,6 +338,7 @@ export {
   httpPostNewBatch,
   httpGetAllSalaries,
   httpPostNewSalary,
+  httpUpdateSalary,
   httpGetAllDeductions,
   httpPostNewDeduction
 };
