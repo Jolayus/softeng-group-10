@@ -132,7 +132,19 @@ export default {
         }
         return false;
       }
-    }
+    }, 
+    isUniqueEditClientCompanyName() {
+      const newCompanyName = this.editClientCompanyNameInput.toLowerCase();
+      return this.clients.every(client => {
+        return client.id === this.editClientId || client.company_name.toLowerCase() !== newCompanyName;
+      });
+    },
+    isUniqueNewClientCompanyName() {
+      const newCompanyName = this.clientCompanyNameInput.toLowerCase();
+      return this.clients.every(client => {
+        return client.company_name.toLowerCase() !== newCompanyName;
+      });
+    },
   }
 };
 </script>
@@ -226,6 +238,9 @@ export default {
               id="clientCompanyName"
               aria-describedby="clientCompanyName"
             />
+            <p class="fw-bold text-danger" v-if="!isUniqueNewClientCompanyName">
+              The new client name is already existing!
+            </p> 
           </div>
           <div class="mb-3">
             <label
@@ -280,7 +295,7 @@ export default {
           class="btn tms-btn text-light"
           form="clientForm"
           data-bs-dismiss="modal"
-          :disabled="isFormInvalid"
+          :disabled="isFormInvalid || !isUniqueNewClientCompanyName"
         >
           Add Client
         </button>
@@ -312,6 +327,9 @@ export default {
               id="newClientCompanyName"
               aria-describedby="newClientCompanyName"
             />
+          <p class="fw-bold text-danger" v-if="!isUniqueEditClientCompanyName">
+            The edited client name is already existing!
+          </p>              
           </div>
           <div class="mb-3">
             <label
@@ -366,10 +384,10 @@ export default {
           class="btn btn-primary tms-btn"
           form="editClientForm"
           data-bs-dismiss="modal"
-          :disabled="isFormInvalid"
+          :disabled="isFormInvalid || !isUniqueEditClientCompanyName" 
         >
           Save changes
-        </button>
+        </button>    
       </div>
     </template>
   </Modal>

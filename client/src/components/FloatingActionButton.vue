@@ -63,8 +63,9 @@ export default {
       this.menuItems.unshift(uploadObj);
 
       // BUTTON FOR ADD TRIP RATE
-      this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =
-        'addTripRatesModal';
+      this.menuItems.find(
+        (menuItem) => menuItem.text === 'Add'
+        ).targetModal = 'addTripRatesModal';
 
       // BUTTON FOR DELETE TRIP RATE
       this.menuItems.find(
@@ -72,8 +73,9 @@ export default {
       ).targetModal = 'deleteTripRatesModal';
 
       // BUTTON FOR EDIT TRIP RATE
-      this.menuItems.find((menuItem) => menuItem.text === 'Edit').targetModal =
-        'editTripRatesModal';
+      this.menuItems.find(
+        (menuItem) => menuItem.text === 'Edit'
+        ).targetModal = 'editTripRatesModal';
     } else if (this.isForBilling) {
       // BUTTON FOR ADD BILLING
       this.menuItems.find((menuItem) => menuItem.text === 'Add').targetModal =

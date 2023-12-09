@@ -381,10 +381,6 @@ export default {
       return this.getUniqueValuesFromArray(cities);
     },
 
-    // editTripRatesHandler() {
-
-    // },
-
     onSubmitEditTripRates() {
       const branch = this.editTripRatesBranchInput;
       const province = this.editTripRatesProvinceInput;
@@ -396,26 +392,14 @@ export default {
           tripRate.city === city
       );
 
-      const {
-        auv,
-        four_wheeler,
-        six_wheeler_elf,
-        six_wheeler_forward,
-        ten_wheeler
-      } = tripRateToBeEdited;
-
-      this.editTripRatesAUVInput = auv;
-      this.editTripRates4WInput = four_wheeler;
-      this.editTripRates6WElfInput = six_wheeler_elf;
-      this.editTripRates6WFInput = six_wheeler_forward;
-      this.editTripRates10WInput = ten_wheeler;
-
       if (this.isForEditing) {
-        tripRateToBeEdited.auv = this.editTripRatesAUVInput;
-        tripRateToBeEdited.four_wheeler = this.editTripRates4WInput;
-        tripRateToBeEdited.six_wheeler_elf = this.editTripRates6WElfInput;
-        tripRateToBeEdited.six_wheeler_forward = this.editTripRates6WFInput;
-        tripRateToBeEdited.ten_wheeler = this.editTripRates10WInput;
+        Object.assign(tripRateToBeEdited, {
+          auv: this.editTripRatesAUVInput,
+          four_wheeler: this.editTripRates4WInput,
+          six_wheeler_elf: this.editTripRates6WElfInput,
+          six_wheeler_forward: this.editTripRates6WFInput,
+          ten_wheeler: this.editTripRates10WInput,
+        });
 
         httpUpdateTripRates(tripRateToBeEdited);
         this.clearDataForEdit();

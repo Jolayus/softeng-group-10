@@ -140,6 +140,10 @@ export default {
         date_hired: this.editEmployeeDateHiredInput,
         role: this.editEmployeeRoleInput,
         type: this.editEmployeeTypeInput,
+        driver_name: 
+          this.editEmployeeTypeInput.toLowerCase() === 'internal'
+            ? '-'
+            : this.editEmployeeDriverNameInput,
         vehicle_type:
           this.editEmployeeRoleInput === 'Admin'
             ? '-'
@@ -149,8 +153,7 @@ export default {
             ? '-'
             : this.editEmployeePlateNumberInput,
         email: this.editEmployeeEmailInput,
-        contact_number: this.editEmployeeContactNumberInput,
-        driver_name: this.editEmployeeDriverNameInput
+        contact_number: this.editEmployeeContactNumberInput
       };
 
       await httpUpdateEmployee(newDetails);
@@ -337,13 +340,7 @@ export default {
       } else if (newType === 'Internal') {
         this.editEmployeeRoleInput = '';
       }
-    },
-    employeeTypeInput(newValue) {
-      if (newValue.toLowerCase() === 'internal') {
-        this.employeeDriverNameInput = '-';
-      }
     }
-    
   },
   beforeRouteLeave() {
     // When the user selects other page
