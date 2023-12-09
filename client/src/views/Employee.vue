@@ -337,7 +337,13 @@ export default {
       } else if (newType === 'Internal') {
         this.editEmployeeRoleInput = '';
       }
+    },
+    employeeTypeInput(newValue) {
+      if (newValue.toLowerCase() === 'internal') {
+        this.employeeDriverNameInput = '-';
+      }
     }
+    
   },
   beforeRouteLeave() {
     // When the user selects other page
