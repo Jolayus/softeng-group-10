@@ -1020,7 +1020,7 @@ export default {
               placeholder="Allowance"
             />
           </div>
-          <div class="mb-3" v-if="!isEmployeeRoleIsAdmin">
+          <div class="mb-3" v-if="isEmployeeInternal(payrollCurrentEmployee)">
             <label for="payrollDailyRate" class="form-label d-block text-start"
               >Daily Rate</label
             >
@@ -1031,10 +1031,10 @@ export default {
               id="payrollDailyRate"
               aria-describedby="payrollDailyRate"
               placeholder="Daily Rate"
-              :disabled="isEmployeeRoleIsAdmin"
+              :disabled="!isEmployeeInternal(payrollCurrentEmployee)"
             />
           </div>
-          <div class="mb-3" v-if="!isEmployeeRoleIsAdmin">
+          <div class="mb-3" v-if="isEmployeeInternal(payrollCurrentEmployee)">
             <label
               for="payrollDailyAllowance"
               class="form-label d-block text-start"
@@ -1047,7 +1047,7 @@ export default {
               id="payrollDailyAllowance"
               aria-describedby="payrollDailyAllowance"
               placeholder="Daily Allowance"
-              :disabled="isEmployeeRoleIsAdmin"
+              :disabled="!isEmployeeInternal(payrollCurrentEmployee)"
             />
           </div>
           <div class="mb-3">
