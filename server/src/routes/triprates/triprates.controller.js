@@ -5,7 +5,8 @@ const {
   getTripRate,
   getTripRateById,
   addNewTripRate,
-  removeTripRate
+  removeTripRate,
+  loadTripRates
 } = require('../../models/triprates.model');
 
 function httpGetAllTripRates(req, res) {
@@ -157,17 +158,15 @@ function httpEditClientName(req, res) {
     return res.status(400).json({ error: 'Invalid inputs' });
   }
 
-  const sql = 'UPDATE triprates SET client_name=? WHERE client_name=?'
+  const sql = 'UPDATE triprates SET client_name=? WHERE client_name=?';
 
-  db.run(
-    sql,
-    [newName, prevName],
-    (err) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
+  db.run(sql, [newName, prevName], (err) => {
+    if (err) {
+      return res.status(500).json({ error: err });
     }
-  );
+  });
+
+  loadTripRates();
 }
 
 // DELETE EMPLOYEE FROM THE DATABASE BY ID

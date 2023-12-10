@@ -147,7 +147,7 @@ export default {
               const newTripRate = await httpCreateTripRates(tripRate);
               this.addNewTripRatesToStore(newTripRate);
             });
-          this.uploadFileInput = '';
+            this.uploadFileInput = '';
           } catch (err) {
             this.isFileSubmitValidFormat = false;
           }
@@ -156,7 +156,6 @@ export default {
     },
 
     clearDataForUpload() {
-
       this.isFileSubmitValidFormat = undefined;
     },
 
@@ -193,7 +192,6 @@ export default {
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
-      console.log(this.currentClient);
       this.updateCurrentTripRates();
       this.searchInputProvince = '';
       this.searchInputCity = '';
@@ -276,8 +274,6 @@ export default {
       this.deleteTripRatesCityInput = '';
     },
     filterTripRatesByClientName(clientName) {
-      console.log(this.tripRates);
-
       return this.tripRates.filter((tripRate) => {
         return tripRate.client_name === clientName;
       });
@@ -401,7 +397,7 @@ export default {
           four_wheeler: this.editTripRates4WInput,
           six_wheeler_elf: this.editTripRates6WElfInput,
           six_wheeler_forward: this.editTripRates6WFInput,
-          ten_wheeler: this.editTripRates10WInput,
+          ten_wheeler: this.editTripRates10WInput
         });
 
         httpUpdateTripRates(tripRateToBeEdited);
@@ -414,6 +410,10 @@ export default {
     }
   },
   mounted() {
+    if (this.clients.length > 0) {
+      this.currentClient = this.clients[0];
+    }
+    console.log(this.tripRates);
     this.updateCurrentTripRates();
   },
   computed: {
@@ -627,7 +627,12 @@ export default {
             />
           </div>
         </form>
-        <p v-if="!isCurrentTripRatesEmpty && !isFileSubmitValidFormat" class="text-danger fw-bold">Trip Rates are not empty</p>
+        <p
+          v-if="!isCurrentTripRatesEmpty && !isFileSubmitValidFormat"
+          class="text-danger fw-bold"
+        >
+          Trip Rates are not empty
+        </p>
       </div>
     </template>
     <template v-slot:modal-footer>
