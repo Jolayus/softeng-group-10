@@ -166,7 +166,7 @@ export default {
       :id="'billing-' + client.id"
     >
       <p class="text-danger fw-bold" v-if="currentClientBillings.length === 0">
-        Empty billing
+        There are no billing stored to this client.
       </p>
       <main>
         <ul class="container list-group">

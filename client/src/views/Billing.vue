@@ -311,6 +311,7 @@ export default {
               class="form-control"
               id="shipmentNumber"
               aria-describedby="shipmentNumber"
+              placeholder="Shipment Number"
             />
           </div>
 
@@ -324,6 +325,7 @@ export default {
               class="form-control"
               id="spoNumber"
               aria-describedby="spoNumber"
+              placeholder="SPO Number"
             />
           </div>
 
@@ -335,6 +337,7 @@ export default {
               class="form-control"
               id="fee"
               aria-describedby="fee"
+              placeholder="Trip Fee"
             />
           </div>
         </form>

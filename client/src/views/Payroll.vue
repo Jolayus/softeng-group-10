@@ -450,15 +450,19 @@ export default {
         (batch) => batch.batchCode === this.currentBatchCode
       );
 
-      const registeredEmployees = this.payrollEmployees.filter(
-        (payrollEmployee) => payrollEmployee.batchCodeId === currentBatch.id
-      );
+      if (currentBatch) {
+        const registeredEmployees = this.payrollEmployees.filter(
+          (payrollEmployee) => payrollEmployee.batchCodeId === currentBatch.id
+        );
 
-      const ids = registeredEmployees.map(
-        (registeredEmployee) => registeredEmployee.id
-      );
+        const ids = registeredEmployees.map(
+          (registeredEmployee) => registeredEmployee.id
+        );
 
-      return this.employees.filter((employee) => !ids.includes(employee.id));
+        return this.employees.filter((employee) => !ids.includes(employee.id));
+      }
+
+      return this.employees;
     },
     batches() {
       return this.$store.getters['batches/batches'];

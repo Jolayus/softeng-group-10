@@ -286,6 +286,7 @@ export default {
               class="form-control"
               id="clientCompanyName"
               aria-describedby="clientCompanyName"
+              placeholder="Company Name"
             />
             <p class="fw-bold text-danger" v-if="!isUniqueNewClientCompanyName">
               The new client name is already existing!
@@ -303,6 +304,7 @@ export default {
               class="form-control"
               id="clientContactPerson"
               aria-describedby="clientContactPerson"
+              placeholder="Contact Person"
             />
           </div>
           <div class="mb-3">
@@ -317,6 +319,7 @@ export default {
               class="form-control"
               id="clientContactNumber"
               aria-describedby="clientContactNumber"
+              placeholder="Contact Number"
             />
           </div>
           <div class="mb-3">
@@ -329,6 +332,7 @@ export default {
               class="form-control"
               id="clientAddress"
               aria-describedby="clientAddress"
+              placeholder="Address"
             />
           </div>
         </form>
