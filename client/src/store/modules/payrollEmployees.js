@@ -40,10 +40,10 @@ export default {
           );
         } else {
           salary = context.rootGetters[
-            'externalSalaries/externalSalaries'
+            'externalSalaries/salaries'
           ].find((externalSalary) => externalSalary.id === salaryId);
           deduction = context.rootGetters[
-            'externalDeductions/externalDeductions'
+            'externalDeductions/deductions'
           ].find((externalDeduction) => externalDeduction.id === deductionId);
         }
 

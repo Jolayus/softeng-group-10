@@ -438,6 +438,28 @@ export default {
     employees() {
       return this.$store.getters['employees/employees'];
     },
+    payrollEmployees() {
+      return this.$store.getters['payrollEmployees/payrollEmployees'];
+    },
+    availableEmployees() {
+      if (!this.currentBatchCode) {
+        return this.employees;
+      }
+
+      const currentBatch = this.batches.find(
+        (batch) => batch.batchCode === this.currentBatchCode
+      );
+
+      const registeredEmployees = this.payrollEmployees.filter(
+        (payrollEmployee) => payrollEmployee.batchCodeId === currentBatch.id
+      );
+
+      const ids = registeredEmployees.map(
+        (registeredEmployee) => registeredEmployee.id
+      );
+
+      return this.employees.filter((employee) => !ids.includes(employee.id));
+    },
     batches() {
       return this.$store.getters['batches/batches'];
     },
@@ -928,7 +950,7 @@ export default {
           >
             <option selected :value="null">Select Employee</option>
             <option
-              v-for="employee in employees"
+              v-for="employee in availableEmployees"
               :key="employee.id"
               :value="employee"
             >
