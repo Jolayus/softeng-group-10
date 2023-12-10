@@ -1587,7 +1587,7 @@ export default {
           </p>
           <p>
             <span class="fw-bold text-info">Total Salary: </span>
-            {{ payrollCurrentEmployee.salary.total }}
+            {{ payrollCurrentEmployee.salary.total.toFixed(2) }}
           </p>
         </div>
         <div
