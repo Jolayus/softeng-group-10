@@ -386,6 +386,7 @@ export default {
       const city = this.editTripRatesCityInput;
       const tripRateToBeEdited = this.tripRates.find(
         (tripRate) =>
+          tripRate.client_name === this.currentClient.company_name &&
           tripRate.branch === branch &&
           tripRate.province === province &&
           tripRate.city === city
@@ -400,8 +401,25 @@ export default {
           ten_wheeler: this.editTripRates10WInput
         });
 
+        tripRateToBeEdited.auv = this.editTripRatesAUVInput;
+
+        console.log(tripRateToBeEdited);
+
         httpUpdateTripRates(tripRateToBeEdited);
         this.clearDataForEdit();
+      } else {
+        const {
+          auv,
+          four_wheeler,
+          six_wheeler_elf,
+          six_wheeler_forward,
+          ten_wheeler
+        } = tripRateToBeEdited;
+        this.editTripRatesAUVInput = auv;
+        this.editTripRates4WInput = four_wheeler;
+        this.editTripRates6WElfInput = six_wheeler_elf;
+        this.editTripRates6WFInput = six_wheeler_forward;
+        this.editTripRates10WInput = ten_wheeler;
       }
 
       if (this.isInputsForEditTripRateValid) {

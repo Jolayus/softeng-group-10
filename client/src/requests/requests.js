@@ -112,6 +112,7 @@ async function httpCreateTripRates(triprates) {
 
 // Update information of trip rates
 async function httpUpdateTripRates(tripRates) {
+  console.log(tripRates);
   const response = await fetch(`${API_URL}/rates`, {
     method: 'PATCH',
     headers: {

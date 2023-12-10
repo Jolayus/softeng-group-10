@@ -148,6 +148,7 @@ function httpEditTripRate(req, res) {
     }
   );
 
+  loadTripRates();
   return res.status(200).json(updatedTripRate);
 }
 
