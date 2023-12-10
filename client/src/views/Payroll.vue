@@ -754,7 +754,7 @@ export default {
             <td class="align-middle">{{ employee.role }}</td>
             <td class="align-middle">
               <button
-                v-if="employee.type === 'Internal'"
+                v-if="isEmployeeInternal(employee)"
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalBreakdownModal"
@@ -765,7 +765,7 @@ export default {
               </button>
 
               <button
-                v-if="employee.type === 'External'"
+                v-else
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollExternalBreakdownModal"
