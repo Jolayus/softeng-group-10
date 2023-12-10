@@ -1567,7 +1567,7 @@ export default {
           </p>
           <p>
             <span class="fw-bold text-primary">No. Of Days: </span>
-            {{ payrollCurrentEmployee.salary.daysOfWork.toFixed(2) }}
+            {{ payrollCurrentEmployee.salary.daysOfWork }}
           </p>
           <p>
             <span class="fw-bold text-warning">Semi Basic Salary: </span>
@@ -1691,8 +1691,8 @@ export default {
         >
           <h2>Salary</h2>
           <p>
-            <span class="fw-bold text-primary">No of Trips: </span>
-            {{ payrollCurrentEmployee.salary.noOfTrips.toFixed(2) }}
+            <span class="fw-bold text-primary">No. of Trips: </span>
+            {{ payrollCurrentEmployee.salary.noOfTrips }}
           </p>
           <p>
             <span class="fw-bold text-primary">Client Trip Rate: </span>
