@@ -18,7 +18,6 @@ export default {
   actions: {
     async loadPayrollEmployees(context) {
       const loadedPayrollEmployees = await httpGetAllPayrollEmployees();
-
       loadedPayrollEmployees.forEach((payrollEmployee) => {
         const { employeeId, batchCodeId, salaryId, deductionId, type } =
           payrollEmployee;

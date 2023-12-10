@@ -403,8 +403,6 @@ export default {
 
         tripRateToBeEdited.auv = this.editTripRatesAUVInput;
 
-        console.log(tripRateToBeEdited);
-
         httpUpdateTripRates(tripRateToBeEdited);
         this.clearDataForEdit();
       } else {

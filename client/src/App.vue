@@ -10,9 +10,6 @@ export default {
     await this.$store.dispatch('employees/loadEmployees');
     await this.$store.dispatch('clients/loadClients');
     await this.$store.dispatch('tripRates/loadTripRates');
-
-    console.log(this.$store.getters['tripRates/tripRates']);
-
     await this.$store.dispatch('billingTrips/loadBillingTrips');
     await this.$store.dispatch('billings/loadBillings');
     await this.$store.dispatch('salaries/loadSalaries');
@@ -21,6 +18,8 @@ export default {
     await this.$store.dispatch('externalDeductions/loadExternalDeductions');
     await this.$store.dispatch('batches/loadBatches');
     await this.$store.dispatch('payrollEmployees/loadPayrollEmployees');
+
+    console.log(this.$store.getters['payrollEmployees/payrollEmployees']);
   }
 };
 </script>
