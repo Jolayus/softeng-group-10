@@ -8,7 +8,8 @@ import { getClientsModel } from '../models/client.model';
 import {
   httpCreateClient,
   httpUpdateClient,
-  httpArchiveClient
+  httpArchiveClient,
+  httpEditClientName
 } from '../requests/requests';
 
 export default {
@@ -84,11 +85,22 @@ export default {
         address: this.editClientAddressInput
       };
 
-      this.$store.dispatch('clients/editClient', newDetails);
+      const client = this.clients.find(
+        (client) => client.id === this.editClientId
+      );
 
-      console.log(this.tripRates);
+      const newName = this.editClientCompanyNameInput;
+      const prevName = client.company_name;
+
+      this.$store.dispatch('tripRates/updateTripClientName', {
+        newName,
+        prevName
+      });
+
+      httpEditClientName(newName, prevName);
 
       httpUpdateClient(newDetails);
+      this.$store.dispatch('clients/editClient', newDetails);
     }
   },
   computed: {
@@ -137,19 +149,22 @@ export default {
         }
         return false;
       }
-    }, 
+    },
     isUniqueEditClientCompanyName() {
       const newCompanyName = this.editClientCompanyNameInput.toLowerCase();
-      return this.clients.every(client => {
-        return client.id === this.editClientId || client.company_name.toLowerCase() !== newCompanyName;
+      return this.clients.every((client) => {
+        return (
+          client.id === this.editClientId ||
+          client.company_name.toLowerCase() !== newCompanyName
+        );
       });
     },
     isUniqueNewClientCompanyName() {
       const newCompanyName = this.clientCompanyNameInput.toLowerCase();
-      return this.clients.every(client => {
+      return this.clients.every((client) => {
         return client.company_name.toLowerCase() !== newCompanyName;
       });
-    },
+    }
   }
 };
 </script>
@@ -196,10 +211,10 @@ export default {
         <tbody class="table-group-divider">
           <tr class="f-flex" v-for="client in filteredClient" :key="client.id">
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
-            <td class="align-middle" >{{ client.contact_person }}</td>
-            <td class="align-middle" >{{ client.contact_number }}</td>
-            <td class="align-middle" >{{ client.address }}</td>
-            <td class="align-middle" >
+            <td class="align-middle">{{ client.contact_person }}</td>
+            <td class="align-middle">{{ client.contact_number }}</td>
+            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">
               <EditIcon
                 data-bs-toggle="modal"
                 data-bs-target="#editClientModal"
@@ -245,7 +260,7 @@ export default {
             />
             <p class="fw-bold text-danger" v-if="!isUniqueNewClientCompanyName">
               The new client name is already existing!
-            </p> 
+            </p>
           </div>
           <div class="mb-3">
             <label
@@ -332,9 +347,12 @@ export default {
               id="newClientCompanyName"
               aria-describedby="newClientCompanyName"
             />
-          <p class="fw-bold text-danger" v-if="!isUniqueEditClientCompanyName">
-            The edited client name is already existing!
-          </p>              
+            <p
+              class="fw-bold text-danger"
+              v-if="!isUniqueEditClientCompanyName"
+            >
+              The edited client name is already existing!
+            </p>
           </div>
           <div class="mb-3">
             <label
@@ -389,10 +407,10 @@ export default {
           class="btn btn-primary tms-btn"
           form="editClientForm"
           data-bs-dismiss="modal"
-          :disabled="isFormInvalid || !isUniqueEditClientCompanyName" 
+          :disabled="isFormInvalid || !isUniqueEditClientCompanyName"
         >
           Save changes
-        </button>    
+        </button>
       </div>
     </template>
   </Modal>

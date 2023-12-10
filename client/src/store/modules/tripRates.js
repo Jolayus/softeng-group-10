@@ -44,6 +44,13 @@ export default {
         );
       });
       state.tripRates.splice(idx, 1);
+    },
+    updateTripClientName(state, { newName, prevName }) {
+      state.tripRates.forEach((tripRate) => {
+        if (tripRate.client_name === prevName) {
+          tripRate.client_name = newName;
+        }
+      })
     }
   },
   actions: {
@@ -56,6 +63,9 @@ export default {
     },
     deleteTripRate(context, tripRateDetails) {
       context.commit('deleteTripRate', tripRateDetails);
+    },
+    updateTripClientName(context, details) {
+      context.commit('updateTripClientName', details);
     }
   },
   getters: {

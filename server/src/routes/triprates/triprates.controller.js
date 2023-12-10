@@ -150,6 +150,26 @@ function httpEditTripRate(req, res) {
   return res.status(200).json(updatedTripRate);
 }
 
+function httpEditClientName(req, res) {
+  const { newName, prevName } = req.body;
+
+  if (!newName || !prevName) {
+    return res.status(400).json({ error: 'Invalid inputs' });
+  }
+
+  const sql = 'UPDATE triprates SET client_name=? WHERE client_name=?'
+
+  db.run(
+    sql,
+    [newName, prevName],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+    }
+  );
+}
+
 // DELETE EMPLOYEE FROM THE DATABASE BY ID
 function removeTripRateFromDatabase(id) {
   const sql = `DELETE FROM triprates WHERE triprates.id=${id}`;
@@ -164,5 +184,6 @@ module.exports = {
   httpGetAllTripRates,
   httpPostNewTripRate,
   httpDeleteTripRate,
-  httpEditTripRate
+  httpEditTripRate,
+  httpEditClientName
 };
