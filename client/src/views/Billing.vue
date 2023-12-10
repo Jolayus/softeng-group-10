@@ -52,6 +52,32 @@ export default {
       this.addTripSPONumber = '';
       this.addTripFee = null;
     },
+    deleteBillingTrip() {
+      const deletedBillingTrip = this.billing.trips[this.deleteBillingTripIdx];
+
+      httpDeleteBillingTrips(deletedBillingTrip.billingId).then(() => {
+        this.$store.dispatch(
+          'billingTrips/deleteBillingTrip',
+          deletedBillingTrip.billingId
+        );
+
+        const idx = this.billing.trips.findIndex(
+          (trip) => trip.id === deletedBillingTrip.id
+        );
+        
+        this.billing.totalFee -= deletedBillingTrip.fee;
+
+        this.billing.trips.splice(idx, 1);
+      });
+    },
+    deleteBilling(billingId) {
+      httpDeleteBilling(billingId).then(() => {
+        httpDeleteBillingTrips(billingId);
+        this.$store.dispatch('billings/deleteBilling', billingId);
+
+        console.log(this.$router.replace('/billinglist'));
+      });
+    },
     handleGenerateCopy() {
       fetch('http://localhost:8000/billings/getFile', {
         method: 'POST',
@@ -86,30 +112,6 @@ export default {
         return true;
       }
       return false;
-    },
-    deleteBilling(billingId) {
-      httpDeleteBilling(billingId).then(() => {
-        httpDeleteBillingTrips(billingId);
-        this.$store.dispatch('billings/deleteBilling', billingId);
-
-        console.log(this.$router.replace('/billinglist'));
-      });
-    },
-    deleteBillingTrip() {
-      const deletedBillingTrip = this.billing.trips[this.deleteBillingTripIdx];
-
-      httpDeleteBillingTrips(deletedBillingTrip.billingId).then(() => {
-        this.$store.dispatch(
-          'billingTrips/deleteBillingTrip',
-          deletedBillingTrip.billingId
-        );
-
-        const idx = this.billing.trips.findIndex(
-          (trip) => trip.id === deletedBillingTrip.id
-        );
-
-        this.billing.trips.splice(idx, 1);
-      });
     }
   },
   computed: {
