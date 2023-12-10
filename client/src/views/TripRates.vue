@@ -429,7 +429,6 @@ export default {
     if (this.clients.length > 0) {
       this.currentClient = this.clients[0];
     }
-    console.log(this.tripRates);
     this.updateCurrentTripRates();
   },
   computed: {

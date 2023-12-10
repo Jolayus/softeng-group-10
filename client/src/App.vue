@@ -19,7 +19,7 @@ export default {
     await this.$store.dispatch('batches/loadBatches');
     await this.$store.dispatch('payrollEmployees/loadPayrollEmployees');
 
-    console.log(this.$store.getters['payrollEmployees/payrollEmployees']);
+    console.log(this.$store.getters['billings/billings']);
   }
 };
 </script>

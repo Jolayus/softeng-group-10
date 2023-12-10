@@ -110,6 +110,9 @@ export default {
     tripRates() {
       return this.$store.getters['tripRates/tripRates'];
     },
+    billings() {
+      return this.$store.getters['billings/billings'];
+    },
     filteredClient() {
       return this.clients.filter((client) =>
         client.company_name
@@ -164,6 +167,32 @@ export default {
       return this.clients.every((client) => {
         return client.company_name.toLowerCase() !== newCompanyName;
       });
+    },
+    isSelectedClientDoesHaveTripRates() {
+      if (this.selectedClient) {
+        const client = this.clients.find(
+          (client) => client.id === this.selectedClient
+        );
+        const tripRates = this.tripRates.filter(
+          (tripRates) => tripRates.client_name === client.company_name
+        );
+        return tripRates.length > 0 ? true : false;
+      }
+    },
+    isSelectedClientDoesHaveBillings() {
+      if (this.selectedClient) {
+        const client = this.clients.find(
+          (client) => client.id === this.selectedClient
+        );
+        const billings = this.billings.filter(
+          (billing) => billing.clientId === client.id
+        );
+        return billings.length > 0 ? true : false;
+      }
+    },
+    isClientCanBeDeleted() {
+
+      return !this.isSelectedClientDoesHaveTripRates && !this.isSelectedClientDoesHaveBillings;
     }
   }
 };
@@ -438,9 +467,12 @@ export default {
           class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
           @click.prevent="archiveClient(selectedClient)"
+          :disabled="!isClientCanBeDeleted"
         >
           Archive
         </button>
+      <p class="text-danger" v-if="!isClientCanBeDeleted">There are stored trip rates / billings to this client. This client cannot be deleted.</p>
+
       </div>
     </template>
   </Modal>
