@@ -120,8 +120,6 @@ export default {
 
       const formatDate = `${year}-${month}-${day}`;
 
-      console.log(formatDate);
-
       this.editEmployeeId = id;
       this.editEmployeeNameInput = name;
       this.editEmployeeDateHiredInput = formatDate;
@@ -337,10 +335,8 @@ export default {
     editEmployeeTypeInput(newType) {
       if (newType === 'External') {
         this.editEmployeeRoleInput = 'Contractor';
-      } else if (newType === 'Internal') {
-        this.editEmployeeRoleInput = '';
       }
-    }
+    },
   },
   beforeRouteLeave() {
     // When the user selects other page
