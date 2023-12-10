@@ -593,6 +593,14 @@ export default {
       this.payrollSemiAllowanceSalaryInput =
         this.payrollDaysOfWorkInput * newDailyAllowance;
     },
+    payrollClientTripRatesInput(newClientTripRates) {
+      this.payrollTotalAmountOfTripsInput =
+        this.payrollNoOfTripsInput * newClientTripRates;
+    },
+    payrollNoOfTripsInput(newClientNoOfTrips) {
+      this.payrollTotalAmountOfTripsInput =
+        this.payrollClientTripRatesInput * newClientNoOfTrips;
+    },
     payrollCurrentEmployee(currentEmployee) {
       if (currentEmployee.type.toLowerCase() === 'internal') {
         const {
@@ -1354,6 +1362,7 @@ export default {
               id="payrollTotalAmountOfTrips"
               aria-describedby="payrollTotalAmountOfTrips"
               placeholder="Total Amount of Trips"
+              disabled
             />
           </div>
           <!-- EXPENSES -->
