@@ -2,7 +2,7 @@ $btn-bg-color: #042630;
 $btn-hover-bg-color: #4c7273;
 
 .nav .nav-link.active {
-  background-color: $btn-hover-bg-color
+  background-color: $btn-hover-bg-color;
 }
 
 .tms-btn {
@@ -10,14 +10,19 @@ $btn-hover-bg-color: #4c7273;
   border: none;
 
   &:hover {
-    background-color: $btn-hover-bg-color
+    background-color: $btn-hover-bg-color;
   }
 
   &:active {
     background-color: $btn-hover-bg-color;
   }
+
+  &:focus {
+    background-color: $btn-bg-color;
+    border: none;
+  }
 }
 
 .tbl-header {
-  background-color: #042630;;
+  background-color: #042630;
 }
