@@ -143,6 +143,7 @@ export default {
       // SEARCH INPUT
       searchInput: '',
 
+      currentBatch: null,
       currentBatchCode: '',
 
       // PAYROLL
@@ -152,7 +153,7 @@ export default {
       createBatchPeriodCoverFrom: new Date().toISOString().substring(0, 10),
       createBatchPeriodCoverTo: '',
       createBatchCode: 0,
-      selectedEmployees: [],
+      selectedEmployee: null,
 
       //payrollInternalSalaryModal
       payrollBasicSalaryInput: 0,
@@ -197,30 +198,45 @@ export default {
   },
   methods: {
     submitCreateBatchHandler() {
-      this.selectedEmployees.forEach((employeeId) => {
-        const newBatch = new Batch(
-          this.createBatchCode,
-          this.createBatchPeriodCoverFrom,
-          this.createBatchPeriodCoverTo,
-          employeeId
-        );
+      const { id } = this.selectedEmployee;
+      console.log(this.currentEmployee);
+      const newBatch = new Batch(
+        this.createBatchCode,
+        this.createBatchPeriodCoverFrom,
+        this.createBatchPeriodCoverTo,
+        id
+      );
 
-        httpPostNewBatch(newBatch).then((batch) => {
-          this.storeCreateBatch(batch);
+      httpPostNewBatch(newBatch).then((batch) => {
+        this.storeCreateBatch(batch);
+        this.currentBatch = batch;
+        const targetEmployee = this.selectedEmployee;
 
-          const targetEmployee = this.getEmployeeById(employeeId);
-
-          if (this.isEmployeeInternal(targetEmployee)) {
-            this.addDefautlSalaryAndDeduction(targetEmployee, batch.id);
-          } else {
-            this.addDefaultExternalSalaryAndDeduction(targetEmployee, batch.id);
-          }
-        });
-
-        if (!this.isThereBatchCodeExists) {
-          this.currentBatchCode = newBatch.batchCode;
+        if (this.isEmployeeInternal(targetEmployee)) {
+          this.addDefautlSalaryAndDeduction(targetEmployee, batch.id);
+        } else {
+          this.addDefaultExternalSalaryAndDeduction(targetEmployee, batch.id);
         }
       });
+
+      if (!this.isThereBatchCodeExists) {
+        this.currentBatchCode = newBatch.batchCode;
+      }
+    },
+    onSubmitRegisterEmployee() {
+      this.currentBatch = this.batches.find(
+        (batch) => batch.batchCode === this.currentBatchCode
+      );
+      const targetEmployee = this.selectedEmployee;
+
+      if (this.isEmployeeInternal(targetEmployee)) {
+        this.addDefautlSalaryAndDeduction(targetEmployee, this.currentBatch.id);
+      } else {
+        this.addDefaultExternalSalaryAndDeduction(
+          targetEmployee,
+          this.currentBatch.id
+        );
+      }
     },
     async addDefautlSalaryAndDeduction(employee, batchId) {
       const { id } = employee;
@@ -400,7 +416,7 @@ export default {
     onClickCreateBatchHandler() {
       this.createBatchPeriodCoverTo = '';
       this.createBatchCode = 0;
-      this.selectedEmployees = [];
+      this.selectedEmployee = null;
     },
     setPayrollCurrentEmployee(employee) {
       this.payrollCurrentEmployee = employee;
@@ -477,7 +493,6 @@ export default {
         this.createBatchPeriodCoverFrom &&
         this.createBatchPeriodCoverTo &&
         this.createBatchCode &&
-        this.selectedEmployees.length &&
         timeDifference > 0 &&
         !this.isBatchCodeAlreadyExist
       );
@@ -521,7 +536,8 @@ export default {
     isThereACurrentBatch() {
       return this.currentBatchCode === '';
     },
-    isBatchCodeAlreadyExist() {1
+    isBatchCodeAlreadyExist() {
+      1;
       const currentBatch =
         String(new Date().getFullYear()) + ' - ' + this.createBatchCode;
       const idx = this.batches.findIndex((batch) => {
@@ -531,6 +547,10 @@ export default {
     }
   },
   watch: {
+    // currentBatchCode(newValue) {
+    //   this.currentBatch = this.batches.find((batch) => batch.batchCode === newValue);
+    //   console.log(this.currentBatch);
+    // },
     payrollDaysOfWorkInput(newDaysOfWork) {
       this.payrollSemiBasicSalaryInput =
         this.payrollDailyRateInput * newDaysOfWork;
@@ -676,13 +696,23 @@ export default {
 
         <button
           type="button"
+          class="btn btn-success px-5"
+          data-bs-toggle="modal"
+          data-bs-target="#registerEmployeeToPayrollModal"
+          :disabled="isEmployeeCurrentBatchCodeEmpty"
+        >
+          Register
+        </button>
+
+        <!-- <button
+          type="button"
           class="btn btn-danger text-light px-5"
           data-bs-toggle="modal"
           data-bs-target="#deleteBatchVerif"
           :disabled="isThereACurrentBatch"
         >
           Delete Batch
-        </button>
+        </button> -->
       </div>
 
       <table class="table">
@@ -837,15 +867,15 @@ export default {
             >
           </div>
           <select
-            v-model="selectedEmployees"
+            v-model="selectedEmployee"
             class="form-select"
             id="employeeSelect"
-            multiple
           >
+            <option selected :value="null">Select Employee</option>
             <option
               v-for="employee in employees"
               :key="employee.id"
-              :value="employee.id"
+              :value="employee"
             >
               {{ employee.name }} - {{ employee.role }}
             </option>
@@ -867,6 +897,61 @@ export default {
           @click="employeeSelectBatchCodeInput = createBatchCode"
         >
           Create Batch
+        </button>
+      </div>
+    </template>
+  </Modal>
+
+  <Modal id="registerEmployeeToPayrollModal">
+    <template v-slot:modal-header>
+      <div class="modal-header justify-content-center border-bottom-0">
+        <h1 class="modal-title fs-5" id="registerEmployeeToPayrollModalLabel">
+          Register Employee to Payroll
+        </h1>
+      </div>
+    </template>
+    <template v-slot:modal-body>
+      <div class="modal-body">
+        <form
+          id="registerEmployeeForm"
+          @submit.prevent="onSubmitRegisterEmployee"
+        >
+          <div class="mb-3">
+            <label for="employeeSelect" class="form-label d-block text-start">
+              Employees</label
+            >
+          </div>
+          <select
+            v-model="selectedEmployee"
+            class="form-select"
+            id="employeeSelect"
+          >
+            <option selected :value="null">Select Employee</option>
+            <option
+              v-for="employee in employees"
+              :key="employee.id"
+              :value="employee"
+            >
+              {{ employee.name }} - {{ employee.role }}
+            </option>
+          </select>
+        </form>
+      </div>
+    </template>
+    <template v-slot:modal-footer>
+      <div class="modal-footer border-top-0 justify-content-center">
+        <button type="button" class="btn text-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          form="registerEmployeeForm"
+          class="btn text-light"
+          data-bs-dismiss="modal"
+          :disabled="!selectedEmployee"
+          @click="employeeSelectBatchCodeInput = createBatchCode"
+        >
+          Register
         </button>
       </div>
     </template>
