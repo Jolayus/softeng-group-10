@@ -86,12 +86,17 @@ export default {
 
       this.$store.dispatch('clients/editClient', newDetails);
 
+      console.log(this.tripRates);
+
       httpUpdateClient(newDetails);
     }
   },
   computed: {
     clients() {
       return this.$store.getters['clients/clients'];
+    },
+    tripRates() {
+      return this.$store.getters['tripRates/tripRates'];
     },
     filteredClient() {
       return this.clients.filter((client) =>

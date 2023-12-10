@@ -193,6 +193,7 @@ export default {
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
+      console.log(this.currentClient);
       this.updateCurrentTripRates();
       this.searchInputProvince = '';
       this.searchInputCity = '';
@@ -275,6 +276,8 @@ export default {
       this.deleteTripRatesCityInput = '';
     },
     filterTripRatesByClientName(clientName) {
+      console.log(this.tripRates);
+
       return this.tripRates.filter((tripRate) => {
         return tripRate.client_name === clientName;
       });

@@ -53,7 +53,7 @@ function httpPostNewClient(req, res) {
     });
 }
 
-function httpEditEmployee(req, res) {
+function httpEditClient(req, res) {
   const { id, company_name, contact_person, contact_number, address } =
     req.body;
 
@@ -148,6 +148,6 @@ function addClientToArchive(client) {
 module.exports = {
   httpGetAllClients,
   httpPostNewClient,
-  httpEditEmployee,
+  httpEditClient,
   httpArchiveClient
 };

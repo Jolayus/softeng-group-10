@@ -134,6 +134,7 @@ async function httpDeleteTripRates(tripRateToBeDeleted) {
   return await response.json();
 }
 
+
 // ARCHIVED EMPLOYEES
 
 // GET Archived Employees

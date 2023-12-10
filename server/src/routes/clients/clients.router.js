@@ -3,7 +3,7 @@ const express = require('express');
 const {
   httpGetAllClients,
   httpPostNewClient,
-  httpEditEmployee,
+  httpEditClient,
   httpArchiveClient
 } = require('./clients.controller');
 
@@ -11,7 +11,7 @@ const clientsRouter = express.Router();
 
 clientsRouter.get('/', httpGetAllClients);
 clientsRouter.post('/', httpPostNewClient);
-clientsRouter.patch('/', httpEditEmployee);
+clientsRouter.patch('/', httpEditClient);
 clientsRouter.delete('/', httpArchiveClient);
 
 module.exports = clientsRouter;
