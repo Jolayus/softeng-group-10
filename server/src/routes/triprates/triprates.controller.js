@@ -108,6 +108,7 @@ function httpDeleteTripRate(req, res) {
 
   promise
     .then((employee) => {
+      loadTripRates();
       return res.status(200).json(employee);
     })
     .catch((err) => {
