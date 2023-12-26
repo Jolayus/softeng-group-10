@@ -4,7 +4,7 @@ const tripRates = [];
 
 function loadTripRates() {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM triprates';
+    const sql = 'SELECT * FROM triprate';
 
     db.all(sql, [], (err, rows) => {
       if (err) {
