@@ -584,10 +584,14 @@ export default {
         this.payrollDailyAllowanceInput * newDaysOfWork;
     },
     payrollBasicSalaryInput() {
-      this.payrollDailyRateInput = this.payrollBasicSalaryInput / 26;
+      this.payrollDailyRateInput = parseFloat(
+        (this.payrollBasicSalaryInput / 26).toFixed(2)
+      );
     },
     payrollAllowanceSalaryInput() {
-      this.payrollDailyAllowanceInput = this.payrollAllowanceSalaryInput / 26;
+      this.payrollDailyAllowanceInput = parseFloat(
+        (this.payrollAllowanceSalaryInput / 26).toFixed(2)
+      );
     },
     payrollDailyRateInput(newDailyRate) {
       this.payrollSemiBasicSalaryInput =
@@ -770,10 +774,10 @@ export default {
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalBreakdownModal"
-                class="btn tms-btn text-light align-items-center h-100"
+                class="net-pay btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
-                {{ getNetPay(employee) }}
+                &#8369; {{ getNetPay(employee) }}
               </button>
 
               <button
@@ -781,10 +785,10 @@ export default {
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollExternalBreakdownModal"
-                class="btn tms-btn text-light align-items-center h-100"
+                class="net-pay btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
-                {{ getNetPay(employee) }}
+                &#8369; {{ getNetPay(employee) }}
               </button>
             </td>
             <td class="align-middle d-flex">
@@ -1833,5 +1837,9 @@ th {
 
 .nav .nav-link {
   background-color: #041421;
+}
+
+.net-pay {
+  min-width: 200px;
 }
 </style>
