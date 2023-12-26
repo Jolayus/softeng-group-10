@@ -64,7 +64,7 @@ export default {
         const idx = this.billing.trips.findIndex(
           (trip) => trip.id === deletedBillingTrip.id
         );
-        
+
         this.billing.totalFee -= deletedBillingTrip.fee;
 
         this.billing.trips.splice(idx, 1);
@@ -255,7 +255,7 @@ export default {
             <p
               class="w-25 mb-0 d-flex justify-content-center align-items-center"
             >
-              {{ trip.fee }}
+              &#8369; {{ trip.fee.toFixed(2) }}
             </p>
           </section>
 
@@ -282,7 +282,7 @@ export default {
           <p
             class="w-25 mb-0 d-flex justify-content-center align-items-center fw-bold text-black"
           >
-            {{ billing.totalFee }}
+            &#8369; {{ billing.totalFee.toFixed(2) }}
           </p>
         </section>
       </div>
