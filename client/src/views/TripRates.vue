@@ -58,7 +58,7 @@ export default {
           branch,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
-          auv: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : null,
+          auv: row['AUV'] ? row['AUV'] : null,
           four_wheeler: row['4W'] ? Math.ceil(row['4W'] * 100) / 100 : null,
           six_wheeler_forward: row['6WF']
             ? Math.ceil(row['6WF'] * 100) / 100
@@ -123,6 +123,7 @@ export default {
             for (const tripRate of tripRates) {
               const newTripRate = await httpCreateTripRates(tripRate);
               this.addTripRateToStore(newTripRate);
+              console.log(tripRate);
             }
           } catch (err) {
             this.isFileSubmitValidFormat = false;
@@ -338,11 +339,35 @@ export default {
             >
               <td scope="row">{{ tripRate.province }}</td>
               <td>{{ tripRate.city }}</td>
-              <td>{{ tripRate.auv }}</td>
-              <td>{{ tripRate.four_wheeler }}</td>
-              <td>{{ tripRate.six_wheeler_elf }}</td>
-              <td>{{ tripRate.six_wheeler_forward }}</td>
-              <td>{{ tripRate.ten_wheeler }}</td>
+              <td>
+                <span v-if="tripRate.auv">&#8369;</span>
+                {{ tripRate.auv && tripRate.auv.toFixed(2) }}
+              </td>
+              <td>
+                <span v-if="tripRate.four_wheeler">&#8369;</span>
+                {{ tripRate.four_wheeler && tripRate.four_wheeler.toFixed(2) }}
+              </td>
+              <td>
+                <span v-if="tripRate.six_wheeler_elf">&#8369;</span>
+
+                {{
+                  tripRate.six_wheeler_elf &&
+                  tripRate.six_wheeler_elf.toFixed(2)
+                }}
+              </td>
+              <td>
+                <span v-if="tripRate.six_wheeler_forward">&#8369;</span>
+
+                {{
+                  tripRate.six_wheeler_forward &&
+                  tripRate.six_wheeler_forward.toFixed(2)
+                }}
+              </td>
+              <td>
+                <span v-if="tripRate.ten_wheeler">&#8369;</span>
+
+                {{ tripRate.ten_wheeler && tripRate.ten_wheeler.toFixed(2) }}
+              </td>
             </tr>
           </tbody>
         </table>

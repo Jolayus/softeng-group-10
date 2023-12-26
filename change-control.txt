@@ -8,8 +8,8 @@ Items:
 
 
 Resolution:
-1. Reuploading of excel file for the client’s trip rates
-2. Adding Date Added for Trip Rates
+1. Reuploading of excel file for the client’s trip rates (done)
+2. Adding Date Added for Trip Rates (done)
 3. Adding the email address, contract number in the client table and uploading the contract
 4.1. Adding report generation for employees’ payroll
 4.2. Adding report generation for archived employees’ and archive clients’ details
