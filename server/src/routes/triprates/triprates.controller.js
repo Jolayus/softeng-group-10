@@ -15,6 +15,7 @@ function httpGetAllTripRates(req, res) {
 function httpPostNewTripRate(req, res) {
   const {
     clientId,
+    date_created,
     branch,
     province,
     city,
@@ -27,11 +28,12 @@ function httpPostNewTripRate(req, res) {
 
   const promise = new Promise((resolve, reject) => {
     const sql =
-      'INSERT INTO triprate (clientId, branch, province, city, auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      'INSERT INTO triprate (clientId, date_created, branch, province, city, auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.run(
       sql,
       [
         clientId,
+        date_created,
         branch,
         province,
         city,

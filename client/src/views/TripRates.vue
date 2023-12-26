@@ -53,8 +53,9 @@ export default {
     formatJson(json, branch) {
       const result = json.map((row) => {
         return {
-          branch,
           clientId: this.currentClient.id,
+          date_created: new Date(),
+          branch,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
           auv: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : null,
@@ -201,10 +202,19 @@ export default {
           (tripRate) => tripRate.branch === branch
         );
       }
-
-      console.log(rates);
-
       return rates;
+    },
+
+    dateUploaded() {
+      if (this.currentTripRates.length) {
+        const tripRate = this.currentTripRates[0];
+        const date = new Date(tripRate.date_created);
+        const options = { day: 'numeric', month: 'short', year: '2-digit' };
+
+        return new Date(tripRate.date_created)
+          .toLocaleDateString('en-GB', options)
+          .replace(/\s/g, '-');
+      }
     },
 
     isCurrentTripRatesEmpty() {
@@ -241,7 +251,7 @@ export default {
     </CompanyTab>
   </ul>
   <hr />
-  <div class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center justify-content-between mb-4">
     <div class="d-flex gap-2">
       <div>
         <label class="d-block text-start fw-bold" for="province"
@@ -284,6 +294,10 @@ export default {
       {{ currentTripRates.length ? 'Re-upload' : 'Upload' }} Rates
     </button>
   </div>
+
+  <p v-if="currentTripRates.length" class="fw-bold text-start">
+    Date uploaded: <span class="text-success">{{ dateUploaded }}</span>
+  </p>
 
   <div class="tab-content" id="pills-tabContent">
     <TabPane
