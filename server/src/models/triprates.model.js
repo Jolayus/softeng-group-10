@@ -4,7 +4,7 @@ const tripRates = [];
 
 function loadTripRates() {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM triprates';
+    const sql = 'SELECT * FROM triprate';
 
     db.all(sql, [], (err, rows) => {
       if (err) {
@@ -35,7 +35,7 @@ function addNewTripRate(newTripRate) {
 
 function removeTripRate(tripRateId) {
   const idx = tripRates.findIndex((tripRate) => tripRate.id === tripRateId);
-  return tripRates.splice(idx, 1);
+  return tripRates.splice(idx, 1)[0];
 }
 
 module.exports = {

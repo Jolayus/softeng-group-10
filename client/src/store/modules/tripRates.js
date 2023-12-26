@@ -34,15 +34,10 @@ export default {
         state.cities.push(newTripRate.city);
       }
     },
-    deleteTripRate(state, tripRateDetails) {
-      const { branch, province, city } = tripRateDetails;
-      const idx = state.tripRates.findIndex((tripRate) => {
-        return (
-          tripRate.branch === branch &&
-          tripRate.province === province &&
-          tripRate.city === city
-        );
-      });
+    deleteTripRate(state, tripRateId) {
+      const idx = state.tripRates.find(
+        (tripRate) => tripRate.id === tripRateId
+      );
       state.tripRates.splice(idx, 1);
     },
     updateTripClientName(state, { newName, prevName }) {
@@ -50,7 +45,7 @@ export default {
         if (tripRate.client_name === prevName) {
           tripRate.client_name = newName;
         }
-      })
+      });
     }
   },
   actions: {
@@ -61,8 +56,8 @@ export default {
     addTripRate(context, newTripRate) {
       context.commit('addTripRate', newTripRate);
     },
-    deleteTripRate(context, tripRateDetails) {
-      context.commit('deleteTripRate', tripRateDetails);
+    deleteTripRate(context, tripRateId) {
+      context.commit('deleteTripRate', tripRateId);
     },
     updateTripClientName(context, details) {
       context.commit('updateTripClientName', details);
@@ -74,11 +69,9 @@ export default {
     },
     getTripRatesByCompanyName(state) {
       return function (companyName) {
-        return state.tripRates.filter(
-          (tripRate) => {
-            return tripRate.client_name === companyName
-          }
-        );
+        return state.tripRates.filter((tripRate) => {
+          return tripRate.client_name === companyName;
+        });
       };
     },
     provinces(state) {

@@ -99,26 +99,13 @@ async function httpGetAllTripRates() {
 }
 
 // Create new trip rates
-async function httpCreateTripRates(triprates) {
+async function httpCreateTripRates(tripRate) {
   const response = await fetch(`${API_URL}/rates`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(triprates)
-  });
-  return await response.json();
-}
-
-// Update information of trip rates
-async function httpUpdateTripRates(tripRates) {
-  console.log(tripRates);
-  const response = await fetch(`${API_URL}/rates`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(tripRates)
+    body: JSON.stringify(tripRate)
   });
   return await response.json();
 }
@@ -135,13 +122,13 @@ async function httpEditClientName(newName, prevName) {
 }
 
 // DELETE trip rates
-async function httpDeleteTripRates(tripRateToBeDeleted) {
+async function httpDeleteTripRates(tripRateId) {
   const response = await fetch(`${API_URL}/rates`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(tripRateToBeDeleted)
+    body: JSON.stringify({ id: tripRateId })
   });
   return await response.json();
 }
@@ -427,7 +414,6 @@ export {
   httpArchiveClient,
   httpGetAllTripRates,
   httpCreateTripRates,
-  httpUpdateTripRates,
   httpEditClientName,
   httpDeleteTripRates,
   httpGetArchivedEmployees,
