@@ -6,7 +6,7 @@ export default {
   components: {
     AppLayout
   },
-  async created() {
+  async beforeCreate() {
     await this.$store.dispatch('employees/loadEmployees');
     await this.$store.dispatch('clients/loadClients');
     await this.$store.dispatch('tripRates/loadTripRates');
@@ -18,9 +18,7 @@ export default {
     await this.$store.dispatch('externalDeductions/loadExternalDeductions');
     await this.$store.dispatch('batches/loadBatches');
     await this.$store.dispatch('payrollEmployees/loadPayrollEmployees');
-
-    console.log(this.$store.getters['billings/billings']);
-  }
+  },
 };
 </script>
 

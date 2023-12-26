@@ -13,7 +13,6 @@ export default {
   name: 'Trip Rates',
   data() {
     return {
-      currentTripRates: {},
       currentClient: getClientsModel().length > 0 ? getClientsModel()[0] : {},
       isFileSubmitValidFormat: undefined,
 
@@ -21,6 +20,7 @@ export default {
       fileInput: '',
 
       // Search Inputs
+      searchInputBranch: '',
       searchInputProvince: '',
       searchInputCity: '',
 
@@ -36,9 +36,12 @@ export default {
     Modal
   },
   methods: {
-    addNewTripRatesToStore(newTripRate) {
+    // Method used to add a tripRate to store
+    addTripRateToStore(newTripRate) {
       this.$store.dispatch('tripRates/addTripRate', newTripRate);
     },
+
+    // Change event handler when the file is change
     handleFileChange(event) {
       this.fileInput = event.target.files[0];
     },
@@ -66,6 +69,7 @@ export default {
       return result;
     },
 
+    // File submit event handler
     onFileSubmitHandler() {
       const reader = new FileReader();
       reader.readAsBinaryString(this.fileInput);
@@ -106,7 +110,7 @@ export default {
 
             for (const tripRate of tripRates) {
               const newTripRate = await httpCreateTripRates(tripRate);
-              this.$store.dispatch('tripRates/addTripRate', newTripRate);
+              this.addTripRateToStore(newTripRate);
             }
           } catch (err) {
             this.isFileSubmitValidFormat = false;
@@ -115,191 +119,240 @@ export default {
       });
     },
 
+    // Resetting the state of the file input
     clearDataForUpload() {
+      this.$refs.fileInput.selectedFile = null;
+      this.$refs.fileInput.value = null;
       this.isFileSubmitValidFormat = undefined;
     },
 
     // Used to re-assign the value of currentTripRates to be show
     tabChangeHandler(id) {
       this.currentClient = this.clients.find((client) => client.id === id);
-      this.updateCurrentTripRates();
       this.searchInputProvince = '';
       this.searchInputCity = '';
-    },
-
-    isTripRateExists(newTripRate) {
-      const { branch } = newTripRate;
-      const rate = this.currentTripRates[branch].find((tripRate) => {
-        return (
-          tripRate.branch === newTripRate.branch &&
-          tripRate.province === newTripRate.province &&
-          tripRate.city === newTripRate.city
-        );
-      });
-
-      return Boolean(rate);
-    },
-
-    filterTripRatesByClientName(clientName) {
-      return this.tripRates.filter((tripRate) => {
-        return tripRate.client_name === clientName;
-      });
-    },
-
-    filterCurrentTripRatesByBranch(branch) {
-      return this.currentTripRates[branch];
-    },
-
-    filterTripRatesByProvince(tripRates, province) {
-      return tripRates.filter((tripRate) => tripRate.province === province);
-    },
-
-    getProvinces(tripRates) {
-      return tripRates.map((tripRate) => tripRate.province);
-    },
-
-    getCities(tripRates) {
-      return tripRates.map((tripRate) => tripRate.city);
-    },
-
-    getUniqueValuesFromArray(arr) {
-      return Array.from(new Set(arr));
-    },
-
-    updateCurrentTripRates() {
-      this.resetCurrentTripRates();
-
-      const { company_name } = this.currentClient;
-
-      const filteredTripRatesByClientName =
-        this.filterTripRatesByClientName(company_name);
-      filteredTripRatesByClientName.reverse();
-
-      filteredTripRatesByClientName.forEach((tripRate) => {
-        const { branch, province, city } = tripRate;
-        if (
-          province.includes(this.searchInputProvince) &&
-          city.includes(this.searchInputCity)
-        ) {
-          if (this.currentTripRates[branch] !== undefined) {
-            return this.currentTripRates[branch].push(tripRate);
-          }
-          this.currentTripRates[branch] = [tripRate];
-        }
-      });
-    },
-
-    resetCurrentTripRates() {
-      this.currentTripRates = {};
-    },
-
-    addNewTripRateToCurrentTripRates(tripRate) {
-      const { branch } = tripRate;
-      this.currentTripRates[branch].push(tripRate);
-    },
-
-    filteredProvinceByBranch(modal) {
-      let currentBranch;
-
-      if (modal === this.EDIT_MODAL) {
-        currentBranch = this.editTripRatesBranchInput;
-      } else if (modal === this.DELETE_MODAL) {
-        currentBranch = this.deleteTripRatesBranchInput;
-      }
-
-      if (!currentBranch) {
-        return [];
-      }
-
-      const filteredTripRates =
-        this.filterCurrentTripRatesByBranch(currentBranch);
-      const provinces = this.getProvinces(filteredTripRates);
-
-      return this.getUniqueValuesFromArray(provinces);
-    },
-
-    filteredCityByProvince(modal) {
-      let currentBranch;
-      let currentProvince;
-
-      switch (modal) {
-        case this.EDIT_MODAL:
-          currentBranch = this.editTripRatesBranchInput;
-          currentProvince = this.editTripRatesProvinceInput;
-          break;
-        case this.DELETE_MODAL:
-          currentBranch = this.deleteTripRatesBranchInput;
-          currentProvince = this.deleteTripRatesProvinceInput;
-      }
-
-      if (!currentProvince) {
-        return [];
-      }
-
-      const filteredTripRatesByBranch =
-        this.filterCurrentTripRatesByBranch(currentBranch);
-      const filteredTripRatesByProvince = this.filterTripRatesByProvince(
-        filteredTripRatesByBranch,
-        currentProvince
-      );
-      const cities = this.getCities(filteredTripRatesByProvince);
-
-      return this.getUniqueValuesFromArray(cities);
     }
-  },
-  mounted() {
-    if (this.clients.length > 0) {
-      this.currentClient = this.clients[0];
-    }
-    this.updateCurrentTripRates();
+
+    // isTripRateExists(newTripRate) {
+    //   const { branch } = newTripRate;
+    //   const rate = this.currentTripRates[branch].find((tripRate) => {
+    //     return (
+    //       tripRate.branch === newTripRate.branch &&
+    //       tripRate.province === newTripRate.province &&
+    //       tripRate.city === newTripRate.city
+    //     );
+    //   });
+
+    //   return Boolean(rate);
+    // },
+
+    // filterTripRatesByClientName(clientName) {
+    //   return this.tripRates.filter((tripRate) => {
+    //     return tripRate.client_name === clientName;
+    //   });
+    // },
+
+    // filterCurrentTripRatesByBranch(branch) {
+    //   return this.currentTripRates[branch];
+    // },
+
+    // filterTripRatesByProvince(tripRates, province) {
+    //   return tripRates.filter((tripRate) => tripRate.province === province);
+    // },
+
+    // getProvinces(tripRates) {
+    //   return tripRates.map((tripRate) => tripRate.province);
+    // },
+
+    // getCities(tripRates) {
+    //   return tripRates.map((tripRate) => tripRate.city);
+    // },
+
+    // getUniqueValuesFromArray(arr) {
+    //   return Array.from(new Set(arr));
+    // },
+
+    // updateCurrentTripRates() {
+    //   this.resetCurrentTripRates();
+
+    //   const { company_name } = this.currentClient;
+
+    //   const filteredTripRatesByClientName =
+    //     this.filterTripRatesByClientName(company_name);
+    //   filteredTripRatesByClientName.reverse();
+
+    //   filteredTripRatesByClientName.forEach((tripRate) => {
+    //     const { branch, province, city } = tripRate;
+    //     if (
+    //       province.includes(this.searchInputProvince) &&
+    //       city.includes(this.searchInputCity)
+    //     ) {
+    //       if (this.currentTripRates[branch] !== undefined) {
+    //         return this.currentTripRates[branch].push(tripRate);
+    //       }
+    //       this.currentTripRates[branch] = [tripRate];
+    //     }
+    //   });
+    // },
+
+    // resetCurrentTripRates() {
+    //   this.currentTripRates = {};
+    // },
+
+    // addNewTripRateToCurrentTripRates(tripRate) {
+    //   const { branch } = tripRate;
+    //   this.currentTripRates[branch].push(tripRate);
+    // },
+
+    // filteredProvinceByBranch(modal) {
+    //   let currentBranch;
+
+    //   if (modal === this.EDIT_MODAL) {
+    //     currentBranch = this.editTripRatesBranchInput;
+    //   } else if (modal === this.DELETE_MODAL) {
+    //     currentBranch = this.deleteTripRatesBranchInput;
+    //   }
+
+    //   if (!currentBranch) {
+    //     return [];
+    //   }
+
+    //   const filteredTripRates =
+    //     this.filterCurrentTripRatesByBranch(currentBranch);
+    //   const provinces = this.getProvinces(filteredTripRates);
+
+    //   return this.getUniqueValuesFromArray(provinces);
+    // },
+
+    // filteredCityByProvince(modal) {
+    //   let currentBranch;
+    //   let currentProvince;
+
+    //   switch (modal) {
+    //     case this.EDIT_MODAL:
+    //       currentBranch = this.editTripRatesBranchInput;
+    //       currentProvince = this.editTripRatesProvinceInput;
+    //       break;
+    //     case this.DELETE_MODAL:
+    //       currentBranch = this.deleteTripRatesBranchInput;
+    //       currentProvince = this.deleteTripRatesProvinceInput;
+    //   }
+
+    //   if (!currentProvince) {
+    //     return [];
+    //   }
+
+    //   const filteredTripRatesByBranch =
+    //     this.filterCurrentTripRatesByBranch(currentBranch);
+    //   const filteredTripRatesByProvince = this.filterTripRatesByProvince(
+    //     filteredTripRatesByBranch,
+    //     currentProvince
+    //   );
+    //   const cities = this.getCities(filteredTripRatesByProvince);
+
+    //   return this.getUniqueValuesFromArray(cities);
+    // }
   },
   computed: {
+    // GET ALL THE TRIP RATES AVAILABLE FROM THE STORE
+    tripRates() {
+      return this.$store.getters['tripRates/tripRates'];
+    },
+
+    // GET THE TRIP RATES BY THE CURRENT CLIENT
+    currentTripRates() {
+      return this.tripRates.filter(
+        (tripRate) => tripRate.clientId === this.currentClient.id
+      );
+    },
+
+    // GET THE BRANCHES FROM THE CURRENT TRIP RATES
+    currentBranches() {
+      return Array.from(
+        new Set(this.currentTripRates.map((tripRate) => tripRate.branch))
+      );
+    },
+
+    // GET THE PROVINCES FROM THE CURRENT TRIP RATES
+    currentProvinces() {
+      return Array.from(
+        new Set(this.currentTripRates.map((tripRate) => tripRate.province))
+      );
+    },
+
+    // GET THE CITIES FROM THE CURRENT TRIP RATES
+    currentCities() {
+      return Array.from(
+        new Set(this.currentTripRates.map((tripRate) => tripRate.cty))
+      );
+    },
+
+    // FILTERED CITIES BASED ON THE VALUE OF SEARCHINPUTPROVINCE
+    filteredCities() {
+      const tripRates = this.currentTripRates.filter((tripRate) =>
+        tripRate.province.includes(this.searchInputProvince)
+      );
+
+      return Array.from(new Set(tripRates.map((tripRate) => tripRate.city)));
+    },
+
+    filteredTripRates() {
+      const rates = {};
+
+      const tripRates = this.currentTripRates.filter((tripRate) => tripRate.province.includes(this.searchInputProvince) && tripRate.city.includes(this.searchInputCity));
+
+      for (const branch of this.currentBranches) {
+        rates[branch] = tripRates.filter(
+          (tripRate) => tripRate.branch === branch
+        );
+      }
+
+      console.log(rates);
+
+      return rates;
+    },
+
     isCurrentTripRatesEmpty() {
       const branches = Object.keys(this.currentTripRates);
       return branches.length === 0 ? true : false;
     },
+
     clients() {
       return this.$store.getters['clients/clients'];
-    },
-    tripRates() {
-      return this.$store.getters['tripRates/tripRates'];
-    },
-    provinces() {
-      return this.$store.getters['tripRates/provinces'];
-    },
-
-    provincesByCurrentClient() {
-      const currentTripRatesBasedOnCurrentCompanyName = this.$store.getters[
-        'tripRates/getTripRatesByCompanyName'
-      ](this.currentClient.company_name);
-
-      return new Set(
-        currentTripRatesBasedOnCurrentCompanyName.map(
-          (tripRate) => tripRate.province
-        )
-      );
-    },
-    cities() {
-      return this.$store.getters['tripRates/cities'];
-    },
-    filteredCities() {
-      const cities = [];
-
-      const filteredTripRates = this.tripRates.filter(
-        (tripRate) => tripRate.province === this.searchInputProvince
-      );
-      filteredTripRates.forEach((tripRate) => {
-        if (!cities.includes(tripRate.city)) {
-          cities.push(tripRate.city);
-        }
-      });
-
-      return cities;
-    },
-    filteredTripRates() {
-      this.updateCurrentTripRates();
-      return this.currentTripRates;
     }
+
+    // provincesByCurrentClient() {
+    //   const currentTripRatesBasedOnCurrentCompanyName = this.$store.getters[
+    //     'tripRates/getTripRatesByCompanyName'
+    //   ](this.currentClient.company_name);
+
+    //   return new Set(
+    //     currentTripRatesBasedOnCurrentCompanyName.map(
+    //       (tripRate) => tripRate.province
+    //     )
+    //   );
+    // },
+    // cities() {
+    //   return this.$store.getters['tripRates/cities'];
+    // },
+    // filteredCities() {
+    //   const cities = [];
+
+    //   const filteredTripRates = this.tripRates.filter(
+    //     (tripRate) => tripRate.province === this.searchInputProvince
+    //   );
+    //   filteredTripRates.forEach((tripRate) => {
+    //     if (!cities.includes(tripRate.city)) {
+    //       cities.push(tripRate.city);
+    //     }
+    //   });
+
+    //   return cities;
+    // },
+    // filteredTripRates() {
+    //   this.updateCurrentTripRates();
+    //   return this.currentTripRates;
+    // }
   },
   watch: {
     searchInputProvince() {
@@ -340,7 +393,7 @@ export default {
         >
           <option value="" selected>All</option>
           <option
-            v-for="province in provincesByCurrentClient"
+            v-for="province in currentProvinces"
             :value="province"
           >
             {{ province }}
@@ -348,7 +401,7 @@ export default {
         </select>
       </div>
       <div>
-        <label class="d-block text-start fw-bold" for="cities">City:</label>
+        <label class="d-block text-start fw-bold" for="city">City:</label>
         <select
           v-model="searchInputCity"
           id="city"
@@ -367,6 +420,7 @@ export default {
       class="btn tms-btn text-light align-self-end"
       data-bs-toggle="modal"
       data-bs-target="#uploadFileModal"
+      @click="clearDataForUpload"
     >
       Upload Rates
     </button>
@@ -379,7 +433,10 @@ export default {
       :id="'pills-' + client.id"
       :key="client.id"
     >
-      <p v-if="Object.keys(filteredTripRates).length === 0">
+      <p
+        v-if="isCurrentTripRatesEmpty"
+        class="text-danger fw-bold text-decoration-underline"
+      >
         There are no stored trip rates for this client.
       </p>
       <main
@@ -446,6 +503,7 @@ export default {
             >
             <input
               @change="handleFileChange"
+              ref="fileInput"
               type="file"
               class="form-control"
               id="file"
@@ -505,3 +563,9 @@ export default {
     </template>
   </Modal>
 </template>
+
+<style scoped>
+th {
+  width: 14.28%;
+}
+</style>
