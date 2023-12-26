@@ -18,7 +18,7 @@ export default {
       isFileSubmitValidFormat: undefined,
 
       // Upload Input
-      uploadFileInput: '',
+      fileInput: '',
 
       // Search Inputs
       searchInputProvince: '',
@@ -39,51 +39,61 @@ export default {
     addNewTripRatesToStore(newTripRate) {
       this.$store.dispatch('tripRates/addTripRate', newTripRate);
     },
+    handleFileChange(event) {
+      this.fileInput = event.target.files[0];
+    },
 
     // A method that formats the result from sheet_to_json method
     formatJson(json, branch) {
       const result = json.map((row) => {
         return {
           branch,
-          client: this.currentClient.company_name,
+          clientId: this.currentClient.id,
           province: row['PROVINCE'],
           city: row['CITY / MUNICIPALITY'],
-          AUV: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : undefined,
-          '4W': row['4W'] ? Math.ceil(row['4W'] * 100) / 100 : undefined,
-          '6WF': row['6WF'] ? Math.ceil(row['6WF'] * 100) / 100 : undefined,
-          '6W ELF': row['6W ELF']
+          auv: row['AUV'] ? Math.ceil(row['AUV'] * 100) / 100 : null,
+          four_wheeler: row['4W'] ? Math.ceil(row['4W'] * 100) / 100 : null,
+          six_wheeler_forward: row['6WF']
+            ? Math.ceil(row['6WF'] * 100) / 100
+            : null,
+          six_wheeler_elf: row['6W ELF']
             ? Math.ceil(row['6W ELF'] * 100) / 100
-            : undefined,
-          '10W': row['10W'] ? Math.ceil(row['10W'] * 100) / 100 : undefined
+            : null,
+          ten_wheeler: row['10W'] ? Math.ceil(row['10W'] * 100) / 100 : null
         };
       });
 
       return result;
     },
+
     onFileSubmitHandler() {
-      const file = this.$refs.fileInput.files[0];
       const reader = new FileReader();
-      reader.readAsBinaryString(file);
+      reader.readAsBinaryString(this.fileInput);
 
       reader.addEventListener('load', (event) => {
+        // Get the data of excel but in binary format
         const data = event.target.result;
+
+        // Parse the data (binary format) into javascript object
         const workbook = XLSX.read(data, { type: 'binary' });
 
+        // Iterate to every sheetnames avaiable in the excel
         const { SheetNames } = workbook;
 
-        SheetNames.forEach((SheetName) => {
+        SheetNames.forEach(async (SheetName) => {
           const worksheet = workbook.Sheets[SheetName];
 
           // This range is valid if the user follow the given format
+          // The range for the values of rates
           const range = 'A11:Z500';
 
           const json = XLSX.utils.sheet_to_json(worksheet, {
             range
           });
 
-          const result = this.formatJson(json, SheetName);
+          const tripRates = this.formatJson(json, SheetName);
 
-          const firstRow = result[0];
+          const firstRow = tripRates[0];
           try {
             if (
               firstRow === undefined ||
@@ -94,25 +104,10 @@ export default {
             }
             this.isFileSubmitValidFormat = true;
 
-            result.forEach(async (rawTripRate) => {
-              const { client, branch, province, city, AUV } = rawTripRate;
-
-              const tripRate = {
-                client_name: client,
-                branch,
-                province,
-                city,
-                auv: AUV,
-                four_wheeler: rawTripRate['4W'],
-                six_wheeler_elf: rawTripRate['6W ELF'],
-                six_wheeler_forward: rawTripRate['6WF'],
-                ten_wheeler: rawTripRate['10W']
-              };
-
+            for (const tripRate of tripRates) {
               const newTripRate = await httpCreateTripRates(tripRate);
-              this.addNewTripRatesToStore(newTripRate);
-            });
-            this.uploadFileInput = '';
+              this.$store.dispatch('tripRates/addTripRate', newTripRate);
+            }
           } catch (err) {
             this.isFileSubmitValidFormat = false;
           }
@@ -284,7 +279,6 @@ export default {
         )
       );
     },
-
     cities() {
       return this.$store.getters['tripRates/cities'];
     },
@@ -368,7 +362,14 @@ export default {
         </select>
       </div>
     </div>
-    <button type="button" class="btn tms-btn text-light align-self-end" data-bs-toggle="modal" data-bs-target="#uploadFileModal">Upload Rates</button>
+    <button
+      type="button"
+      class="btn tms-btn text-light align-self-end"
+      data-bs-toggle="modal"
+      data-bs-target="#uploadFileModal"
+    >
+      Upload Rates
+    </button>
   </div>
 
   <div class="tab-content" id="pills-tabContent">
@@ -444,11 +445,10 @@ export default {
               >File:</label
             >
             <input
-              v-on:change="uploadFileInput"
+              @change="handleFileChange"
               type="file"
               class="form-control"
               id="file"
-              ref="fileInput"
               required
               :disabled="!isCurrentTripRatesEmpty"
             />

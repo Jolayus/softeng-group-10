@@ -2,9 +2,7 @@ const db = require('../../../database/db');
 
 const {
   getAllTripRates,
-  getTripRate,
   addNewTripRate,
-  removeTripRate,
   loadTripRates
 } = require('../../models/triprates.model');
 
@@ -28,7 +26,7 @@ function httpPostNewTripRate(req, res) {
 
   const promise = new Promise((resolve, reject) => {
     const sql =
-      'INSERT INTO triprates (clientId,, branch, province, city, auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      'INSERT INTO triprate (clientId, branch, province, city, auv, four_wheeler, six_wheeler_elf, six_wheeler_forward, ten_wheeler) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.run(
       sql,
       [
@@ -46,7 +44,7 @@ function httpPostNewTripRate(req, res) {
         if (err) {
           reject(err);
         } else {
-          const sql = 'SELECT * FROM triprate ORDER BY id DESC LIMIT 1';
+          const sql = `SELECT * FROM triprate ORDER BY id DESC LIMIT 1`;
           db.all(sql, [], (err, rows) => {
             if (err) {
               reject(err);
@@ -67,6 +65,11 @@ function httpPostNewTripRate(req, res) {
     .catch((err) => {
       res.status(500).json({ error: err });
     });
+}
+
+function getNewlyAddedTripRate() {
+  const sql = 'SELECT * FROM triprate';
+  
 }
 
 function httpEditClientName(req, res) {

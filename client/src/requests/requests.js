@@ -99,13 +99,13 @@ async function httpGetAllTripRates() {
 }
 
 // Create new trip rates
-async function httpCreateTripRates(triprates) {
+async function httpCreateTripRates(tripRate) {
   const response = await fetch(`${API_URL}/rates`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(triprates)
+    body: JSON.stringify(tripRate)
   });
   return await response.json();
 }
