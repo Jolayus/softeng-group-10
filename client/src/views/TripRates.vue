@@ -263,6 +263,7 @@ export default {
           id="province"
           class="form-select"
           aria-label="Default select example"
+          :disabled="isCurrentTripRatesEmpty"
         >
           <option value="" selected>All</option>
           <option v-for="province in currentProvinces" :value="province">
@@ -277,6 +278,7 @@ export default {
           id="city"
           class="form-select"
           aria-label="Default select example"
+          :disabled="isCurrentTripRatesEmpty"
         >
           <option value="" selected>All</option>
           <option v-for="city in filteredCities" :value="city">
