@@ -3,7 +3,8 @@ const db = require('../../../database/db');
 const {
   getAllTripRates,
   addNewTripRate,
-  loadTripRates
+  loadTripRates,
+  removeTripRate
 } = require('../../models/triprates.model');
 
 function httpGetAllTripRates(req, res) {
@@ -67,9 +68,31 @@ function httpPostNewTripRate(req, res) {
     });
 }
 
-function getNewlyAddedTripRate() {
-  const sql = 'SELECT * FROM triprate';
-  
+function httpDeleteTripRate(req, res) {
+  const { id } = req.body;
+
+  if (id === undefined) {
+    return res.status(400).json({ error: 'Invalid ID' });
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    const sql = 'DELETE FROM triprate WHERE triprate.id = ?';
+    db.run(sql, [id], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(removeTripRate(id));
+      }
+    });
+  });
+
+  promise
+    .then((removedTripRate) => {
+      res.status(200).json(removedTripRate);
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
 }
 
 function httpEditClientName(req, res) {
@@ -90,18 +113,9 @@ function httpEditClientName(req, res) {
   loadTripRates();
 }
 
-// DELETE EMPLOYEE FROM THE DATABASE BY ID
-function removeTripRateFromDatabase(id) {
-  const sql = `DELETE FROM triprates WHERE triprates.id=${id}`;
-  db.run(sql, [], (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
-}
-
 module.exports = {
   httpGetAllTripRates,
   httpPostNewTripRate,
+  httpDeleteTripRate,
   httpEditClientName
 };

@@ -35,7 +35,7 @@ function addNewTripRate(newTripRate) {
 
 function removeTripRate(tripRateId) {
   const idx = tripRates.findIndex((tripRate) => tripRate.id === tripRateId);
-  return tripRates.splice(idx, 1);
+  return tripRates.splice(idx, 1)[0];
 }
 
 module.exports = {
