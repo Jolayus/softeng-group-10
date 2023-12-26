@@ -1,0 +1,18 @@
+Items:
+1. Removal of adding and editing existing of client’s trip rates
+2. No date indication when Trip Rates are added
+3. Adding of Client input concern
+4. Report Generation for Payroll and Archive Modules
+5. Monetary Format for Billing and Payroll Modules
+6. No Notification Tracker for All Modules
+
+
+Resolution:
+1. Reuploading of excel file for the client’s trip rates
+2. Adding Date Added for Trip Rates
+3. Adding the email address, contract number in the client table and uploading the contract
+4.1. Adding report generation for employees’ payroll
+4.2. Adding report generation for archived employees’ and archive clients’ details
+5.1. Format only two(2) decimals for computed values in Payroll inputs and Billing fees
+5.2. Adding Pesos Sign in Billing and Payroll Breakdown
+6. Adding notification tracker for any actions taken by the user
