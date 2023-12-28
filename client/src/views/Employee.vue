@@ -132,13 +132,21 @@ export default {
       this.editEmployeeDriverNameInput = driver_name;
     },
     async saveChanges() {
+      // Copy the selected employee to be edited
+      const prevDetails = { ...this.getEmployeeById(this.editEmployeeId) };
+
+      const options = { day: 'numeric', month: 'short', year: '2-digit' };
+      const date = new Date(this.editEmployeeDateHiredInput)
+        .toLocaleDateString('en-GB', options)
+        .replace(/\s/g, '-');
+
       const newDetails = {
         id: this.editEmployeeId,
         name: this.editEmployeeNameInput,
-        date_hired: this.editEmployeeDateHiredInput,
+        date_hired: date,
         role: this.editEmployeeRoleInput,
         type: this.editEmployeeTypeInput,
-        driver_name: 
+        driver_name:
           this.editEmployeeTypeInput.toLowerCase() === 'internal'
             ? '-'
             : this.editEmployeeDriverNameInput,
@@ -155,8 +163,18 @@ export default {
       };
 
       await httpUpdateEmployee(newDetails);
-      this.$store.dispatch('employees/editEmployee', newDetails);
+      this.$store.dispatch('employees/editEmployee', { prevDetails, newDetails });
     },
+
+    getEmployeeById(id) {
+      return this.$store.getters['employees/getEmployeeById'](id);
+    },
+
+    markAsModified(employee) {
+      employee.modified = true;
+      return employee;
+    },
+
     clearAddEmployeeInputs() {
       this.employeeNameInput = '';
       this.employeeRoleInput = '';
@@ -172,8 +190,8 @@ export default {
       this.clearAddEmployeeInputs();
     },
     onClickAddEmployeeHandler() {
-        this.clearAddEmployeeInputs();
-        this.currentModal = 'ADD';
+      this.clearAddEmployeeInputs();
+      this.currentModal = 'ADD';
     }
   },
   computed: {
@@ -336,7 +354,7 @@ export default {
       if (newType === 'External') {
         this.editEmployeeRoleInput = 'Contractor';
       }
-    },
+    }
   },
   beforeRouteLeave() {
     // When the user selects other page
@@ -389,7 +407,7 @@ export default {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-for="employee in filteredEmployees" :key="employee.id">
+          <tr v-for="employee in filteredEmployees" :key="employee.id" :class="{ 'bg-warning': employee.modified }">
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
@@ -519,12 +537,7 @@ export default {
             </select>
           </div>
 
-          <div
-            class="mb-3"
-            v-if="
-              !isEmployeeRoleInputIsAdmin
-            "
-          >
+          <div class="mb-3" v-if="!isEmployeeRoleInputIsAdmin">
             <label for="employeeRole" class="form-label d-block text-start"
               >Vehicle Type</label
             >
@@ -543,12 +556,7 @@ export default {
             </select>
           </div>
 
-          <div
-            class="mb-3"
-            v-if="
-              !isEmployeeRoleInputIsAdmin
-            "
-          >
+          <div class="mb-3" v-if="!isEmployeeRoleInputIsAdmin">
             <label
               for="employeePlateNumber"
               class="form-label d-block text-start"
