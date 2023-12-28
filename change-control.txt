@@ -12,7 +12,7 @@ Resolution:
 2. Adding Date Added for Trip Rates (done)
 3. Adding the email address, contract number in the client table and uploading the contract
 4.1. Adding report generation for employees’ payroll (done)
-4.2. Adding report generation for archived employees’ and archive clients’ details
+4.2. Adding report generation for archived employees’ and archive clients’ details (done for archivedEmployees tab only)
 5.1. Format only two(2) decimals for computed values in Payroll inputs and Billing fees (done)
 5.2. Adding Pesos Sign in Billing and Payroll Breakdown (done)
-6. Adding notification tracker for any actions taken by the user
+6. Adding notification tracker for any actions taken by the user (done for employees tab only)
