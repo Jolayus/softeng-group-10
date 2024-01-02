@@ -52,7 +52,6 @@ if (process.env.MODE === 'production') {
   });
 }
 
-
 app.use(express.static(path.join(__dirname, 'routes', 'clients', 'contracts')));
 
 module.exports = app;

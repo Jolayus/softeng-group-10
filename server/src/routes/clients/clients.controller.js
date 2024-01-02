@@ -1,5 +1,6 @@
 const db = require('../../../database/db');
 const multer = require('multer');
+const sharp = require('sharp');
 const path = require('path');
 
 const {
@@ -15,18 +16,7 @@ function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'contracts'));
-  },
-  filename: (req, file, cb) => {
-    const { company_name } = req.body;
-    const fileType = file.mimetype.slice(file.mimetype.indexOf('/') + 1);
-    const fileName = `${company_name}.${fileType}`;
-    cb(null, fileName);
-  }
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // CREATE NEW CLIENT
@@ -83,6 +73,20 @@ function httpPostNewClient(req, res) {
   promise
     .then((newClient) => {
       addNewClient(newClient);
+
+      sharp(req.file.buffer)
+        .png()
+        .toFile(
+          path.join(__dirname, 'contracts', `${newClient.id}-contract.png`),
+          (err, info) => {
+            if (err) {
+              return res
+                .status(500)
+                .json({ error: 'Error processing the image' });
+            }
+          }
+        );
+
       res.status(201).json(newClient);
     })
     .catch((err) => {
