@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const db = require('../../../database/db');
 const {
   getAllArchivedClients,
@@ -39,17 +41,29 @@ function httpDeleteArchivedClient(req, res) {
 
   promise
     .then((deletedArchivedClient) => {
+      const filePath = path.resolve(
+        __dirname,
+        '..',
+        'clients',
+        'contracts',
+        `${deletedArchivedClient.id}-contract.png`
+      );
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.log('Error deleting files');
+        }
+      });
       res.status(200).json(deletedArchivedClient);
     })
     .catch((err) => {
       return res.status(500).json({ error: err });
     });
 }
-  
+
 function removeClientFromArchivedClientsTable(id) {
   const sql = `DELETE FROM archivedClients WHERE archivedClients.id=${id}`;
   db.run(sql, [], (err) => {
-    if (err) {  
+    if (err) {
       console.log(err);
     }
   });
