@@ -15,17 +15,40 @@ function httpGetAllClients(req, res) {
 
 // CREATE NEW CLIENT
 function httpPostNewClient(req, res) {
-  const { company_name, contact_person, contact_number, address } = req.body;
+  const {
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = req.body;
 
-  if (!company_name || !contact_person || !contact_number || !address) {
+  if (
+    !company_name ||
+    !address ||
+    !contact_person ||
+    !contact_number ||
+    !email ||
+    !contract_number
+  ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
+  console.log(req.body);
+
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO clients (company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?)`;
+    const sql = `INSERT INTO clients (company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?)`;
     db.run(
       sql,
-      [company_name, contact_person, contact_number, address],
+      [
+        company_name,
+        address,
+        contact_person,
+        contact_number,
+        email,
+        contract_number
+      ],
       (err) => {
         if (err) {
           reject(err);

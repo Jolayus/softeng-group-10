@@ -25,9 +25,12 @@ export default {
       selectedClient: null,
       searchInput: '',
       clientCompanyNameInput: '',
+      clientAddressInput: '',
       clientContactPersonInput: '',
       clientContactNumberInput: '',
-      clientAddressInput: '',
+      clientEmailInput: '',
+      clientContractNumberInput: '',
+      clientContractImageInput: null,
       editClientCompanyNameInput: '',
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
@@ -44,25 +47,35 @@ export default {
     },
     addNewClient() {
       const company_name = this.clientCompanyNameInput.trim();
+      const address = this.clientAddressInput.trim();
       const contact_person = this.clientContactPersonInput.trim();
       const contact_number = this.clientContactNumberInput.trim();
-      const address = this.clientAddressInput.trim();
+      const email = this.clientEmailInput.trim();
+      const contract_number = this.clientContractNumberInput.trim();
 
       const newClient = {
         company_name,
+        address,
         contact_person,
         contact_number,
-        address
+        email,
+        contract_number
       };
+
+      console.log(newClient);
 
       httpCreateClient(newClient).then((client) => {
         this.$store.dispatch('clients/addClient', client);
       });
 
       this.clientCompanyNameInput = '';
+      this.clientAddressInput = '';
       this.clientContactPersonInput = '';
       this.clientContactNumberInput = '';
-      this.clientAddressInput = '';
+      this.clientEmailInput = '';
+      this.clientContractNumberInput = '';
+
+      console.log('New client is added');
     },
     onEdit(client) {
       this.currentModal = 'EDIT';
@@ -101,6 +114,9 @@ export default {
 
       httpUpdateClient(newDetails);
       this.$store.dispatch('clients/editClient', newDetails);
+    },
+    handleFileChange(event) {
+      console.log(event);
     }
   },
   computed: {
@@ -191,8 +207,10 @@ export default {
       }
     },
     isClientCanBeDeleted() {
-
-      return !this.isSelectedClientDoesHaveTripRates && !this.isSelectedClientDoesHaveBillings;
+      return (
+        !this.isSelectedClientDoesHaveTripRates &&
+        !this.isSelectedClientDoesHaveBillings
+      );
     }
   }
 };
@@ -230,19 +248,23 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Company Name</th>
-            <th class="w-20" scope="col">Contact Person</th>
-            <th class="w-20" scope="col">Contact Number</th>
-            <th class="w-20" scope="col">Address</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Company Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Contact Person</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">Email</th>
+            <th scope="col">Contract Number</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr class="f-flex" v-for="client in filteredClient" :key="client.id">
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">{{ client.contact_person }}</td>
             <td class="align-middle">{{ client.contact_number }}</td>
-            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">{{ client.email }}</td>
+            <td class="align-middle">{{ client.contract_number }}</td>
             <td class="align-middle">
               <EditIcon
                 data-bs-toggle="modal"
@@ -275,7 +297,7 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="clientForm" @submit.prevent="addNewClient">
+        <form>
           <div class="mb-3">
             <label for="clientCompanyName" class="form-label d-block text-start"
               >Company Name</label
@@ -291,6 +313,19 @@ export default {
             <p class="fw-bold text-danger" v-if="!isUniqueNewClientCompanyName">
               The new client name is already existing!
             </p>
+          </div>
+          <div class="mb-3">
+            <label for="clientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="clientAddressInput"
+              type="text"
+              class="form-control"
+              id="clientAddress"
+              aria-describedby="clientAddress"
+              placeholder="Address"
+            />
           </div>
           <div class="mb-3">
             <label
@@ -323,16 +358,44 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="clientAddress" class="form-label d-block text-start"
-              >Address</label
+            <label for="clientEmail" class="form-label d-block text-start"
+              >Email</label
             >
             <input
-              v-model="clientAddressInput"
-              type="text"
+              v-model="clientEmailInput"
+              type="email"
               class="form-control"
-              id="clientAddress"
-              aria-describedby="clientAddress"
-              placeholder="Address"
+              id="clientEmail"
+              aria-describedby="clientEmail"
+              placeholder="Email"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="clientContractNumber"
+              class="form-label d-block text-start"
+              >Contract Number</label
+            >
+            <input
+              v-model="clientContractNumberInput"
+              type="email"
+              class="form-control"
+              id="contractNumber"
+              aria-describedby="contractNumber"
+              placeholder="Contract Number"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="contractImage" class="form-label d-block text-start"
+              >Contract</label
+            >
+            <input
+              @change="handleFileChange"
+              type="file"
+              accept="image/*"
+              class="form-control"
+              id="contractImage"
+              aria-describedby="contractImage"
             />
           </div>
         </form>
@@ -344,9 +407,8 @@ export default {
           Close
         </button>
         <button
-          type="submit"
+          @click="addNewClient"
           class="btn tms-btn text-light"
-          form="clientForm"
           data-bs-dismiss="modal"
           :disabled="isFormInvalid || !isUniqueNewClientCompanyName"
         >
@@ -475,14 +537,20 @@ export default {
         >
           Archive
         </button>
-      <p class="text-danger" v-if="!isClientCanBeDeleted">There are stored trip rates / billings to this client. This client cannot be deleted.</p>
-
+        <p class="text-danger" v-if="!isClientCanBeDeleted">
+          There are stored trip rates / billings to this client. This client
+          cannot be deleted.
+        </p>
       </div>
     </template>
   </Modal>
 </template>
 
 <style scoped>
+th {
+  width: 14.28%;
+}
+
 .input-group {
   width: 45%;
 }
