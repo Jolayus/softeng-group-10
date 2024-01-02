@@ -10,7 +10,6 @@ import {
   httpCreateClient,
   httpUpdateClient,
   httpArchiveClient,
-  httpEditClientName
 } from '../requests/requests';
 
 export default {
@@ -38,7 +37,6 @@ export default {
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
       editClientEmailInput: '',
-      editClientContractNumberInput: '',
       editClientId: '',
       currentModal: ''
     };
@@ -109,29 +107,7 @@ export default {
         contract_number: this.editClientContractNumberInput
       };
 
-      const formData = new FormData();
-      formData.append('id', this.editClientId);
-      formData.append('company_name', this.editClientCompanyNameInput);
-      formData.append('address', this.editClientAddressInput);
-      formData.append('contact_person', this.editClientContactPersonInput);
-      formData.append('contact_number', this.editClientContactNumberInput);
-      formData.append('email', this.editClientEmailInput);
-      formData.append('contract_number', this.editClientContractNumberInput);
-
-      const client = this.clients.find(
-        (client) => client.id === this.editClientId
-      );
-
-      const newName = this.editClientCompanyNameInput;
-      const prevName = client.company_name;
-
-      this.$store.dispatch('tripRates/updateTripClientName', {
-        newName,
-        prevName
-      });
-
-      httpEditClientName(newName, prevName);
-      httpUpdateClient(formData);
+      httpUpdateClient(newDetails);
       this.$store.dispatch('clients/editClient', newDetails);
     },
     handleFileChange(event) {
@@ -547,21 +523,6 @@ export default {
               aria-describedby="newClientContractNumber"
             />
           </div>
-          <div class="mb-3">
-            <label
-              for="newClientContractImage"
-              class="form-label d-block text-start"
-              >Contract (.PNG)</label
-            >
-            <input
-              @change="handleUpdateContract"
-              type="file"
-              accept="image/png"
-              class="form-control"
-              id="newClientContractImage"
-              aria-describedby="newClientContractImage"
-            />
-          </div>
         </form>
       </div>
     </template>
@@ -572,8 +533,8 @@ export default {
         </button>
         <button
           type="submit"
-          class="btn btn-primary tms-btn"
           form="editClientForm"
+          class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
           :disabled="isFormInvalid || !isUniqueEditClientCompanyName"
         >

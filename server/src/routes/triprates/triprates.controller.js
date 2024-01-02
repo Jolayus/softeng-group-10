@@ -3,7 +3,6 @@ const db = require('../../../database/db');
 const {
   getAllTripRates,
   addNewTripRate,
-  loadTripRates,
   removeTripRate
 } = require('../../models/triprates.model');
 
@@ -97,27 +96,8 @@ function httpDeleteTripRate(req, res) {
     });
 }
 
-function httpEditClientName(req, res) {
-  const { newName, prevName } = req.body;
-
-  if (!newName || !prevName) {
-    return res.status(400).json({ error: 'Invalid inputs' });
-  }
-
-  const sql = 'UPDATE triprates SET client_name=? WHERE client_name=?';
-
-  db.run(sql, [newName, prevName], (err) => {
-    if (err) {
-      return res.status(500).json({ error: err });
-    }
-  });
-
-  loadTripRates();
-}
-
 module.exports = {
   httpGetAllTripRates,
   httpPostNewTripRate,
   httpDeleteTripRate,
-  httpEditClientName
 };

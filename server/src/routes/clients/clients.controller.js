@@ -94,21 +94,38 @@ function httpPostNewClient(req, res) {
     });
 }
 function httpEditClient(req, res) {
-  const { id, company_name, contact_person, contact_number, address } =
-    req.body;
+  const {
+    id,
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = req.body;
 
   const updatedClient = getClientById(id);
 
   updatedClient.company_name = company_name;
+  updatedClient.address = address;
   updatedClient.contact_person = contact_person;
   updatedClient.contact_number = contact_number;
-  updatedClient.address = address;
+  updatedClient.email = email;
+  updatedClient.contract_number = contract_number;
 
-  const sql = `UPDATE clients SET company_name=?, contact_person=?, contact_number=?, address=? WHERE clients.id=?`;
+  const sql = `UPDATE clients SET company_name=?, address=?, contact_person=?, contact_number=?, email=?, contract_number=? WHERE clients.id=?`;
 
   db.run(
     sql,
-    [company_name, contact_person, contact_number, address, id],
+    [
+      company_name,
+      address,
+      contact_person,
+      contact_number,
+      email,
+      contract_number,
+      id
+    ],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });
