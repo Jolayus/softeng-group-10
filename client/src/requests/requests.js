@@ -54,13 +54,10 @@ async function httpGetClients() {
 }
 
 // Create new client
-async function httpCreateClient(newClient) {
+async function httpCreateClient(formData) {
   const response = await fetch(`${API_URL}/clients`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(newClient)
+    body: formData
   });
   return await response.json();
 }

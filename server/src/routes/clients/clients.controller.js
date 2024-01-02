@@ -1,4 +1,6 @@
 const db = require('../../../database/db');
+const multer = require('multer');
+const path = require('path');
 
 const {
   getAllClients,
@@ -12,6 +14,20 @@ const { addNewArchivedClient } = require('../../models/archivedClients.model');
 function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
 }
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'contracts'));
+  },
+  filename: (req, file, cb) => {
+    const { company_name } = req.body;
+    const fileType = file.mimetype.slice(file.mimetype.indexOf('/') + 1);
+    const fileName = `${company_name}.${fileType}`;
+    cb(null, fileName);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // CREATE NEW CLIENT
 function httpPostNewClient(req, res) {
@@ -34,8 +50,6 @@ function httpPostNewClient(req, res) {
   ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
-
-  console.log(req.body);
 
   const promise = new Promise((resolve, reject) => {
     const sql = `INSERT INTO clients (company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -75,7 +89,6 @@ function httpPostNewClient(req, res) {
       res.status(500).json({ error: err });
     });
 }
-
 function httpEditClient(req, res) {
   const { id, company_name, contact_person, contact_number, address } =
     req.body;
@@ -172,5 +185,6 @@ module.exports = {
   httpGetAllClients,
   httpPostNewClient,
   httpEditClient,
-  httpArchiveClient
+  httpArchiveClient,
+  upload
 };

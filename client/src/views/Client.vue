@@ -1,6 +1,7 @@
 <script>
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
+import ContractIcon from '../components/Icons/ContractIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Modal from '../components/Modal.vue';
 import { getClientsModel } from '../models/client.model';
@@ -17,6 +18,7 @@ export default {
   components: {
     SearchIcon,
     EditIcon,
+    ContractIcon,
     TrashIcon,
     Modal
   },
@@ -30,7 +32,7 @@ export default {
       clientContactNumberInput: '',
       clientEmailInput: '',
       clientContractNumberInput: '',
-      clientContractImageInput: null,
+      clientContractImageInput: '',
       editClientCompanyNameInput: '',
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
@@ -53,18 +55,16 @@ export default {
       const email = this.clientEmailInput.trim();
       const contract_number = this.clientContractNumberInput.trim();
 
-      const newClient = {
-        company_name,
-        address,
-        contact_person,
-        contact_number,
-        email,
-        contract_number
-      };
+      const formData = new FormData();
+      formData.append('company_name', company_name);
+      formData.append('address', address);
+      formData.append('contact_person', contact_person);
+      formData.append('contact_number', contact_number);
+      formData.append('email', email);
+      formData.append('contract_number', contract_number);
+      formData.append('contract', this.clientContractImageInput)
 
-      console.log(newClient);
-
-      httpCreateClient(newClient).then((client) => {
+      httpCreateClient(formData).then((client) => {
         this.$store.dispatch('clients/addClient', client);
       });
 
@@ -74,8 +74,6 @@ export default {
       this.clientContactNumberInput = '';
       this.clientEmailInput = '';
       this.clientContractNumberInput = '';
-
-      console.log('New client is added');
     },
     onEdit(client) {
       this.currentModal = 'EDIT';
@@ -116,7 +114,7 @@ export default {
       this.$store.dispatch('clients/editClient', newDetails);
     },
     handleFileChange(event) {
-      console.log(event);
+      this.clientContractImageInput = event.target.files[0];
     }
   },
   computed: {
@@ -139,15 +137,21 @@ export default {
     isFormInvalid() {
       if (this.currentModal === 'ADD') {
         const company_name = this.clientCompanyNameInput.trim();
+        const address = this.clientAddressInput.trim();
         const contact_person = this.clientContactPersonInput.trim();
         const contact_number = this.clientContactNumberInput.trim();
-        const address = this.clientAddressInput.trim();
+        const email = this.clientEmailInput.trim();
+        const contract_number = this.clientContractNumberInput.trim();
+        const contract_image = this.clientContractImageInput;
 
         if (
           company_name.length === 0 ||
+          address.length === 0 ||
           contact_person.length === 0 ||
           contact_number.length === 0 ||
-          address.length === 0
+          email.length === 0 ||
+          contract_number.length === 0 ||
+          !contract_image
         ) {
           return true;
         }
@@ -273,6 +277,9 @@ export default {
                 class="mx-2 text-primary"
                 role="button"
               />
+              <a :href="`http://localhost:8000/${client.company_name}.png`" target="_blank">
+                <ContractIcon class="mx-2 text-success" />
+              </a>
               <TrashIcon
                 data-bs-toggle="modal"
                 data-bs-target="#archiveClientVerif"
@@ -297,7 +304,7 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form>
+        <form ref="addNewClientForm">
           <div class="mb-3">
             <label for="clientCompanyName" class="form-label d-block text-start"
               >Company Name</label
@@ -387,14 +394,15 @@ export default {
           </div>
           <div class="mb-3">
             <label for="contractImage" class="form-label d-block text-start"
-              >Contract</label
+              >Contract (.png)</label
             >
             <input
               @change="handleFileChange"
               type="file"
-              accept="image/*"
+              accept="image/png"
               class="form-control"
               id="contractImage"
+              name="contract"
               aria-describedby="contractImage"
             />
           </div>
