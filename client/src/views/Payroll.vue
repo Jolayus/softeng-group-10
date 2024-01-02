@@ -1,4 +1,8 @@
 <script>
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as font from '../assets/font/Montserrat-Bold';
+
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import FloatingActionButton from '../components/FloatingActionButton.vue';
 import Modal from '../components/Modal.vue';
@@ -432,6 +436,147 @@ export default {
     },
     deleteBatch() {
       // TODO
+    },
+    handleGenerateReport(employee) {
+      const doc = new jsPDF({
+        orientation: 'landscape'
+      });
+
+      // Font that was imported from the assets/font
+      const FONT = 'Montserrat-Bold';
+
+      doc.setFont(FONT, 'bold');
+
+      // Salary heading name
+      const salaryColumns = [
+        [
+          'Name',
+          'Basic',
+          'Allowance',
+          'Daily Rate',
+          'Daily Allowance',
+          'Days of Work',
+          'Service Fee',
+          'Overtime Pay',
+          'Others',
+          'Total'
+        ]
+      ];
+
+      const {
+        basicSalary,
+        allowanceSalary,
+        dailyRate,
+        dailyAllowance,
+        daysOfWork,
+        serviceFee,
+        overtimePay,
+        others,
+        total
+      } = employee.salary;
+
+      // Salary rows (body)
+      let salaryRows = [
+        [
+          employee.name,
+          basicSalary,
+          allowanceSalary,
+          dailyRate,
+          dailyAllowance,
+          daysOfWork,
+          serviceFee,
+          overtimePay,
+          others,
+          total
+        ]
+      ];
+
+      salaryRows = [
+        salaryRows[0].map((tableData, index) => {
+          if (index === 0) {
+            return tableData;
+          }
+          return `₱ ${tableData.toFixed(2)}`;
+        })
+      ];
+
+      doc.text(`Name: ${employee.name}`, 15, 15);
+      doc.text(`Role: ${employee.role}`, 15, 20);
+      doc.text('Salary', 15, 35);
+
+      autoTable(doc, {
+        head: salaryColumns,
+        body: salaryRows,
+        startY: 40,
+        styles: {
+          font: FONT
+        }
+      });
+
+      // Deduction heading name
+      const deductionColumns = [
+        [
+          'Cash Advance',
+          'PAG-IBIG Contribution',
+          'SSS Contribution',
+          'Philhealth Contribution',
+          'Late',
+          'Damages',
+          'Others',
+          'Total'
+        ]
+      ];
+
+      const {
+        cashAdvance,
+        pagibig,
+        SSS,
+        philhealth,
+        late,
+        damages,
+        others: othersDeductions,
+        total: totalDeductions
+      } = employee.deduction;
+
+      // Deduction Rows
+      let deductionRows = [
+        [
+          cashAdvance,
+          pagibig,
+          SSS,
+          philhealth,
+          late,
+          damages,
+          othersDeductions,
+          totalDeductions
+        ]
+      ];
+
+      deductionRows = [
+        deductionRows[0].map((tableData) => {
+          return `₱ ${tableData.toFixed(2)}`;
+        })
+      ];
+
+      doc.text('Deductions', 15, 75);
+
+      autoTable(doc, {
+        head: deductionColumns,
+        body: deductionRows,
+        startY: 80,
+        styles: {
+          font: FONT
+        }
+      });
+
+      doc.text(`Net Pay: ₱${this.getNetPay(employee)}`, 15, 120);
+
+      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+      const currentDate = new Date()
+        .toLocaleDateString('en-GB', dateOptions)
+        .replace(/\s/g, '-');
+
+      doc.save(`payroll - ${employee.name} ${currentDate}.pdf`);
     }
   },
   computed: {
@@ -756,11 +901,11 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="align-middle" scope="col">Name</th>
-            <th class="align-middle" scope="col">Type</th>
-            <th class="align-middle" scope="col">Role</th>
-            <th class="align-middle" scope="col">Net Pay</th>
-            <th class="align-middle" scope="col">Actions</th>
+            <th id="name" class="align-middle" scope="col">Name</th>
+            <th id="type" class="align-middle" scope="col">Type</th>
+            <th id="type" class="align-middle" scope="col">Role</th>
+            <th id="net-pay" class="align-middle" scope="col">Net Pay</th>
+            <th id="actions" class="align-middle" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider" v-if="currentBatchCode.length > 0">
@@ -774,7 +919,7 @@ export default {
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalBreakdownModal"
-                class="net-pay btn tms-btn text-light align-items-center h-100"
+                class="btn tms-btn text-light align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
                 &#8369; {{ getNetPay(employee) }}
@@ -791,13 +936,13 @@ export default {
                 &#8369; {{ getNetPay(employee) }}
               </button>
             </td>
-            <td class="align-middle d-flex">
+            <td class="align-middle d-flex justify-content-center gap-2">
               <button
                 v-if="employee.type === 'Internal'"
                 type="button"
                 data-bs-toggle="modal"
                 data-bs-target="#payrollInternalSalaryModal"
-                class="btn tms-btn text-light justify-content-center align-items-center h-100 mx-2"
+                class="btn tms-btn text-light justify-content-center align-items-center h-100"
                 @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Salary
@@ -834,6 +979,14 @@ export default {
                 @click="setPayrollCurrentEmployee(employee)"
               >
                 Edit Deductions
+              </button>
+
+              <button
+                type="button"
+                class="btn tms-btn text-light justify-content-center align-items-center"
+                @click="handleGenerateReport(employee)"
+              >
+                Generate Report
               </button>
             </td>
           </tr>
@@ -1839,7 +1992,20 @@ th {
   background-color: #041421;
 }
 
-.net-pay {
-  min-width: 200px;
+th#name {
+  width: 30%;
+}
+
+th#role,
+th#type {
+  width: 10%;
+}
+
+th#net-pay {
+  width: 15%;
+}
+
+th#actions {
+  width: 35%;
 }
 </style>

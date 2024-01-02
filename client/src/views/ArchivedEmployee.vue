@@ -1,4 +1,7 @@
 <script>
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
@@ -50,6 +53,64 @@ export default {
         'archivedEmployees/deleteArchivedEmployee',
         archivedEmployeeId
       );
+    },
+
+    handleGenerateCopy() {
+      const doc = new jsPDF({
+        orientation: 'landscape'
+      });
+
+      const columns = [
+        [
+          'Name',
+          'Date Hired',
+          'Role',
+          'Driver Name',
+          'Vehicle Type',
+          'Plate Number',
+          'Email',
+          'Contact Number'
+        ]
+      ];
+      const rows = [];
+
+      for (const archivedEmployee of this.archivedEmployees) {
+        const {
+          name,
+          date_hired,
+          role,
+          driver_name,
+          vehicle_type,
+          plate_number,
+          email,
+          contact_number
+        } = archivedEmployee;
+        const row = [
+          name,
+          date_hired,
+          role,
+          driver_name,
+          vehicle_type,
+          plate_number,
+          email,
+          contact_number
+        ];
+        rows.push(row);
+      }
+
+      autoTable(doc, {
+        head: columns,
+        body: rows,
+        startY: 20
+      });
+
+      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+      const currentDate = new Date()
+        .toLocaleDateString('en-GB', dateOptions)
+        .replace(/\s/g, '-');
+
+      console.log(currentDate);
+      doc.save(`archivedEmployees ${currentDate}.pdf`);
     }
   },
   computed: {
@@ -92,6 +153,9 @@ export default {
             aria-describedby="basic-addon2"
           />
         </div>
+        <button class="btn tms-btn text-light px-5" @click="handleGenerateCopy">
+          Generate Copy
+        </button>
       </div>
       <table class="table">
         <thead class="tbl-header text-light rounded">
