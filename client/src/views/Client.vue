@@ -34,9 +34,11 @@ export default {
       clientContractNumberInput: '',
       clientContractImageInput: '',
       editClientCompanyNameInput: '',
+      editClientAddressInput: '',
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
-      editClientAddressInput: '',
+      editClientEmailInput: '',
+      editClientContractNumberInput: '',
       editClientId: '',
       currentModal: ''
     };
@@ -62,7 +64,7 @@ export default {
       formData.append('contact_number', contact_number);
       formData.append('email', email);
       formData.append('contract_number', contract_number);
-      formData.append('contract', this.clientContractImageInput)
+      formData.append('contract', this.clientContractImageInput);
 
       httpCreateClient(formData).then((client) => {
         this.$store.dispatch('clients/addClient', client);
@@ -78,23 +80,43 @@ export default {
     onEdit(client) {
       this.currentModal = 'EDIT';
 
-      const { id, company_name, contact_person, contact_number, address } =
-        client;
+      const {
+        id,
+        company_name,
+        address,
+        contact_person,
+        contact_number,
+        email,
+        contract_number
+      } = client;
 
       this.editClientId = id;
+      this.editClientAddressInput = address;
       this.editClientCompanyNameInput = company_name;
       this.editClientContactPersonInput = contact_person;
       this.editClientContactNumberInput = contact_number;
-      this.editClientAddressInput = address;
+      this.editClientEmailInput = email;
+      this.editClientContractNumberInput = contract_number;
     },
     saveChanges() {
       const newDetails = {
         id: this.editClientId,
         company_name: this.editClientCompanyNameInput,
+        address: this.editClientAddressInput,
         contact_person: this.editClientContactPersonInput,
         contact_number: this.editClientContactNumberInput,
-        address: this.editClientAddressInput
+        email: this.editClientEmailInput,
+        contract_number: this.editClientContractNumberInput
       };
+
+      const formData = new FormData();
+      formData.append('id', this.editClientId);
+      formData.append('company_name', this.editClientCompanyNameInput);
+      formData.append('address', this.editClientAddressInput);
+      formData.append('contact_person', this.editClientContactPersonInput);
+      formData.append('contact_number', this.editClientContactNumberInput);
+      formData.append('email', this.editClientEmailInput);
+      formData.append('contract_number', this.editClientContractNumberInput);
 
       const client = this.clients.find(
         (client) => client.id === this.editClientId
@@ -109,8 +131,7 @@ export default {
       });
 
       httpEditClientName(newName, prevName);
-
-      httpUpdateClient(newDetails);
+      httpUpdateClient(formData);
       this.$store.dispatch('clients/editClient', newDetails);
     },
     handleFileChange(event) {
@@ -277,7 +298,10 @@ export default {
                 class="mx-2 text-primary"
                 role="button"
               />
-              <a :href="`http://localhost:8000/${client.company_name}.png`" target="_blank">
+              <a
+                :href="`http://localhost:8000/${client.id}-contract.png`"
+                target="_blank"
+              >
                 <ContractIcon class="mx-2 text-success" />
               </a>
               <TrashIcon
@@ -458,6 +482,18 @@ export default {
             </p>
           </div>
           <div class="mb-3">
+            <label for="newClientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="editClientAddressInput"
+              type="text"
+              class="form-control"
+              id="newClientAddress"
+              aria-describedby="newClientAddress"
+            />
+          </div>
+          <div class="mb-3">
             <label
               for="newClientContactPerson"
               class="form-label d-block text-start"
@@ -486,15 +522,44 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="newClientAddress" class="form-label d-block text-start"
-              >Address</label
+            <label for="newClientEmail" class="form-label d-block text-start"
+              >Email</label
             >
             <input
-              v-model="editClientAddressInput"
+              v-model="editClientEmailInput"
               type="text"
               class="form-control"
-              id="newClientAddress"
-              aria-describedby="newClientAddress"
+              id="newClientEmail"
+              aria-describedby="newClientEmail"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="newClientContractNumber"
+              class="form-label d-block text-start"
+              >Contract Number</label
+            >
+            <input
+              v-model="editClientContractNumberInput"
+              type="text"
+              class="form-control"
+              id="newClientContractNumber"
+              aria-describedby="newClientContractNumber"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="newClientContractImage"
+              class="form-label d-block text-start"
+              >Contract (.PNG)</label
+            >
+            <input
+              @change="handleUpdateContract"
+              type="file"
+              accept="image/png"
+              class="form-control"
+              id="newClientContractImage"
+              aria-describedby="newClientContractImage"
             />
           </div>
         </form>

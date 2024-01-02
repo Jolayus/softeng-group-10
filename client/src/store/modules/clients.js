@@ -26,9 +26,11 @@ export default {
       );
       
       client.company_name = newClientDetails.company_name;
+      client.address = newClientDetails.address;
       client.contact_person = newClientDetails.contact_person;
       client.contact_number = newClientDetails.contact_number;
-      client.address = newClientDetails.address;
+      client.email = newClientDetails.email;
+      client.contract_number = newClientDetails.contract_number;
     }
   },
   actions: {

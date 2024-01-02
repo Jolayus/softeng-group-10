@@ -63,13 +63,13 @@ async function httpCreateClient(formData) {
 }
 
 // Update information of a client
-async function httpUpdateClient(client) {
+async function httpUpdateClient(formData) {
   const response = await fetch(`${API_URL}/clients`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(client)
+    body: formData
   });
   return await response.json();
 }
