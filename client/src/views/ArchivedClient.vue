@@ -91,19 +91,23 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Company Name</th>
-            <th class="w-20" scope="col">Contact Person</th>
-            <th class="w-20" scope="col">Contact Number</th>
-            <th class="w-20" scope="col">Address</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Company Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Contact Person</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">Email</th>
+            <th scope="col">Contract Number</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="client in filteredClient" :key="client.id">
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">{{ client.contact_person }}</td>
             <td class="align-middle">{{ client.contact_number }}</td>
-            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">{{ client.email }}</td>
+            <td class="align-middle">{{ client.contract_number }}</td>
             <td class="align-middle">
               <RecoverIcon
                 @click.prevent="recoverArchivedClient(client.id)"
@@ -155,6 +159,10 @@ export default {
 </template>
 
 <style scoped>
+th {
+  width: 14.28%;
+}
+
 .input-group {
   width: 45%;
 }

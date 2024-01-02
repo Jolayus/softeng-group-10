@@ -186,14 +186,30 @@ function removeClientFromDatabase(id) {
 }
 
 function addClientToArchive(client) {
-  const { id, company_name, contact_person, contact_number, address } = client;
-  const sql = `INSERT INTO archivedClients (id, company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?, ?)`;
+  const {
+    id,
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = client;
+  const sql = `INSERT INTO archivedClients (id, company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?,  ?)`;
 
   addNewArchivedClient(client);
 
   db.run(
     sql,
-    [id, company_name, contact_person, contact_number, address],
+    [
+      id,
+      address,
+      company_name,
+      contact_person,
+      contact_number,
+      email,
+      contract_number
+    ],
     (err) => {
       if (err) {
         console.log(err);

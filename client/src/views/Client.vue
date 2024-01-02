@@ -4,12 +4,11 @@ import EditIcon from '../components/Icons/EditIcon.vue';
 import ContractIcon from '../components/Icons/ContractIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Modal from '../components/Modal.vue';
-import { getClientsModel } from '../models/client.model';
 
 import {
   httpCreateClient,
   httpUpdateClient,
-  httpArchiveClient,
+  httpArchiveClient
 } from '../requests/requests';
 
 export default {
@@ -37,6 +36,7 @@ export default {
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
       editClientEmailInput: '',
+      editClientContractNumberInput: '',
       editClientId: '',
       currentModal: ''
     };
@@ -45,6 +45,7 @@ export default {
     archiveClient(id) {
       httpArchiveClient(id).then((archivedClient) => {
         this.$store.dispatch('clients/archiveClient', archivedClient.id);
+        this.selectedClient = null;
       });
     },
     addNewClient() {
@@ -185,17 +186,6 @@ export default {
         return client.company_name.toLowerCase() !== newCompanyName;
       });
     },
-    isSelectedClientDoesHaveTripRates() {
-      if (this.selectedClient) {
-        const client = this.clients.find(
-          (client) => client.id === this.selectedClient
-        );
-        const tripRates = this.tripRates.filter(
-          (tripRates) => tripRates.client_name === client.company_name
-        );
-        return tripRates.length > 0 ? true : false;
-      }
-    },
     isSelectedClientDoesHaveBillings() {
       if (this.selectedClient) {
         const client = this.clients.find(
@@ -208,10 +198,7 @@ export default {
       }
     },
     isClientCanBeDeleted() {
-      return (
-        !this.isSelectedClientDoesHaveTripRates &&
-        !this.isSelectedClientDoesHaveBillings
-      );
+      return !this.isSelectedClientDoesHaveBillings;
     }
   }
 };
@@ -572,8 +559,8 @@ export default {
           Archive
         </button>
         <p class="text-danger" v-if="!isClientCanBeDeleted">
-          There are stored trip rates / billings to this client. This client
-          cannot be deleted.
+          There are stored billings to this client. This client cannot be
+          deleted.
         </p>
       </div>
     </template>
