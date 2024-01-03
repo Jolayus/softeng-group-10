@@ -31,8 +31,6 @@ export default {
       clientEmailInput: '',
       clientContractNumberInput: '',
       clientContractImageInput: '',
-      clientPreviewContractImage: '',
-
       editClientCompanyNameInput: '',
       editClientAddressInput: '',
       editClientContactPersonInput: '',
@@ -49,6 +47,17 @@ export default {
         this.$store.dispatch('clients/archiveClient', archivedClient.id);
         this.selectedClient = null;
       });
+    },
+    clearAddClientInputs() {
+      this.currentModal = 'ADD';
+      this.clientCompanyNameInput = '';
+      this.clientAddressInput = '';
+      this.clientContactPersonInput = '';
+      this.clientContactNumberInput = '';
+      this.clientEmailInput = '';
+      this.clientContractNumberInput = '';
+      this.clientContractImageInput = '';
+      this.$refs.addClientUploadContractImage.value = '';
     },
     addNewClient() {
       const company_name = this.clientCompanyNameInput.trim();
@@ -246,7 +255,7 @@ export default {
           data-bs-toggle="modal"
           data-bs-target="#clientModal"
           class="btn tms-btn text-light d-flex align-items-center h-100"
-          @click="currentModal = 'ADD'"
+          @click="clearAddClientInputs"
         >
           Add new client
         </button>
@@ -414,9 +423,10 @@ export default {
               id="contractImage"
               name="contract"
               aria-describedby="contractImage"
+              ref="addClientUploadContractImage"
             />
           </div>
-          <div class="mb-3">
+          <div class="mb-3" v-if="clientContractImageInput !== ''">
             <img alt="Preview Image" ref="previewImage" class="w-100" />
           </div>
         </form>
