@@ -715,6 +715,23 @@ export default {
         return batch.batchCode === currentBatch;
       });
       return idx >= 0 ? true : false;
+    },
+    isPeriodCoverInvalid() {
+      const from = new Date(this.createBatchPeriodCoverFrom);
+
+      if (this.createBatchPeriodCoverTo) {
+        const to = new Date(this.createBatchPeriodCoverTo);
+        const fromTimestamp = from.getTime();
+        const toTimestamp = to.getTime();
+
+        const difference = toTimestamp - fromTimestamp;
+
+        if (difference <= 0) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     }
   },
   watch: {
@@ -1032,6 +1049,7 @@ export default {
                 </div>
               </div>
             </div>
+            <p v-if="isPeriodCoverInvalid" class="text-danger fw-bold">Period Cover "to" must be later than the Period Cover "from"</p>
           </div>
 
           <div class="mb-3">
