@@ -205,8 +205,8 @@ function addClientToArchive(client) {
     sql,
     [
       id,
-      address,
       company_name,
+      address,
       contact_person,
       contact_number,
       email,

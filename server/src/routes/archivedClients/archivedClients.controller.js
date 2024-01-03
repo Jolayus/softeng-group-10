@@ -73,7 +73,7 @@ async function httpRecoverArchivedClient(req, res) {
   const { id } = req.body;
 
   if (typeof id !== 'number' || id < 0) {
-    res.status(400).json({ error: 'Invalid id' });
+    return res.status(400).json({ error: 'Invalid id' });
   }
 
   const promise = new Promise((resolve, reject) => {
@@ -98,6 +98,8 @@ async function httpRecoverArchivedClient(req, res) {
   });
 
   const archivedClient = await promise;
+  console.log(archivedClient);
+
 
   const formData = new FormData();
   formData.append('company_name', archivedClient.company_name);
