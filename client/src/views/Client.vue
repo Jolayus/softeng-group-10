@@ -31,6 +31,8 @@ export default {
       clientEmailInput: '',
       clientContractNumberInput: '',
       clientContractImageInput: '',
+      clientPreviewContractImage: '',
+
       editClientCompanyNameInput: '',
       editClientAddressInput: '',
       editClientContactPersonInput: '',
@@ -116,6 +118,16 @@ export default {
     },
     handleFileChange(event) {
       this.clientContractImageInput = event.target.files[0];
+
+      if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          this.$refs.previewImage.src = e.target.result;
+        };
+
+        reader.readAsDataURL(event.target.files[0]);
+      }
     },
     getClientById(id) {
       return this.$store.getters['clients/getClientById'](id);
@@ -403,6 +415,9 @@ export default {
               name="contract"
               aria-describedby="contractImage"
             />
+          </div>
+          <div class="mb-3">
+            <img alt="Preview Image" ref="previewImage" class="w-100" />
           </div>
         </form>
       </div>
