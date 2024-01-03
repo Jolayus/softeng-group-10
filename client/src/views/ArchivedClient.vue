@@ -4,7 +4,7 @@ import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 
 import {
-  httpCreateClient,
+  httpRecoverArchivedClient,
   httpDeleteArchivedClient
 } from '../requests/requests';
 
@@ -23,21 +23,12 @@ export default {
   },
   methods: {
     async recoverArchivedClient(archivedClientId) {
-      // The archived client information to be recover
-      const selectedArchivedClient = this.$store.getters[
-        'archivedClients/archivedClients'
-      ].find((archivedClient) => archivedClient.id === archivedClientId);
-
-      // Add the archived client information to the clients database
-      const recoveredArchivedClient = await httpCreateClient(
-        selectedArchivedClient
+      const recoveredClient = await httpRecoverArchivedClient(archivedClientId);
+      this.$store.dispatch('clients/addClient', recoveredClient);
+      this.$store.dispatch(
+        'archivedClients/deleteArchivedClient',
+        archivedClientId
       );
-
-      // Add the archived client information to the clients store
-      this.$store.dispatch('clients/addClient', recoveredArchivedClient);
-
-      // Removing archived client information from archivedClients database and store
-      this.deleteArchivedClient(archivedClientId);
     },
     async deleteArchivedClient(archivedClientId) {
       // Remove archived client information to the archivedClient database

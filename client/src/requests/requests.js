@@ -161,6 +161,17 @@ async function httpDeleteArchivedClient(archivedClientId) {
   return await response.json();
 }
 
+async function httpRecoverArchivedClient(archivedClientId) {
+  const response = await fetch(`${API_URL}/archivedClients`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: archivedClientId })
+  });
+  return await response.json();
+}
+
 // BILLING
 async function httpGetAllBillings() {
   const response = await fetch(`${API_URL}/billings`);
@@ -405,6 +416,7 @@ export {
   httpDeleteArchivedEmployee,
   httpGetArchivedClients,
   httpDeleteArchivedClient,
+  httpRecoverArchivedClient,
   httpGetAllBillings,
   httpCreateBilling,
   httpDeleteBilling,

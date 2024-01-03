@@ -74,18 +74,20 @@ function httpPostNewClient(req, res) {
     .then((newClient) => {
       addNewClient(newClient);
 
-      sharp(req.file.buffer)
-        .png()
-        .toFile(
-          path.join(__dirname, 'contracts', `${newClient.id}-contract.png`),
-          (err, info) => {
-            if (err) {
-              return res
-                .status(500)
-                .json({ error: 'Error processing the image' });
+      if (req.file) {
+        sharp(req.file.buffer)
+          .png()
+          .toFile(
+            path.join(__dirname, 'contracts', `${newClient.id}-contract.png`),
+            (err, info) => {
+              if (err) {
+                return res
+                  .status(500)
+                  .json({ error: 'Error processing the image' });
+              }
             }
-          }
-        );
+          );
+      }
 
       res.status(201).json(newClient);
     })
