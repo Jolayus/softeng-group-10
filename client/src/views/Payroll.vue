@@ -429,11 +429,21 @@ export default {
       if (employee && employee.salary && employee.deduction) {
         const { salary, deduction } = employee;
         const options = {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        };
+        return (salary.total - deduction.total).toLocaleString(
+          undefined,
+          options
+        );
+      }
+    },
+    formatMoneyWithCommasAndDecimals(money) {
+      const options = {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-        }
-        return (salary.total - deduction.total).toLocaleString(undefined, options);
-      }
+      };
+      return money.toLocaleString(undefined, options);
     },
     getEmployeeById(id) {
       return this.$store.getters['employees/getEmployeeById'](id);
@@ -578,11 +588,7 @@ export default {
         }
       });
 
-      doc.text(
-        `Net Pay: ₱${this.getNetPay(employee)}`,
-        15,
-        120
-      );
+      doc.text(`Net Pay: ₱${this.getNetPay(employee)}`, 15, 120);
 
       const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
       const currentDate = new Date()
@@ -1754,19 +1760,35 @@ export default {
           <h2>Salary</h2>
           <p v-if="isEmployeeRoleIsAdmin">
             <span class="fw-bold text-primary">Basic Salary: </span>
-            {{ payrollCurrentEmployee.salary.basicSalary.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.basicSalary
+              )
+            }}
           </p>
           <p v-if="isEmployeeRoleIsAdmin">
             <span class="fw-bold text-primary">Allowance: </span>
-            {{ payrollCurrentEmployee.salary.allowanceSalary.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.allowanceSalary
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-primary">Daily Rate: </span>
-            {{ payrollCurrentEmployee.salary.dailyRate.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.dailyRate
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-primary">Daily Allowance: </span>
-            {{ payrollCurrentEmployee.salary.dailyAllowance.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.dailyAllowance
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-primary">No. Of Days: </span>
@@ -1774,23 +1796,43 @@ export default {
           </p>
           <p>
             <span class="fw-bold text-warning">Semi Basic Salary: </span>
-            {{ payrollCurrentEmployee.salary.semiBasicSalary.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.semiBasicSalary
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Semi Allowance Salary: </span>
-            {{ payrollCurrentEmployee.salary.semiAllowanceSalary.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.semiAllowanceSalary
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Overtime Pay: </span>
-            {{ payrollCurrentEmployee.salary.overtimePay.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.overtimePay
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Others: </span>
-            {{ payrollCurrentEmployee.salary.others.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.others
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-info">Total Salary: </span>
-            {{ payrollCurrentEmployee.salary.total.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.total
+              )
+            }}
           </p>
         </div>
         <div
@@ -1804,42 +1846,74 @@ export default {
           <h2>Deductions</h2>
           <p>
             <span class="fw-bold text-secondary">Cash Advance: </span>
-            {{ payrollCurrentEmployee.deduction.cashAdvance.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.cashAdvance
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">PAGIBIG: </span>
-            {{ payrollCurrentEmployee.deduction.pagibig.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.pagibig
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">SSS: </span>
-            {{ payrollCurrentEmployee.deduction.SSS.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.SSS
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Philhealth: </span>
-            {{ payrollCurrentEmployee.deduction.philhealth.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.philhealth
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Late: </span>
-            {{ payrollCurrentEmployee.deduction.late.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.late
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Damages: </span>
-            {{ payrollCurrentEmployee.deduction.damages.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.damages
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Others: </span>
-            {{ payrollCurrentEmployee.deduction.others.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.others
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-danger">Total Deductions: </span>
-            {{ payrollCurrentEmployee.deduction.total.toFixed(2) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.total
+              )
+            }}
           </p>
         </div>
       </div>
       <div>
-        <p class="fw-bold h4">
+        <p class="fw-bold h4 text-decoration-underline">
           <span class="text-success">Net pay:</span>
-          {{ getNetPay(payrollCurrentEmployee) }}
+          ₱{{ getNetPay(payrollCurrentEmployee) }}
         </p>
       </div>
     </template>
@@ -1899,31 +1973,31 @@ export default {
           </p>
           <p>
             <span class="fw-bold text-primary">Client Trip Rate: </span>
-            {{ payrollCurrentEmployee.salary.clientTripRates.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.clientTripRates) }}
           </p>
           <p>
             <span class="fw-bold text-primary">Total Amount of Trips: </span>
-            {{ payrollCurrentEmployee.salary.totalAmountOfTrips.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.totalAmountOfTrips) }}
           </p>
           <p>
             <span class="fw-bold text-warning">Drop Rate: </span>
-            {{ payrollCurrentEmployee.salary.dropRate.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.dropRate) }}
           </p>
           <p>
             <span class="fw-bold text-warning">Toll Fee: </span>
-            {{ payrollCurrentEmployee.salary.tollFee.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.tollFee) }}
           </p>
           <p>
             <span class="fw-bold text-warning">Passway: </span>
-            {{ payrollCurrentEmployee.salary.passway.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.passway) }}
           </p>
           <p>
             <span class="fw-bold text-warning">Others: </span>
-            {{ payrollCurrentEmployee.salary.others.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.others) }}
           </p>
           <p>
             <span class="fw-bold text-info">Total Salary: </span>
-            {{ payrollCurrentEmployee.salary.total.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.total) }}
           </p>
         </div>
         <div
@@ -1936,30 +2010,30 @@ export default {
           <h2>Deductions</h2>
           <p>
             <span class="fw-bold text-secondary">Cash Advance: </span>
-            {{ payrollCurrentEmployee.deduction.cashAdvance.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.cashAdvance) }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Marine Insurance Fee: </span>
-            {{ payrollCurrentEmployee.deduction.marineInsuranceFee.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.marineInsuranceFee) }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Uniform: </span>
-            {{ payrollCurrentEmployee.deduction.uniform.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.uniform) }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Penalties: </span>
-            {{ payrollCurrentEmployee.deduction.penalties.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.penalties) }}
           </p>
           <p>
             <span class="fw-bold text-danger">Total Deductions: </span>
-            {{ payrollCurrentEmployee.deduction.total.toFixed(2) }}
+            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.total) }}
           </p>
         </div>
       </div>
       <div>
         <p class="fw-bold h4">
           <span class="text-success">Net pay:</span>
-          {{ getNetPay(payrollCurrentEmployee) }}
+          ₱{{ getNetPay(payrollCurrentEmployee) }}
         </p>
       </div>
     </template>
