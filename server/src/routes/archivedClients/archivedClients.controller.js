@@ -6,6 +6,8 @@ const {
   removeArchivedClient
 } = require('../../models/archivedClients.model');
 
+const { loadTripRates } = require('../../models/triprates.model');
+
 function httpGetAllArchivedClients(req, res) {
   return res.status(200).json(getAllArchivedClients());
 }
@@ -100,7 +102,6 @@ async function httpRecoverArchivedClient(req, res) {
   const archivedClient = await promise;
   console.log(archivedClient);
 
-
   const formData = new FormData();
   formData.append('company_name', archivedClient.company_name);
   formData.append('address', archivedClient.address);
@@ -117,6 +118,11 @@ async function httpRecoverArchivedClient(req, res) {
     return await response.json();
   }
   const recoveredClient = await httpCreateClient(formData);
+
+  // UPDATE THE CLIENT ID OF THE TRIP RATES FOR THE RECOVERED CLIENT
+  updateClientIdTripRates(archivedClient.id, recoveredClient.id);
+
+  console.log(archivedClient.id, recoveredClient.id);
 
   const oldFileName = path.resolve(
     __dirname,
@@ -141,6 +147,20 @@ async function httpRecoverArchivedClient(req, res) {
       res.status(200).json(recoveredClient);
     }
   });
+}
+
+function updateClientIdTripRates(prevId, latestId) {
+  const sql = 'UPDATE triprate SET clientId = ? WHERE clientId = ?';
+
+  db.run(sql, [latestId, prevId], (err) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: 'Cannot update the clientId TripRates' });
+    }
+  });
+
+  loadTripRates();
 }
 
 module.exports = {
