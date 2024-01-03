@@ -117,6 +117,9 @@ export default {
     archivedEmployees() {
       return this.$store.getters['archivedEmployees/archivedEmployees'];
     },
+    isArchivedEmployeesEmpty() {
+      return this.archivedEmployees.length === 0;
+    },
     filteredEmployees() {
       const archivedEmployees = this.archivedEmployees.filter(
         (archivedEmployee) =>
@@ -151,9 +154,14 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
+            :disabled="isArchivedEmployeesEmpty"
           />
         </div>
-        <button class="btn tms-btn text-light px-5" @click="handleGenerateCopy">
+        <button
+          class="btn tms-btn text-light px-5"
+          @click="handleGenerateCopy"
+          :disabled="isArchivedEmployeesEmpty"
+        >
           Generate Copy
         </button>
       </div>
