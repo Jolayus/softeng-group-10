@@ -15,25 +15,75 @@ export default {
       state.clients.push(newClient);
     },
     archiveClient(state, clientId) {
-      const index = state.clients.findIndex(
-        (client) => client.id === clientId
-      );
+      const index = state.clients.findIndex((client) => client.id === clientId);
       state.clients.splice(index, 1);
+
+      const key = `client_${clientId}_modified`;
+      const value = localStorage.getItem(key);
+
+      if (value !== null) {
+        localStorage.removeItem(key);
+      }
     },
-    editClient(state, newClientDetails) {
+    editClient(state, { prevDetails, newDetails }) {
       const client = state.clients.find(
-        (client) => client.id === newClientDetails.id
+        (client) => client.id === newDetails.id
       );
-      
-      client.company_name = newClientDetails.company_name;
-      client.contact_person = newClientDetails.contact_person;
-      client.contact_number = newClientDetails.contact_number;
-      client.address = newClientDetails.address;
+
+      const {
+        company_name,
+        address,
+        contact_person,
+        contact_number,
+        email,
+        contract_number
+      } = newDetails;
+
+      client.company_name = company_name;
+      client.address = address;
+      client.contact_person = contact_person;
+      client.contact_number = contact_number;
+      client.email = email;
+      client.contract_number = contract_number;
+
+      if (
+        prevDetails.company_name !== company_name ||
+        prevDetails.address !== address ||
+        prevDetails.contact_person !== contact_person ||
+        prevDetails.contact_number !== contact_number ||
+        prevDetails.email !== email ||
+        prevDetails.contract_number !== contract_number
+      ) {
+        localStorage.setItem(`client_${client.id}_modified`, Date.now());
+        client.modified = true;
+      }
     }
   },
   actions: {
     async loadClients(context) {
       const loadedClients = await httpGetClients();
+
+      // Highlight the clients's row if it is modified
+      for (const loadedClient of loadedClients) {
+        const key = `client_${loadedClient.id}_modified`;
+        const value = localStorage.getItem(key);
+
+        if (value !== null) {
+          const currentDate = new Date();
+          const currentTimestamp = currentDate.getTime();
+
+          const remainingSeconds =
+            (parseInt(value) + 60000 - currentTimestamp) / 1000;
+
+          // Check if there is a remaining seconds
+          if (remainingSeconds > 0) {
+            loadedClient.modified = true;
+          } else {
+            localStorage.removeItem(key);
+          }
+        }
+      }
+
       context.commit('setClients', loadedClients);
     },
     addClient(context, newClient) {
@@ -42,13 +92,18 @@ export default {
     archiveClient(context, clientId) {
       context.commit('archiveClient', clientId);
     },
-    editClient(context, newClientDetails) {
-      context.commit('editClient', newClientDetails);
+    editClient(context, prevAndNewDetails) {
+      context.commit('editClient', prevAndNewDetails);
     }
   },
   getters: {
     clients(state) {
       return state.clients;
+    },
+    getClientById(state) {
+      return function (id) {
+        return state.clients.find((client) => client.id === id);
+      };
     }
   }
 };

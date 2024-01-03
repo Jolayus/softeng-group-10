@@ -212,6 +212,7 @@ export default {
               class="form-control"
               id="transactionNumber"
               aria-describedby="transactionNumber"
+              placeholder="Transaction Number"
             />
           </div>
           <div class="mb-3">

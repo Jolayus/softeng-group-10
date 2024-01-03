@@ -67,7 +67,7 @@ export default {
     async loadEmployees(context) {
       const loadedEmployees = await httpGetEmployees();
 
-      // Highlight the employee's role if it is modified
+      // Highlight the employee's row if it is modified
       for (const loadedEmployee of loadedEmployees) {
         const key = `employee_${loadedEmployee.id}_modified`;
         const value = localStorage.getItem(key);

@@ -1,10 +1,13 @@
 <script>
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 import Modal from '../components/Modal.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 
 import {
-  httpCreateClient,
+  httpRecoverArchivedClient,
   httpDeleteArchivedClient
 } from '../requests/requests';
 
@@ -23,21 +26,12 @@ export default {
   },
   methods: {
     async recoverArchivedClient(archivedClientId) {
-      // The archived client information to be recover
-      const selectedArchivedClient = this.$store.getters[
-        'archivedClients/archivedClients'
-      ].find((archivedClient) => archivedClient.id === archivedClientId);
-
-      // Add the archived client information to the clients database
-      const recoveredArchivedClient = await httpCreateClient(
-        selectedArchivedClient
+      const recoveredClient = await httpRecoverArchivedClient(archivedClientId);
+      this.$store.dispatch('clients/addClient', recoveredClient);
+      this.$store.dispatch(
+        'archivedClients/deleteArchivedClient',
+        archivedClientId
       );
-
-      // Add the archived client information to the clients store
-      this.$store.dispatch('clients/addClient', recoveredArchivedClient);
-
-      // Removing archived client information from archivedClients database and store
-      this.deleteArchivedClient(archivedClientId);
     },
     async deleteArchivedClient(archivedClientId) {
       // Remove archived client information to the archivedClient database
@@ -48,11 +42,64 @@ export default {
         'archivedClients/deleteArchivedClient',
         archivedClientId
       );
+    },
+    handleGenerateCopy() {
+      const doc = new jsPDF({
+        orientation: 'landscape'
+      });
+
+      const columns = [
+        [
+          'Company Name',
+          'Address',
+          'Contact Person',
+          'Contact Number',
+          'Email',
+          'Contract Number'
+        ]
+      ];
+      const rows = [];
+
+      for (const archivedClient of this.archivedClients) {
+        const {
+          company_name,
+          address,
+          contact_person,
+          contact_number,
+          email,
+          contract_number
+        } = archivedClient;
+        const row = [
+          company_name,
+          address,
+          contact_person,
+          contact_number,
+          email,
+          contract_number
+        ];
+        rows.push(row);
+      }
+
+      autoTable(doc, {
+        head: columns,
+        body: rows,
+        startY: 20
+      });
+
+      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+      const currentDate = new Date()
+        .toLocaleDateString('en-GB', dateOptions)
+        .replace(/\s/g, '-');
+
+      doc.save(`archivedEmployees ${currentDate}.pdf`);
     }
   },
   computed: {
     archivedClients() {
       return this.$store.getters['archivedClients/archivedClients'];
+    },
+    isArchivedClientsEmpty() {
+      return this.archivedClients.length === 0;
     },
     filteredClient() {
       return this.archivedClients.filter((archivedClient) =>
@@ -85,25 +132,37 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
+            :disabled="isArchivedClientsEmpty"
           />
         </div>
+        <button
+          class="btn tms-btn text-light px-5"
+          @click="handleGenerateCopy"
+          :disabled="isArchivedClientsEmpty"
+        >
+          Generate Copy
+        </button>
       </div>
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Company Name</th>
-            <th class="w-20" scope="col">Contact Person</th>
-            <th class="w-20" scope="col">Contact Number</th>
-            <th class="w-20" scope="col">Address</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Company Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Contact Person</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">Email</th>
+            <th scope="col">Contract Number</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="client in filteredClient" :key="client.id">
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">{{ client.contact_person }}</td>
             <td class="align-middle">{{ client.contact_number }}</td>
-            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">{{ client.email }}</td>
+            <td class="align-middle">{{ client.contract_number }}</td>
             <td class="align-middle">
               <RecoverIcon
                 @click.prevent="recoverArchivedClient(client.id)"
@@ -155,6 +214,10 @@ export default {
 </template>
 
 <style scoped>
+th {
+  width: 14.28%;
+}
+
 .input-group {
   width: 45%;
 }

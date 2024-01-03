@@ -1,4 +1,7 @@
 const db = require('../../../database/db');
+const multer = require('multer');
+const sharp = require('sharp');
+const path = require('path');
 
 const {
   getAllClients,
@@ -13,19 +16,43 @@ function httpGetAllClients(req, res) {
   return res.status(200).json(getAllClients());
 }
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 // CREATE NEW CLIENT
 function httpPostNewClient(req, res) {
-  const { company_name, contact_person, contact_number, address } = req.body;
+  const {
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = req.body;
 
-  if (!company_name || !contact_person || !contact_number || !address) {
+  if (
+    !company_name ||
+    !address ||
+    !contact_person ||
+    !contact_number ||
+    !email ||
+    !contract_number
+  ) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
   const promise = new Promise((resolve, reject) => {
-    const sql = `INSERT INTO clients (company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?)`;
+    const sql = `INSERT INTO clients (company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?)`;
     db.run(
       sql,
-      [company_name, contact_person, contact_number, address],
+      [
+        company_name,
+        address,
+        contact_person,
+        contact_number,
+        email,
+        contract_number
+      ],
       (err) => {
         if (err) {
           reject(err);
@@ -46,29 +73,61 @@ function httpPostNewClient(req, res) {
   promise
     .then((newClient) => {
       addNewClient(newClient);
+
+      if (req.file) {
+        sharp(req.file.buffer)
+          .png()
+          .toFile(
+            path.join(__dirname, 'contracts', `${newClient.id}-contract.png`),
+            (err, info) => {
+              if (err) {
+                return res
+                  .status(500)
+                  .json({ error: 'Error processing the image' });
+              }
+            }
+          );
+      }
+
       res.status(201).json(newClient);
     })
     .catch((err) => {
       res.status(500).json({ error: err });
     });
 }
-
 function httpEditClient(req, res) {
-  const { id, company_name, contact_person, contact_number, address } =
-    req.body;
+  const {
+    id,
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = req.body;
 
   const updatedClient = getClientById(id);
 
   updatedClient.company_name = company_name;
+  updatedClient.address = address;
   updatedClient.contact_person = contact_person;
   updatedClient.contact_number = contact_number;
-  updatedClient.address = address;
+  updatedClient.email = email;
+  updatedClient.contract_number = contract_number;
 
-  const sql = `UPDATE clients SET company_name=?, contact_person=?, contact_number=?, address=? WHERE clients.id=?`;
+  const sql = `UPDATE clients SET company_name=?, address=?, contact_person=?, contact_number=?, email=?, contract_number=? WHERE clients.id=?`;
 
   db.run(
     sql,
-    [company_name, contact_person, contact_number, address, id],
+    [
+      company_name,
+      address,
+      contact_person,
+      contact_number,
+      email,
+      contract_number,
+      id
+    ],
     (err) => {
       if (err) {
         return res.status(500).json({ error: err });
@@ -129,14 +188,30 @@ function removeClientFromDatabase(id) {
 }
 
 function addClientToArchive(client) {
-  const { id, company_name, contact_person, contact_number, address } = client;
-  const sql = `INSERT INTO archivedClients (id, company_name, contact_person, contact_number, address) VALUES (?, ?, ?, ?, ?)`;
+  const {
+    id,
+    company_name,
+    address,
+    contact_person,
+    contact_number,
+    email,
+    contract_number
+  } = client;
+  const sql = `INSERT INTO archivedClients (id, company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   addNewArchivedClient(client);
 
   db.run(
     sql,
-    [id, company_name, contact_person, contact_number, address],
+    [
+      id,
+      company_name,
+      address,
+      contact_person,
+      contact_number,
+      email,
+      contract_number
+    ],
     (err) => {
       if (err) {
         console.log(err);
@@ -149,5 +224,6 @@ module.exports = {
   httpGetAllClients,
   httpPostNewClient,
   httpEditClient,
-  httpArchiveClient
+  httpArchiveClient,
+  upload
 };

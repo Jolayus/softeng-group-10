@@ -54,25 +54,22 @@ async function httpGetClients() {
 }
 
 // Create new client
-async function httpCreateClient(newClient) {
+async function httpCreateClient(formData) {
   const response = await fetch(`${API_URL}/clients`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(newClient)
+    body: formData
   });
   return await response.json();
 }
 
 // Update information of a client
-async function httpUpdateClient(client) {
+async function httpUpdateClient(newDetails) {
   const response = await fetch(`${API_URL}/clients`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(client)
+    body: JSON.stringify(newDetails)
   });
   return await response.json();
 }
@@ -106,17 +103,6 @@ async function httpCreateTripRates(tripRate) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(tripRate)
-  });
-  return await response.json();
-}
-
-async function httpEditClientName(newName, prevName) {
-  const response = await fetch(`${API_URL}/rates/update`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ newName, prevName })
   });
   return await response.json();
 }
@@ -167,6 +153,17 @@ async function httpGetArchivedClients() {
 async function httpDeleteArchivedClient(archivedClientId) {
   const response = await fetch(`${API_URL}/archivedClients`, {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: archivedClientId })
+  });
+  return await response.json();
+}
+
+async function httpRecoverArchivedClient(archivedClientId) {
+  const response = await fetch(`${API_URL}/archivedClients`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -414,12 +411,12 @@ export {
   httpArchiveClient,
   httpGetAllTripRates,
   httpCreateTripRates,
-  httpEditClientName,
   httpDeleteTripRates,
   httpGetArchivedEmployees,
   httpDeleteArchivedEmployee,
   httpGetArchivedClients,
   httpDeleteArchivedClient,
+  httpRecoverArchivedClient,
   httpGetAllBillings,
   httpCreateBilling,
   httpDeleteBilling,

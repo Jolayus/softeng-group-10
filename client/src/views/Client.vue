@@ -1,15 +1,14 @@
 <script>
 import SearchIcon from '../components/Icons/SearchIcon.vue';
 import EditIcon from '../components/Icons/EditIcon.vue';
+import ContractIcon from '../components/Icons/ContractIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
 import Modal from '../components/Modal.vue';
-import { getClientsModel } from '../models/client.model';
 
 import {
   httpCreateClient,
   httpUpdateClient,
-  httpArchiveClient,
-  httpEditClientName
+  httpArchiveClient
 } from '../requests/requests';
 
 export default {
@@ -17,6 +16,7 @@ export default {
   components: {
     SearchIcon,
     EditIcon,
+    ContractIcon,
     TrashIcon,
     Modal
   },
@@ -25,13 +25,18 @@ export default {
       selectedClient: null,
       searchInput: '',
       clientCompanyNameInput: '',
+      clientAddressInput: '',
       clientContactPersonInput: '',
       clientContactNumberInput: '',
-      clientAddressInput: '',
+      clientEmailInput: '',
+      clientContractNumberInput: '',
+      clientContractImageInput: '',
       editClientCompanyNameInput: '',
+      editClientAddressInput: '',
       editClientContactPersonInput: '',
       editClientContactNumberInput: '',
-      editClientAddressInput: '',
+      editClientEmailInput: '',
+      editClientContractNumberInput: '',
       editClientId: '',
       currentModal: ''
     };
@@ -40,67 +45,101 @@ export default {
     archiveClient(id) {
       httpArchiveClient(id).then((archivedClient) => {
         this.$store.dispatch('clients/archiveClient', archivedClient.id);
+        this.selectedClient = null;
       });
+    },
+    clearAddClientInputs() {
+      this.currentModal = 'ADD';
+      this.clientCompanyNameInput = '';
+      this.clientAddressInput = '';
+      this.clientContactPersonInput = '';
+      this.clientContactNumberInput = '';
+      this.clientEmailInput = '';
+      this.clientContractNumberInput = '';
+      this.clientContractImageInput = '';
+      this.$refs.addClientUploadContractImage.value = '';
     },
     addNewClient() {
       const company_name = this.clientCompanyNameInput.trim();
+      const address = this.clientAddressInput.trim();
       const contact_person = this.clientContactPersonInput.trim();
       const contact_number = this.clientContactNumberInput.trim();
-      const address = this.clientAddressInput.trim();
+      const email = this.clientEmailInput.trim();
+      const contract_number = this.clientContractNumberInput.trim();
 
-      const newClient = {
-        company_name,
-        contact_person,
-        contact_number,
-        address
-      };
+      const formData = new FormData();
+      formData.append('company_name', company_name);
+      formData.append('address', address);
+      formData.append('contact_person', contact_person);
+      formData.append('contact_number', contact_number);
+      formData.append('email', email);
+      formData.append('contract_number', contract_number);
+      formData.append('contract', this.clientContractImageInput);
 
-      httpCreateClient(newClient).then((client) => {
+      httpCreateClient(formData).then((client) => {
         this.$store.dispatch('clients/addClient', client);
       });
 
       this.clientCompanyNameInput = '';
+      this.clientAddressInput = '';
       this.clientContactPersonInput = '';
       this.clientContactNumberInput = '';
-      this.clientAddressInput = '';
+      this.clientEmailInput = '';
+      this.clientContractNumberInput = '';
     },
     onEdit(client) {
       this.currentModal = 'EDIT';
 
-      const { id, company_name, contact_person, contact_number, address } =
-        client;
+      const {
+        id,
+        company_name,
+        address,
+        contact_person,
+        contact_number,
+        email,
+        contract_number
+      } = client;
 
       this.editClientId = id;
+      this.editClientAddressInput = address;
       this.editClientCompanyNameInput = company_name;
       this.editClientContactPersonInput = contact_person;
       this.editClientContactNumberInput = contact_number;
-      this.editClientAddressInput = address;
+      this.editClientEmailInput = email;
+      this.editClientContractNumberInput = contract_number;
     },
-    saveChanges() {
+    async saveChanges() {
+      // Copy the selected client to be edited
+      const prevDetails = { ...this.getClientById(this.editClientId) };
+
       const newDetails = {
         id: this.editClientId,
         company_name: this.editClientCompanyNameInput,
+        address: this.editClientAddressInput,
         contact_person: this.editClientContactPersonInput,
         contact_number: this.editClientContactNumberInput,
-        address: this.editClientAddressInput
+        email: this.editClientEmailInput,
+        contract_number: this.editClientContractNumberInput
       };
 
-      const client = this.clients.find(
-        (client) => client.id === this.editClientId
-      );
+      await httpUpdateClient(newDetails);
+      this.$store.dispatch('clients/editClient', { prevDetails, newDetails });
+    },
+    handleFileChange(event) {
+      this.clientContractImageInput = event.target.files[0];
 
-      const newName = this.editClientCompanyNameInput;
-      const prevName = client.company_name;
+      if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
 
-      this.$store.dispatch('tripRates/updateTripClientName', {
-        newName,
-        prevName
-      });
+        reader.onload = (e) => {
+          this.$refs.previewImage.src = e.target.result;
+        };
 
-      httpEditClientName(newName, prevName);
-
-      httpUpdateClient(newDetails);
-      this.$store.dispatch('clients/editClient', newDetails);
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    },
+    getClientById(id) {
+      return this.$store.getters['clients/getClientById'](id);
     }
   },
   computed: {
@@ -123,15 +162,21 @@ export default {
     isFormInvalid() {
       if (this.currentModal === 'ADD') {
         const company_name = this.clientCompanyNameInput.trim();
+        const address = this.clientAddressInput.trim();
         const contact_person = this.clientContactPersonInput.trim();
         const contact_number = this.clientContactNumberInput.trim();
-        const address = this.clientAddressInput.trim();
+        const email = this.clientEmailInput.trim();
+        const contract_number = this.clientContractNumberInput.trim();
+        const contract_image = this.clientContractImageInput;
 
         if (
           company_name.length === 0 ||
+          address.length === 0 ||
           contact_person.length === 0 ||
           contact_number.length === 0 ||
-          address.length === 0
+          email.length === 0 ||
+          contract_number.length === 0 ||
+          !contract_image
         ) {
           return true;
         }
@@ -168,17 +213,6 @@ export default {
         return client.company_name.toLowerCase() !== newCompanyName;
       });
     },
-    isSelectedClientDoesHaveTripRates() {
-      if (this.selectedClient) {
-        const client = this.clients.find(
-          (client) => client.id === this.selectedClient
-        );
-        const tripRates = this.tripRates.filter(
-          (tripRates) => tripRates.client_name === client.company_name
-        );
-        return tripRates.length > 0 ? true : false;
-      }
-    },
     isSelectedClientDoesHaveBillings() {
       if (this.selectedClient) {
         const client = this.clients.find(
@@ -191,8 +225,7 @@ export default {
       }
     },
     isClientCanBeDeleted() {
-
-      return !this.isSelectedClientDoesHaveTripRates && !this.isSelectedClientDoesHaveBillings;
+      return !this.isSelectedClientDoesHaveBillings;
     }
   }
 };
@@ -222,7 +255,7 @@ export default {
           data-bs-toggle="modal"
           data-bs-target="#clientModal"
           class="btn tms-btn text-light d-flex align-items-center h-100"
-          @click="currentModal = 'ADD'"
+          @click="clearAddClientInputs"
         >
           Add new client
         </button>
@@ -230,19 +263,28 @@ export default {
       <table class="table">
         <thead class="tbl-header text-light rounded">
           <tr>
-            <th class="w-20" scope="col">Company Name</th>
-            <th class="w-20" scope="col">Contact Person</th>
-            <th class="w-20" scope="col">Contact Number</th>
-            <th class="w-20" scope="col">Address</th>
-            <th class="w-20" scope="col">Actions</th>
+            <th scope="col">Company Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Contact Person</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">Email</th>
+            <th scope="col">Contract Number</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr class="f-flex" v-for="client in filteredClient" :key="client.id">
+          <tr
+            class="f-flex"
+            v-for="client in filteredClient"
+            :key="client.id"
+            :class="{ 'bg-warning': client.modified }"
+          >
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
+            <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">{{ client.contact_person }}</td>
             <td class="align-middle">{{ client.contact_number }}</td>
-            <td class="align-middle">{{ client.address }}</td>
+            <td class="align-middle">{{ client.email }}</td>
+            <td class="align-middle">{{ client.contract_number }}</td>
             <td class="align-middle">
               <EditIcon
                 data-bs-toggle="modal"
@@ -251,6 +293,12 @@ export default {
                 class="mx-2 text-primary"
                 role="button"
               />
+              <a
+                :href="`http://localhost:8000/${client.id}-contract.png`"
+                target="_blank"
+              >
+                <ContractIcon class="mx-2 text-success" />
+              </a>
               <TrashIcon
                 data-bs-toggle="modal"
                 data-bs-target="#archiveClientVerif"
@@ -275,7 +323,7 @@ export default {
     </template>
     <template v-slot:modal-body>
       <div class="modal-body">
-        <form id="clientForm" @submit.prevent="addNewClient">
+        <form ref="addNewClientForm">
           <div class="mb-3">
             <label for="clientCompanyName" class="form-label d-block text-start"
               >Company Name</label
@@ -291,6 +339,19 @@ export default {
             <p class="fw-bold text-danger" v-if="!isUniqueNewClientCompanyName">
               The new client name is already existing!
             </p>
+          </div>
+          <div class="mb-3">
+            <label for="clientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="clientAddressInput"
+              type="text"
+              class="form-control"
+              id="clientAddress"
+              aria-describedby="clientAddress"
+              placeholder="Address"
+            />
           </div>
           <div class="mb-3">
             <label
@@ -323,17 +384,50 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="clientAddress" class="form-label d-block text-start"
-              >Address</label
+            <label for="clientEmail" class="form-label d-block text-start"
+              >Email</label
             >
             <input
-              v-model="clientAddressInput"
-              type="text"
+              v-model="clientEmailInput"
+              type="email"
               class="form-control"
-              id="clientAddress"
-              aria-describedby="clientAddress"
-              placeholder="Address"
+              id="clientEmail"
+              aria-describedby="clientEmail"
+              placeholder="Email"
             />
+          </div>
+          <div class="mb-3">
+            <label
+              for="clientContractNumber"
+              class="form-label d-block text-start"
+              >Contract Number</label
+            >
+            <input
+              v-model="clientContractNumberInput"
+              type="email"
+              class="form-control"
+              id="contractNumber"
+              aria-describedby="contractNumber"
+              placeholder="Contract Number"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="contractImage" class="form-label d-block text-start"
+              >Contract (.png)</label
+            >
+            <input
+              @change="handleFileChange"
+              type="file"
+              accept="image/png"
+              class="form-control"
+              id="contractImage"
+              name="contract"
+              aria-describedby="contractImage"
+              ref="addClientUploadContractImage"
+            />
+          </div>
+          <div class="mb-3" v-if="clientContractImageInput !== ''">
+            <img alt="Preview Image" ref="previewImage" class="w-100" />
           </div>
         </form>
       </div>
@@ -344,9 +438,8 @@ export default {
           Close
         </button>
         <button
-          type="submit"
+          @click="addNewClient"
           class="btn tms-btn text-light"
-          form="clientForm"
           data-bs-dismiss="modal"
           :disabled="isFormInvalid || !isUniqueNewClientCompanyName"
         >
@@ -388,6 +481,18 @@ export default {
             </p>
           </div>
           <div class="mb-3">
+            <label for="newClientAddress" class="form-label d-block text-start"
+              >Address</label
+            >
+            <input
+              v-model="editClientAddressInput"
+              type="text"
+              class="form-control"
+              id="newClientAddress"
+              aria-describedby="newClientAddress"
+            />
+          </div>
+          <div class="mb-3">
             <label
               for="newClientContactPerson"
               class="form-label d-block text-start"
@@ -416,15 +521,29 @@ export default {
             />
           </div>
           <div class="mb-3">
-            <label for="newClientAddress" class="form-label d-block text-start"
-              >Address</label
+            <label for="newClientEmail" class="form-label d-block text-start"
+              >Email</label
             >
             <input
-              v-model="editClientAddressInput"
+              v-model="editClientEmailInput"
               type="text"
               class="form-control"
-              id="newClientAddress"
-              aria-describedby="newClientAddress"
+              id="newClientEmail"
+              aria-describedby="newClientEmail"
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="newClientContractNumber"
+              class="form-label d-block text-start"
+              >Contract Number</label
+            >
+            <input
+              v-model="editClientContractNumberInput"
+              type="text"
+              class="form-control"
+              id="newClientContractNumber"
+              aria-describedby="newClientContractNumber"
             />
           </div>
         </form>
@@ -437,8 +556,8 @@ export default {
         </button>
         <button
           type="submit"
-          class="btn btn-primary tms-btn"
           form="editClientForm"
+          class="btn btn-primary tms-btn"
           data-bs-dismiss="modal"
           :disabled="isFormInvalid || !isUniqueEditClientCompanyName"
         >
@@ -475,14 +594,20 @@ export default {
         >
           Archive
         </button>
-      <p class="text-danger" v-if="!isClientCanBeDeleted">There are stored trip rates / billings to this client. This client cannot be deleted.</p>
-
+        <p class="text-danger" v-if="!isClientCanBeDeleted">
+          There are stored billings to this client. This client cannot be
+          deleted.
+        </p>
       </div>
     </template>
   </Modal>
 </template>
 
 <style scoped>
+th {
+  width: 14.28%;
+}
+
 .input-group {
   width: 45%;
 }

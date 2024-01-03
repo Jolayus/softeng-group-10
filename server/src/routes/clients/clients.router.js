@@ -4,13 +4,14 @@ const {
   httpGetAllClients,
   httpPostNewClient,
   httpEditClient,
-  httpArchiveClient
+  httpArchiveClient,
+  upload
 } = require('./clients.controller');
 
 const clientsRouter = express.Router();
 
 clientsRouter.get('/', httpGetAllClients);
-clientsRouter.post('/', httpPostNewClient);
+clientsRouter.post('/', upload.single('contract'), httpPostNewClient);
 clientsRouter.patch('/', httpEditClient);
 clientsRouter.delete('/', httpArchiveClient);
 
