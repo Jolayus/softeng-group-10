@@ -428,7 +428,11 @@ export default {
     getNetPay(employee) {
       if (employee && employee.salary && employee.deduction) {
         const { salary, deduction } = employee;
-        return (salary.total - deduction.total).toFixed(2);
+        const options = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+        }
+        return (salary.total - deduction.total).toLocaleString(undefined, options);
       }
     },
     getEmployeeById(id) {
@@ -491,12 +495,17 @@ export default {
         ]
       ];
 
+      const options = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      };
+
       salaryRows = [
         salaryRows[0].map((tableData, index) => {
           if (index === 0) {
             return tableData;
           }
-          return `₱ ${tableData.toFixed(2)}`;
+          return `₱ ${tableData.toLocaleString(undefined, options)}`;
         })
       ];
 
@@ -554,7 +563,7 @@ export default {
 
       deductionRows = [
         deductionRows[0].map((tableData) => {
-          return `₱ ${tableData.toFixed(2)}`;
+          return `₱ ${tableData.toLocaleString(undefined, options)}`;
         })
       ];
 
@@ -569,7 +578,11 @@ export default {
         }
       });
 
-      doc.text(`Net Pay: ₱${this.getNetPay(employee)}`, 15, 120);
+      doc.text(
+        `Net Pay: ₱${this.getNetPay(employee)}`,
+        15,
+        120
+      );
 
       const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
       const currentDate = new Date()
@@ -1049,7 +1062,9 @@ export default {
                 </div>
               </div>
             </div>
-            <p v-if="isPeriodCoverInvalid" class="text-danger fw-bold">Period Cover "to" must be later than the Period Cover "from"</p>
+            <p v-if="isPeriodCoverInvalid" class="text-danger fw-bold">
+              Period Cover "to" must be later than the Period Cover "from"
+            </p>
           </div>
 
           <div class="mb-3">
