@@ -1,4 +1,7 @@
 <script>
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 import Modal from '../components/Modal.vue';
 import RecoverIcon from '../components/Icons/RecoverIcon.vue';
 import TrashIcon from '../components/Icons/TrashIcon.vue';
@@ -39,11 +42,64 @@ export default {
         'archivedClients/deleteArchivedClient',
         archivedClientId
       );
+    },
+    handleGenerateCopy() {
+      const doc = new jsPDF({
+        orientation: 'landscape'
+      });
+
+      const columns = [
+        [
+          'Company Name',
+          'Address',
+          'Contact Person',
+          'Contact Number',
+          'Email',
+          'Contract Number'
+        ]
+      ];
+      const rows = [];
+
+      for (const archivedClient of this.archivedClients) {
+        const {
+          company_name,
+          address,
+          contact_person,
+          contact_number,
+          email,
+          contract_number
+        } = archivedClient;
+        const row = [
+          company_name,
+          address,
+          contact_person,
+          contact_number,
+          email,
+          contract_number
+        ];
+        rows.push(row);
+      }
+
+      autoTable(doc, {
+        head: columns,
+        body: rows,
+        startY: 20
+      });
+
+      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+      const currentDate = new Date()
+        .toLocaleDateString('en-GB', dateOptions)
+        .replace(/\s/g, '-');
+
+      doc.save(`archivedEmployees ${currentDate}.pdf`);
     }
   },
   computed: {
     archivedClients() {
       return this.$store.getters['archivedClients/archivedClients'];
+    },
+    isArchivedClientsEmpty() {
+      return this.archivedClients.length === 0;
     },
     filteredClient() {
       return this.archivedClients.filter((archivedClient) =>
@@ -76,8 +132,16 @@ export default {
             aria-label="Recipient's username"
             id="user-input"
             aria-describedby="basic-addon2"
+            :disabled="isArchivedClientsEmpty"
           />
         </div>
+        <button
+          class="btn tms-btn text-light px-5"
+          @click="handleGenerateCopy"
+          :disabled="isArchivedClientsEmpty"
+        >
+          Generate Copy
+        </button>
       </div>
       <table class="table">
         <thead class="tbl-header text-light rounded">
