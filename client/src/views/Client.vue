@@ -97,7 +97,10 @@ export default {
       this.editClientEmailInput = email;
       this.editClientContractNumberInput = contract_number;
     },
-    saveChanges() {
+    async saveChanges() {
+      // Copy the selected client to be edited
+      const prevDetails = { ...this.getClientById(this.editClientId) };
+
       const newDetails = {
         id: this.editClientId,
         company_name: this.editClientCompanyNameInput,
@@ -108,11 +111,14 @@ export default {
         contract_number: this.editClientContractNumberInput
       };
 
-      httpUpdateClient(newDetails);
-      this.$store.dispatch('clients/editClient', newDetails);
+      await httpUpdateClient(newDetails);
+      this.$store.dispatch('clients/editClient', { prevDetails, newDetails });
     },
     handleFileChange(event) {
       this.clientContractImageInput = event.target.files[0];
+    },
+    getClientById(id) {
+      return this.$store.getters['clients/getClientById'](id);
     }
   },
   computed: {
@@ -246,7 +252,12 @@ export default {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr class="f-flex" v-for="client in filteredClient" :key="client.id">
+          <tr
+            class="f-flex"
+            v-for="client in filteredClient"
+            :key="client.id"
+            :class="{ 'bg-warning': client.modified }"
+          >
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
             <td class="align-middle">{{ client.address }}</td>
             <td class="align-middle">{{ client.contact_person }}</td>
