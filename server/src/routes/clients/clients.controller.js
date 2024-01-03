@@ -197,7 +197,7 @@ function addClientToArchive(client) {
     email,
     contract_number
   } = client;
-  const sql = `INSERT INTO archivedClients (id, company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?,  ?)`;
+  const sql = `INSERT INTO archivedClients (id, company_name, address, contact_person, contact_number, email, contract_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   addNewArchivedClient(client);
 
