@@ -100,7 +100,6 @@ async function httpRecoverArchivedClient(req, res) {
   });
 
   const archivedClient = await promise;
-  console.log(archivedClient);
 
   const formData = new FormData();
   formData.append('company_name', archivedClient.company_name);
@@ -121,8 +120,6 @@ async function httpRecoverArchivedClient(req, res) {
 
   // UPDATE THE CLIENT ID OF THE TRIP RATES FOR THE RECOVERED CLIENT
   updateClientIdTripRates(archivedClient.id, recoveredClient.id);
-
-  console.log(archivedClient.id, recoveredClient.id);
 
   const oldFileName = path.resolve(
     __dirname,
