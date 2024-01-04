@@ -1,10 +1,11 @@
-import { httpGetAllBatches } from '../../requests/requests';
+import { httpGetAllBatches, httpGetNextId } from '../../requests/requests';
 
 export default {
   namespaced: true,
   state() {
     return {
-      batches: []
+      batches: [],
+      nextId: null
     };
   },
   mutations: {
@@ -13,6 +14,9 @@ export default {
     },
     addBatch(state, newBatch) {
       state.batches.push(newBatch);
+    },
+    setNextId(state, nextId) {
+      state.nextId = nextId;
     }
   },
   actions: {
@@ -51,6 +55,10 @@ export default {
         targetEmployee.deduction = targetDeduction;
       });
     },
+    async loadNextId(context) {
+      const { nextID } = await httpGetNextId();
+      context.commit('setNextId', nextID);
+    },
     addBatch(context, newBatch) {
       context.commit('addBatch', newBatch);
     }
@@ -70,6 +78,9 @@ export default {
           }
         });
       };
+    },
+    nextId(state) {
+      return state.nextId;
     }
   }
 };
