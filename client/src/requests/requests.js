@@ -244,6 +244,13 @@ async function httpGetAllBatches() {
   return batches;
 }
 
+async function httpGetNextId() {
+  const response = await fetch(`${API_URL}/batches/get-next-id`);
+  const nextId = response.json();
+
+  return nextId;
+}
+
 async function httpPostNewBatch(newBatch) {
   const response = await fetch(`${API_URL}/batches`, {
     method: 'POST',
@@ -424,6 +431,7 @@ export {
   httpPostBillingTrip,
   httpDeleteBillingTrips,
   httpGetAllBatches,
+  httpGetNextId,
   httpPostNewBatch,
   httpGetAllSalaries,
   httpPostNewSalary,

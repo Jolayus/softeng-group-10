@@ -201,9 +201,8 @@ export default {
     };
   },
   methods: {
-    submitCreateBatchHandler() {
+    async submitCreateBatchHandler() {
       const { id } = this.selectedEmployee;
-      console.log(this.currentEmployee);
       const newBatch = new Batch(
         this.createBatchCode,
         this.createBatchPeriodCoverFrom,
@@ -214,8 +213,13 @@ export default {
       httpPostNewBatch(newBatch).then((batch) => {
         this.storeCreateBatch(batch);
         this.currentBatch = batch;
-        const targetEmployee = this.selectedEmployee;
 
+        this.$store.dispatch('batches/loadNextId')
+          .then(() => {
+            this.createBatchCode = this.nextBatchId;
+          })
+
+        const targetEmployee = this.selectedEmployee;
         if (this.isEmployeeInternal(targetEmployee)) {
           this.addDefautlSalaryAndDeduction(targetEmployee, batch.id);
         } else {
@@ -417,9 +421,8 @@ export default {
     tabChangeHandler(batchCode) {
       this.currentBatchCode = batchCode;
     },
-    onClickCreateBatchHandler() {
+    async onClickCreateBatchHandler() {
       this.createBatchPeriodCoverTo = '';
-      this.createBatchCode = 0;
       this.selectedEmployee = null;
     },
     setPayrollCurrentEmployee(employee) {
@@ -751,6 +754,9 @@ export default {
           return false;
         }
       }
+    },
+    nextBatchId() {
+      return this.$store.getters['batches/nextId'];
     }
   },
   watch: {
@@ -859,6 +865,10 @@ export default {
         this.deductionExternalTotal = currentEmployee.deduction.total;
       }
     }
+  },
+  async mounted() {
+    await this.$store.dispatch('batches/loadNextId');
+    this.createBatchCode = this.nextBatchId;
   }
 };
 </script>
@@ -1078,17 +1088,8 @@ export default {
               >Batch</label
             >
             <div class="d-flex align-items-center gap-1">
-              <span>2024-</span>
-              <input
-                v-model="createBatchCode"
-                type="number"
-                class="form-control"
-                placeholder="Batch"
-              />
+              <span>2024-{{ createBatchCode }}</span>
             </div>
-            <p class="fw-bold text-danger" v-if="isBatchCodeAlreadyExist">
-              The provided batch code is already exist!
-            </p>
           </div>
 
           <div class="mb-3">
@@ -1973,31 +1974,59 @@ export default {
           </p>
           <p>
             <span class="fw-bold text-primary">Client Trip Rate: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.clientTripRates) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.clientTripRates
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-primary">Total Amount of Trips: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.totalAmountOfTrips) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.totalAmountOfTrips
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Drop Rate: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.dropRate) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.dropRate
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Toll Fee: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.tollFee) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.tollFee
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Passway: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.passway) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.passway
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-warning">Others: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.others) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.others
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-info">Total Salary: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.salary.total) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.salary.total
+              )
+            }}
           </p>
         </div>
         <div
@@ -2010,23 +2039,43 @@ export default {
           <h2>Deductions</h2>
           <p>
             <span class="fw-bold text-secondary">Cash Advance: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.cashAdvance) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.cashAdvance
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Marine Insurance Fee: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.marineInsuranceFee) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.marineInsuranceFee
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Uniform: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.uniform) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.uniform
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-secondary">Penalties: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.penalties) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.penalties
+              )
+            }}
           </p>
           <p>
             <span class="fw-bold text-danger">Total Deductions: </span>
-            ₱{{ formatMoneyWithCommasAndDecimals(payrollCurrentEmployee.deduction.total) }}
+            ₱{{
+              formatMoneyWithCommasAndDecimals(
+                payrollCurrentEmployee.deduction.total
+              )
+            }}
           </p>
         </div>
       </div>
