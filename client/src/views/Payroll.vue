@@ -1078,7 +1078,7 @@ export default {
               >Batch</label
             >
             <div class="d-flex align-items-center gap-1">
-              <span>2023-</span>
+              <span>2024-</span>
               <input
                 v-model="createBatchCode"
                 type="number"
