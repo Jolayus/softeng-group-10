@@ -23,12 +23,7 @@ function httpPostNewBatch(req, res) {
     const sql = `INSERT INTO batch (batchCode, batchPeriodCoverFrom, batchPeriodCoverTo, employeeId) VALUES (?, ?, ?, ?)`;
     db.run(
       sql,
-      [
-        batchCode,
-        batchPeriodCoverFrom,
-        batchPeriodCoverTo,
-        employeeId
-      ],
+      [batchCode, batchPeriodCoverFrom, batchPeriodCoverTo, employeeId],
       (err) => {
         if (err) {
           reject(err);
@@ -56,7 +51,32 @@ function httpPostNewBatch(req, res) {
     });
 }
 
+function httpGetNextId(req, res) {
+  const sql =
+    'INSERT INTO batch (batchCode, batchPeriodCoverFrom, batchPeriodCoverTo) VALUES (?, ?, ?)';
+  db.run(sql, ['1', '2024-01-01', '2024-01-02'], function (err) {
+    if (err) {
+      res.status(500).json({ error: 'Cannot add dummy data to batch table' });
+      return;
+    }
+
+    const lastID = this.lastID;
+
+    db.run('DELETE FROM batch WHERE batch.id = ?', [lastID], (err) => {
+      if (err) {
+        res
+          .status(500)
+          .json({ error: 'Cannot delete dummy data from batch table' });
+        return;
+      } else {
+        res.status(200).json({ nextID: lastID });
+      }
+    });
+  });
+}
+
 module.exports = {
   httpGetAllBatches,
-  httpPostNewBatch
-}
+  httpPostNewBatch,
+  httpGetNextId
+};
