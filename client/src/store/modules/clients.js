@@ -26,7 +26,6 @@ export default {
       setTimeout(() => {
         client.newlyAdded = false;
         localStorage.removeItem(key);
-        console.log(client);
       }, remainingMilliSeconds);
     },
     archiveClient(state, clientId) {

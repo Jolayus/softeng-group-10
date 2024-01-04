@@ -163,7 +163,10 @@ export default {
       };
 
       await httpUpdateEmployee(newDetails);
-      this.$store.dispatch('employees/editEmployee', { prevDetails, newDetails });
+      this.$store.dispatch('employees/editEmployee', {
+        prevDetails,
+        newDetails
+      });
     },
 
     getEmployeeById(id) {
@@ -407,7 +410,14 @@ export default {
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-for="employee in filteredEmployees" :key="employee.id" :class="{ 'bg-warning': employee.modified }">
+          <tr
+            v-for="employee in filteredEmployees"
+            :key="employee.id"
+            :class="{
+              'newly-added': employee.newlyAdded && !employee.modified,
+              'bg-warning': employee.modified
+            }"
+          >
             <th class="align-middle" scope="row">{{ employee.name }}</th>
             <td class="align-middle">{{ employee.date_hired }}</td>
             <td class="align-middle">{{ employee.role }}</td>
@@ -851,6 +861,10 @@ export default {
 </template>
 
 <style scoped>
+.newly-added {
+  background-color: #c7dca7;
+}
+
 .input-group {
   width: 45%;
 }
