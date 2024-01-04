@@ -20,6 +20,12 @@ export default {
       );
       state.employees.splice(index, 1);
     },
+    setModified(state, { employeeId, value }) {
+      const selectedEmployee = state.employees.find(
+        (employee) => employee.id === employeeId
+      );
+      selectedEmployee.modified = value;
+    },
     editEmployee(state, { prevDetails, newDetails }) {
       const employee = state.employees.find(
         (employee) => employee.id === newDetails.id
@@ -58,8 +64,18 @@ export default {
         prevDetails.email !== email ||
         prevDetails.contact_number !== contact_number
       ) {
-        localStorage.setItem(`employee_${employee.id}_modified`, Date.now());
+        const currentTimestamp = Date.now();
+        const key = `employee_${employee.id}_modified`;
+        localStorage.setItem(key, currentTimestamp);
         employee.modified = true;
+
+        const remainingMilliSeconds =
+          currentTimestamp + 10000 - currentTimestamp;
+
+        setTimeout(() => {
+          employee.modified = false;
+          localStorage.removeItem(key);
+        }, remainingMilliSeconds);
       }
     }
   },
@@ -77,11 +93,19 @@ export default {
           const currentTimestamp = currentDate.getTime();
 
           const remainingSeconds =
-            (parseInt(value) + 60000 - currentTimestamp) / 1000;
+            (parseInt(value) + 10000 - currentTimestamp) / 1000;
 
           // Check if there is a remaining seconds
           if (remainingSeconds > 0) {
             loadedEmployee.modified = true;
+
+            setTimeout(() => {
+              context.commit('setModified', {
+                employeeId: loadedEmployee.id,
+                value: false
+              });
+              localStorage.removeItem(key);
+            }, remainingSeconds * 1000);
           } else {
             localStorage.removeItem(key);
           }

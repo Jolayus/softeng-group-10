@@ -25,6 +25,12 @@ export default {
         localStorage.removeItem(key);
       }
     },
+    setModified(state, { clientId, value }) {
+      const selectedClient = state.clients.find(
+        (client) => client.id === clientId
+      );
+      selectedClient.modified = value;
+    },
     editClient(state, { prevDetails, newDetails }) {
       const client = state.clients.find(
         (client) => client.id === newDetails.id
@@ -54,8 +60,18 @@ export default {
         prevDetails.email !== email ||
         prevDetails.contract_number !== contract_number
       ) {
-        localStorage.setItem(`client_${client.id}_modified`, Date.now());
+        const currentTimestamp = Date.now();
+        const key = `client_${client.id}_modified`;
+        localStorage.setItem(key, currentTimestamp);
         client.modified = true;
+
+        const remainingMilliSeconds =
+          currentTimestamp + 10000 - currentTimestamp;
+
+        setTimeout(() => {
+          client.modified = false;
+          localStorage.removeItem(key);
+        }, remainingMilliSeconds);
       }
     }
   },
@@ -73,11 +89,19 @@ export default {
           const currentTimestamp = currentDate.getTime();
 
           const remainingSeconds =
-            (parseInt(value) + 60000 - currentTimestamp) / 1000;
+            (parseInt(value) + 10000 - currentTimestamp) / 1000;
 
           // Check if there is a remaining seconds
           if (remainingSeconds > 0) {
             loadedClient.modified = true;
+
+            setTimeout(() => {
+              context.commit('setModified', {
+                clientId: loadedClient.id,
+                value: false
+              });
+              localStorage.removeItem(key);
+            }, remainingSeconds * 1000);
           } else {
             localStorage.removeItem(key);
           }
