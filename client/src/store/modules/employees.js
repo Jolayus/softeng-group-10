@@ -13,12 +13,38 @@ export default {
     },
     addEmployee(state, newEmployee) {
       state.employees.push(newEmployee);
+
+      const employee = state.employees.find((employee) => employee.id === newEmployee.id);
+
+      const currentTimestamp = Date.now();
+      const key = `employee_${employee.id}_newlyAdded`;
+      localStorage.setItem(key, currentTimestamp);
+      employee.newlyAdded = true;
+
+      const remainingMilliSeconds = currentTimestamp + 10000 - currentTimestamp;
+
+      setTimeout(() => {
+        employee.newlyAdded = false;
+        localStorage.removeItem(key);
+      }, remainingMilliSeconds);
     },
     archiveEmployee(state, employeeId) {
       const index = state.employees.findIndex(
         (employee) => employee.id === employeeId
       );
       state.employees.splice(index, 1);
+    },
+    setNewlyAdded(state, { employeeId, value }) {
+      const selectedEmployee = state.employees.find(
+        (employee) => employee.id === employeeId
+      );
+      selectedEmployee.newlyAdded = value;
+    },
+    setModified(state, { employeeId, value }) {
+      const selectedEmployee = state.employees.find(
+        (employee) => employee.id === employeeId
+      );
+      selectedEmployee.modified = value;
     },
     editEmployee(state, { prevDetails, newDetails }) {
       const employee = state.employees.find(
@@ -58,8 +84,18 @@ export default {
         prevDetails.email !== email ||
         prevDetails.contact_number !== contact_number
       ) {
-        localStorage.setItem(`employee_${employee.id}_modified`, Date.now());
+        const currentTimestamp = Date.now();
+        const key = `employee_${employee.id}_modified`;
+        localStorage.setItem(key, currentTimestamp);
         employee.modified = true;
+
+        const remainingMilliSeconds =
+          currentTimestamp + 10000 - currentTimestamp;
+
+        setTimeout(() => {
+          employee.modified = false;
+          localStorage.removeItem(key);
+        }, remainingMilliSeconds);
       }
     }
   },
@@ -69,21 +105,53 @@ export default {
 
       // Highlight the employee's row if it is modified
       for (const loadedEmployee of loadedEmployees) {
-        const key = `employee_${loadedEmployee.id}_modified`;
-        const value = localStorage.getItem(key);
+        const newlyAddedKey = `employee_${loadedEmployee.id}_newlyAdded`;
+        const newlyAddedValue = localStorage.getItem(newlyAddedKey);
 
-        if (value !== null) {
+        if (newlyAddedValue !== null) {
+          const currentTimestamp = Date.now();
+
+          const remainingSeconds =
+            (parseInt(newlyAddedValue) + 10000 - currentTimestamp) / 1000;
+
+          if (remainingSeconds > 0) {
+            loadedEmployee.newlyAdded = true;
+
+            setTimeout(() => {
+              context.commit('setNewlyAdded', {
+                employeeId: loadedEmployee.id,
+                value: false
+              });
+              localStorage.removeItem(newlyAddedKey);
+            }, remainingSeconds * 1000);
+          } else {
+            localStorage.removeItem(newlyAddedKey);
+          }
+        }
+
+        const modifiedKey = `employee_${loadedEmployee.id}_modified`;
+        const modifiedValue = localStorage.getItem(modifiedKey);
+
+        if (modifiedValue !== null) {
           const currentDate = new Date();
           const currentTimestamp = currentDate.getTime();
 
           const remainingSeconds =
-            (parseInt(value) + 60000 - currentTimestamp) / 1000;
+            (parseInt(modifiedValue) + 10000 - currentTimestamp) / 1000;
 
           // Check if there is a remaining seconds
           if (remainingSeconds > 0) {
             loadedEmployee.modified = true;
+
+            setTimeout(() => {
+              context.commit('setModified', {
+                employeeId: loadedEmployee.id,
+                value: false
+              });
+              localStorage.removeItem(modifiedValue);
+            }, remainingSeconds * 1000);
           } else {
-            localStorage.removeItem(key);
+            localStorage.removeItem(modifiedValue);
           }
         }
       }

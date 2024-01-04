@@ -13,6 +13,20 @@ export default {
     },
     addClient(state, newClient) {
       state.clients.push(newClient);
+
+      const client = state.clients.find((client) => client.id === newClient.id);
+
+      const currentTimestamp = Date.now();
+      const key = `client_${client.id}_newlyAdded`;
+      localStorage.setItem(key, currentTimestamp);
+      client.newlyAdded = true;
+
+      const remainingMilliSeconds = currentTimestamp + 10000 - currentTimestamp;
+
+      setTimeout(() => {
+        client.newlyAdded = false;
+        localStorage.removeItem(key);
+      }, remainingMilliSeconds);
     },
     archiveClient(state, clientId) {
       const index = state.clients.findIndex((client) => client.id === clientId);
@@ -24,6 +38,18 @@ export default {
       if (value !== null) {
         localStorage.removeItem(key);
       }
+    },
+    setNewlyAdded(state, { clientId, value }) {
+      const selectedClient = state.clients.find(
+        (client) => client.id === clientId
+      );
+      selectedClient.newlyAdded = value;
+    },
+    setModified(state, { clientId, value }) {
+      const selectedClient = state.clients.find(
+        (client) => client.id === clientId
+      );
+      selectedClient.modified = value;
     },
     editClient(state, { prevDetails, newDetails }) {
       const client = state.clients.find(
@@ -54,8 +80,18 @@ export default {
         prevDetails.email !== email ||
         prevDetails.contract_number !== contract_number
       ) {
-        localStorage.setItem(`client_${client.id}_modified`, Date.now());
+        const currentTimestamp = Date.now();
+        const key = `client_${client.id}_modified`;
+        localStorage.setItem(key, currentTimestamp);
         client.modified = true;
+
+        const remainingMilliSeconds =
+          currentTimestamp + 10000 - currentTimestamp;
+
+        setTimeout(() => {
+          client.modified = false;
+          localStorage.removeItem(key);
+        }, remainingMilliSeconds);
       }
     }
   },
@@ -65,21 +101,52 @@ export default {
 
       // Highlight the clients's row if it is modified
       for (const loadedClient of loadedClients) {
-        const key = `client_${loadedClient.id}_modified`;
-        const value = localStorage.getItem(key);
+        const newlyAddedKey = `client_${loadedClient.id}_newlyAdded`;
+        const newlyAddedValue = localStorage.getItem(newlyAddedKey);
 
-        if (value !== null) {
-          const currentDate = new Date();
-          const currentTimestamp = currentDate.getTime();
+        if (newlyAddedValue !== null) {
+          const currentTimestamp = Date.now();
 
           const remainingSeconds =
-            (parseInt(value) + 60000 - currentTimestamp) / 1000;
+            (parseInt(newlyAddedValue) + 10000 - currentTimestamp) / 1000;
+
+          if (remainingSeconds > 0) {
+            loadedClient.newlyAdded = true;
+
+            setTimeout(() => {
+              context.commit('setNewlyAdded', {
+                clientId: loadedClient.id,
+                value: false
+              });
+              localStorage.removeItem(newlyAddedKey);
+            }, remainingSeconds * 1000);
+          } else {
+            localStorage.removeItem(newlyAddedKey);
+          }
+        }
+
+        const modifiedKey = `client_${loadedClient.id}_modified`;
+        const modifiedValue = localStorage.getItem(modifiedKey);
+
+        if (modifiedValue !== null) {
+          const currentTimestamp = Date.now();
+
+          const remainingSeconds =
+            (parseInt(modifiedValue) + 10000 - currentTimestamp) / 1000;
 
           // Check if there is a remaining seconds
           if (remainingSeconds > 0) {
             loadedClient.modified = true;
+
+            setTimeout(() => {
+              context.commit('setModified', {
+                clientId: loadedClient.id,
+                value: false
+              });
+              localStorage.removeItem(modifiedKey);
+            }, remainingSeconds * 1000);
           } else {
-            localStorage.removeItem(key);
+            localStorage.removeItem(modifiedKey);
           }
         }
       }

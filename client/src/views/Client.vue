@@ -277,7 +277,10 @@ export default {
             class="f-flex"
             v-for="client in filteredClient"
             :key="client.id"
-            :class="{ 'bg-warning': client.modified }"
+            :class="{
+              'newly-added': client.newlyAdded && !client.modified,
+              'bg-warning': client.modified
+            }"
           >
             <th class="align-middle" scope="row">{{ client.company_name }}</th>
             <td class="align-middle">{{ client.address }}</td>
@@ -604,6 +607,10 @@ export default {
 </template>
 
 <style scoped>
+.newly-added {
+  background-color: #c7dca7;
+}
+
 th {
   width: 14.28%;
 }
