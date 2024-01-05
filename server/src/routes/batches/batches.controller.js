@@ -52,26 +52,21 @@ function httpPostNewBatch(req, res) {
 }
 
 function httpGetNextId(req, res) {
-  const sql =
-    'INSERT INTO batch (batchCode, batchPeriodCoverFrom, batchPeriodCoverTo) VALUES (?, ?, ?)';
-  db.run(sql, ['1', '2024-01-01', '2024-01-02'], function (err) {
+  const sql = 'SELECT MAX(id) + 1 AS nextID FROM batch';
+  db.get(sql, (err, row) => {
     if (err) {
-      res.status(500).json({ error: 'Cannot add dummy data to batch table' });
+      res.status(500).json({ error: 'Cannot get the nextId' });
       return;
     }
 
-    const lastID = this.lastID;
+    const nextID = row ? row.nextID : null;
 
-    db.run('DELETE FROM batch WHERE batch.id = ?', [lastID], (err) => {
-      if (err) {
-        res
-          .status(500)
-          .json({ error: 'Cannot delete dummy data from batch table' });
-        return;
-      } else {
-        res.status(200).json({ nextID: lastID });
-      }
-    });
+    if (nextID === null) {
+      res.status(500).json({ error: 'Cannot get the nextId' });
+      return;
+    }
+
+    res.status(200).json({ nextID });
   });
 }
 
