@@ -3,7 +3,8 @@ const db = require('../../../database/db');
 const {
   getAllDeductions,
   addNewDeduction,
-  editDeduction
+  editDeduction,
+  removeDeductionsByEmployeeId
 } = require('../../models/deductions.model');
 
 function httpGetAllDeductions(req, res) {
@@ -93,8 +94,37 @@ function httpEditSalary(req, res) {
   return res.status(200).json(updatedDeduction);
 }
 
+function httpDeleteDeductions(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql = 'DELETE FROM deduction WHERE deduction.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res
+        .status(500)
+        .json({
+          error: 'Cannot delete deduction row with the provided employeeId'
+        });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({
+        message: `Successfully deleted deduction row/s with the employeeId: ${employeeId}`
+      });
+    removeDeductionsByEmployeeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllDeductions,
   httpPostNewDeduction,
-  httpEditSalary
+  httpEditSalary,
+  httpDeleteDeductions
 };

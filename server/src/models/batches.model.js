@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const batches = [];
+let batches = [];
 
 function loadBatches() {
   return new Promise((resolve, reject) => {
@@ -25,8 +25,14 @@ function addNewBatch(newBatch) {
   return batches.push(newBatch);
 }
 
+function removeBatchByEmployeeId(employeeId) {
+  const filteredBatches = batches.filter((batch) => batch.employeeId !== employeeId);
+  batches = filteredBatches;
+}
+
 module.exports = {
   loadBatches,
   getAllBatches,
-  addNewBatch
+  addNewBatch,
+  removeBatchByEmployeeId
 };

@@ -7,7 +7,13 @@ import Modal from '../components/Modal.vue';
 import {
   httpCreateEmployee,
   httpUpdateEmployee,
-  httpArchiveEmployee
+  httpArchiveEmployee,
+  httpDeleteBatch,
+  httpDeletePayrollEmployees,
+  httpDeleteSalaries,
+  httpDeleteDeductions,
+  httpDeleteExternalSalaries,
+  httpDeleteExternalDeductions
 } from '../requests/requests';
 
 export default {
@@ -57,10 +63,33 @@ export default {
       }
       return false;
     },
-    archiveEmployee(id) {
-      httpArchiveEmployee(id).then((archivedEmployee) => {
-        this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
-      });
+    async archiveEmployee(id) {
+      const archivedEmployee = await httpArchiveEmployee(id);
+      this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
+
+      // REMOVE BATCH row with the provided employeeId
+      await httpDeleteBatch(id);
+      this.$store.dispatch('batches/removeBatch', id);
+
+      // REMOVE payrollEmployee row with the provided employeeId
+      await httpDeletePayrollEmployees(id);
+      this.$store.dispatch('payrollEmployees/removePayrollEmployee', id);
+
+      if (archivedEmployee.type === 'Internal') {
+        // REMOVE salary/deduction row with the provided employeeId
+        await httpDeleteSalaries(id);
+        this.$store.dispatch('salaries/removeSalaries', id);
+
+        await httpDeleteDeductions(id);
+        this.$store.dispatch('deductions/removeDeductions', id);
+      } else if (archivedEmployee.type === 'External') {
+        // REMOVE externalSalary/externalDeduction row with the provided employeeId
+        await httpDeleteExternalSalaries(id);
+        this.$store.dispatch('externalSalaries/removeSalaries', id);
+
+        await httpDeleteExternalDeductions(id);
+        this.$store.dispatch('externalDeductions/removeDeductions', id);
+      }
     },
     async addNewEmployee() {
       const options = { day: 'numeric', month: 'short', year: '2-digit' };

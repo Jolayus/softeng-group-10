@@ -3,7 +3,8 @@ const db = require('../../../database/db');
 const {
   getAllExternalDeductions,
   addNewExternalDeduction,
-  editExternalDeduction
+  editExternalDeduction,
+  removeExternalDeductionsByEmployeeId
 } = require('../../models/externalDeductions.model');
 
 function httpGetAllExternalDeductions(req, res) {
@@ -71,8 +72,35 @@ function httpEditExternalDeduction(req, res) {
   return res.status(200).json(updatedDeduction);
 }
 
+function httpDeleteExternalDeductions(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql =
+    'DELETE FROM externalDeduction WHERE externalDeduction.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res.status(500).json({
+        error:
+          'Cannot delete externalDeductions row with the provided employeeId'
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: `Successfully deleted externalDeductions row with the employeeId: ${employeeId}`
+    });
+    removeExternalDeductionsByEmployeeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllExternalDeductions,
   httpPostNewExternalDeduction,
-  httpEditExternalDeduction
+  httpEditExternalDeduction,
+  httpDeleteExternalDeductions
 };

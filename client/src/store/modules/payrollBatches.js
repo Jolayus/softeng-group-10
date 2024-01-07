@@ -17,6 +17,9 @@ export default {
     },
     setNextId(state, nextId) {
       state.nextId = nextId;
+    },
+    removeBatch(state, employeeId) {
+      state.batches = state.batches.filter((batch) => batch.employeeId !== employeeId);
     }
   },
   actions: {
@@ -61,6 +64,9 @@ export default {
     },
     addBatch(context, newBatch) {
       context.commit('addBatch', newBatch);
+    },
+    removeBatch(context, employeeId) {
+      context.commit('removeBatch', employeeId);
     }
   },
   getters: {

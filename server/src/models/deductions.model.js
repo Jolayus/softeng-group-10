@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const deductions = [];
+let deductions = [];
 
 function loadDeductions() {
   return new Promise((resolve, reject) => {
@@ -58,9 +58,17 @@ function editDeduction(newDetails) {
   return updatedDeduction;
 }
 
+function removeDeductionsByEmployeeId(employeeId) {
+  const filteredDeductions = deductions.filter(
+    (deduction) => deduction.employeeId !== employeeId
+  );
+  deductions = filteredDeductions;
+}
+
 module.exports = {
   loadDeductions,
   getAllDeductions,
   addNewDeduction,
-  editDeduction
+  editDeduction,
+  removeDeductionsByEmployeeId
 };

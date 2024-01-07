@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const externalDeductions = [];
+let externalDeductions = [];
 
 function loadExternalDeductions() {
   return new Promise((resolve, reject) => {
@@ -30,14 +30,8 @@ function getExternalDeductionById(id) {
 }
 
 function editExternalDeduction(newDetails) {
-  const {
-    cashAdvance,
-    marineInsuranceFee,
-    uniform,
-    penalties,
-    total,
-    id
-  } = newDetails;
+  const { cashAdvance, marineInsuranceFee, uniform, penalties, total, id } =
+    newDetails;
 
   const updatedDeduction = getExternalDeductionById(id);
   updatedDeduction.cashAdvance = cashAdvance;
@@ -49,9 +43,17 @@ function editExternalDeduction(newDetails) {
   return updatedDeduction;
 }
 
+function removeExternalDeductionsByEmployeeId(employeeId) {
+  const filteredExternalDeductions = externalDeductions.filter(
+    (externalDeduction) => externalDeduction.employeeId !== employeeId
+  );
+  externalDeductions = filteredExternalDeductions;
+}
+
 module.exports = {
   loadExternalDeductions,
   getAllExternalDeductions,
   addNewExternalDeduction,
-  editExternalDeduction
+  editExternalDeduction,
+  removeExternalDeductionsByEmployeeId
 };

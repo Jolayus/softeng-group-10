@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const payrollEmployees = [];
+let payrollEmployees = [];
 
 function loadPayrollEmployees() {
   return new Promise((resolve, reject) => {
@@ -25,8 +25,16 @@ function addNewPayrollEmployee(newPayrollEmployee) {
   return payrollEmployees.push(newPayrollEmployee);
 }
 
+function removePayrollEmployeeByEmployeeId(employeeId) {
+  const filteredPayrollEmployees = payrollEmployees.filter(
+    (payrollEmployee) => payrollEmployee.employeeId !== employeeId
+  );
+  payrollEmployees = filteredPayrollEmployees;
+}
+
 module.exports = {
   loadPayrollEmployees,
   getAllPayrollEmployees,
-  addNewPayrollEmployee
+  addNewPayrollEmployee,
+  removePayrollEmployeeByEmployeeId
 };

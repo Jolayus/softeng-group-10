@@ -3,7 +3,8 @@ const db = require('../../../database/db');
 const {
   getAllExternalSalaries,
   addNewExternalSalary,
-  editExternalSalary
+  editExternalSalary,
+  removeExternalSalariesByEmployeId
 } = require('../../models/externalSalaries.model');
 
 function httpGetAllExternalSalaries(req, res) {
@@ -103,8 +104,29 @@ function httpEditExternalSalary(req, res) {
   return res.status(200).json(updatedSalary);
 }
 
+function httpDeleteExternalSalaries(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql = 'DELETE FROM externalSalary WHERE externalSalary.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res.status(500).json({ error: 'Cannot delete externalSalary with the provided employeeId' });
+      return;
+    }
+
+    res.status(200).json({ message: `Successfully deleted externalSalaries with the employeeId: ${employeeId}` });
+    removeExternalSalariesByEmployeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllExternalSalaries,
   httpPostNewExternalSalary,
-  httpEditExternalSalary
+  httpEditExternalSalary,
+  httpDeleteExternalSalaries
 };

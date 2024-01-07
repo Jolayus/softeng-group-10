@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const externalSalaries = [];
+let externalSalaries = [];
 
 function loadExternalSalaries() {
   return new Promise((resolve, reject) => {
@@ -54,10 +54,17 @@ function editExternalSalary(newDetails) {
   return updatedSalary;
 }
 
+function removeExternalSalariesByEmployeId(employeeId) {
+  const filteredExternalSalaries = externalSalaries.filter(
+    (externalSalary) => externalSalary.employeeId !== employeeId
+  );
+  externalSalaries = filteredExternalSalaries;
+}
 
 module.exports = {
   loadExternalSalaries,
   getAllExternalSalaries,
   addNewExternalSalary,
-  editExternalSalary
+  editExternalSalary,
+  removeExternalSalariesByEmployeId
 };

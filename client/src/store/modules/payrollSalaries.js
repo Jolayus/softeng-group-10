@@ -46,6 +46,11 @@ export default {
       updatedSalary.total = total;
 
       employee.salary = updatedSalary;
+    },
+    removeSalaries(state, employeeId) {
+      state.salaries = state.salaries.filter(
+        (salary) => salary.employeeId !== employeeId
+      );
     }
   },
   actions: {
@@ -62,6 +67,9 @@ export default {
       );
 
       context.commit('editSalary', { newDetails, employee });
+    },
+    removeSalaries(context, employeeId) {
+      context.commit('removeSalaries', employeeId);
     }
   },
   getters: {
@@ -82,8 +90,10 @@ export default {
     },
     getSalaryByEmployeeId(state) {
       return function (employeeId) {
-        return state.salaries.find((salary) => salary.employeeId === employeeId);
-      }
+        return state.salaries.find(
+          (salary) => salary.employeeId === employeeId
+        );
+      };
     }
   }
 };

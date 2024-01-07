@@ -1,6 +1,5 @@
 import { httpGetAllExternalSalaries } from '../../requests/requests';
 
-
 export default {
   namespaced: true,
   state() {
@@ -28,7 +27,7 @@ export default {
         tollFee,
         passway,
         others,
-        total        
+        total
       } = newDetails;
 
       updatedSalary.noOfTrips = noOfTrips;
@@ -41,6 +40,11 @@ export default {
       updatedSalary.total = total;
 
       employee.salary = updatedSalary;
+    },
+    removeSalaries(state, employeeId) {
+      state.salaries = state.salaries.filter(
+        (salary) => salary.employeeId !== employeeId
+      );
     }
   },
   actions: {
@@ -58,6 +62,9 @@ export default {
       );
 
       context.commit('editSalary', { newDetails, employee });
+    },
+    removeSalaries(context, employeeId) {
+      context.commit('removeSalaries', employeeId);
     }
   },
   getters: {
@@ -78,8 +85,10 @@ export default {
     },
     getExternalSalaryByEmployeeId(state) {
       return function (employeeId) {
-        return state.salaries.find((salary) => salary.employeeId === employeeId);
-      }
+        return state.salaries.find(
+          (salary) => salary.employeeId === employeeId
+        );
+      };
     }
   }
 };
