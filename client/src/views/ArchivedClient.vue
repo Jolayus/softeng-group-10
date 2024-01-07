@@ -91,7 +91,7 @@ export default {
         .toLocaleDateString('en-GB', dateOptions)
         .replace(/\s/g, '-');
 
-      doc.save(`archivedEmployees ${currentDate}.pdf`);
+      doc.save(`archivedClients ${currentDate}.pdf`);
     }
   },
   computed: {
