@@ -81,7 +81,7 @@ export default {
         this.$store.dispatch('salaries/removeSalaries', id);
 
         await httpDeleteDeductions(id);
-        this.$store.dispatch('deductions/removeDeductions', id)
+        this.$store.dispatch('deductions/removeDeductions', id);
       } else if (archivedEmployee.type === 'External') {
         // REMOVE externalSalary/externalDeduction row with the provided employeeId
         await httpDeleteExternalSalaries(id);
