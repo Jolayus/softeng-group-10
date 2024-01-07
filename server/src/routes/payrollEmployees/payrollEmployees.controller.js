@@ -2,7 +2,8 @@ const db = require('../../../database/db');
 
 const {
   getAllPayrollEmployees,
-  addNewPayrollEmployee
+  addNewPayrollEmployee,
+  removePayrollEmployeeByEmployeeId
 } = require('../../models/payrollEmployees.model');
 
 function httpGetAllPayrollEmployees(req, res) {
@@ -10,25 +11,13 @@ function httpGetAllPayrollEmployees(req, res) {
 }
 
 function httpPostNewPayrollEmployee(req, res) {
-  const {
-    batchCodeId,
-    employeeId,
-    salaryId,
-    deductionId,
-    type
-  } = req.body;
+  const { batchCodeId, employeeId, salaryId, deductionId, type } = req.body;
 
   const promise = new Promise((resolve, reject) => {
     const sql = `INSERT INTO payrollEmployee (batchCodeId, employeeId, salaryId, deductionId, type) VALUES (?, ?, ?, ?, ?)`;
     db.run(
       sql,
-      [
-        batchCodeId,
-        employeeId,
-        salaryId,
-        deductionId,
-        type
-      ],
+      [batchCodeId, employeeId, salaryId, deductionId, type],
       (err) => {
         if (err) {
           reject(err);
@@ -56,7 +45,33 @@ function httpPostNewPayrollEmployee(req, res) {
     });
 }
 
+async function httpDeletePayrollEmployee(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql =
+    'DELETE FROM payrollEmployee WHERE payrollEmployee.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res.status(500).json({
+        error: 'Cannot delete payrollEmployee row with the provided employeeId'
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: `Successfully deleted all payrollEmployees row with the employeeId: ${employeeId}`
+    });
+    removePayrollEmployeeByEmployeeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllPayrollEmployees,
-  httpPostNewPayrollEmployee
+  httpPostNewPayrollEmployee,
+  httpDeletePayrollEmployee
 };
