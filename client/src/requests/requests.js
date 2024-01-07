@@ -306,6 +306,17 @@ async function httpUpdateSalary(newDetails) {
   return await response.json();
 }
 
+async function httpDeleteSalaries(employeeId) {
+  const response = await fetch(`${API_URL}/salaries`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
+  });
+
+  return await response.json();
+}
 // DEDUCTIONS
 async function httpGetAllDeductions() {
   const response = await fetch(`${API_URL}/deductions`);
@@ -334,6 +345,18 @@ async function httpUpdateDeduction(newDetails) {
     },
     body: JSON.stringify(newDetails)
   });
+  return await response.json();
+}
+
+async function httpDeleteDeductions(employeeId) {
+  const response = await fetch(`${API_URL}/deductions`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
+  });
+
   return await response.json();
 }
 
@@ -368,6 +391,18 @@ async function httpUpdateExternalSalary(newDetails) {
   return await response.json();
 }
 
+async function httpDeleteExternalSalaries(employeeId) {
+  const response = await fetch(`${API_URL}/externalSalaries`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
+  });
+
+  return await response.json();
+}
+
 // EXTERNAL DEDUCTIONS
 async function httpGetAllExternalDeductions() {
   const response = await fetch(`${API_URL}/externalDeductions`);
@@ -399,6 +434,18 @@ async function httpUpdateExternalDeduction(newDetails) {
   return await response.json();
 }
 
+async function httpDeleteExternalDeductions(employeeId) {
+  const response = await fetch(`${API_URL}/externalDeductions`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
+  });
+
+  return await response.json();
+}
+
 // PAYROLL EMPLOYEES
 async function httpGetAllPayrollEmployees() {
   const response = await fetch(`${API_URL}/payrollEmployees`);
@@ -414,6 +461,18 @@ async function httpPostNewPayrollEmployee(newPayrollEmployee) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(newPayrollEmployee)
+  });
+
+  return await response.json();
+}
+
+async function httpDeletePayrollEmployees(employeeId) {
+  const response = await fetch(`${API_URL}/payrollEmployees`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
   });
 
   return await response.json();
@@ -449,15 +508,20 @@ export {
   httpGetAllSalaries,
   httpPostNewSalary,
   httpUpdateSalary,
+  httpDeleteSalaries,
   httpGetAllDeductions,
   httpPostNewDeduction,
   httpUpdateDeduction,
+  httpDeleteDeductions,
   httpGetAllExternalSalaries,
   httpPostNewExternalSalary,
   httpUpdateExternalSalary,
+  httpDeleteExternalSalaries,
   httpGetAllExternalDeductions,
   httpPostNewExternalDeduction,
   httpUpdateExternalDeduction,
+  httpDeleteExternalDeductions,
   httpGetAllPayrollEmployees,
-  httpPostNewPayrollEmployee
+  httpPostNewPayrollEmployee,
+  httpDeletePayrollEmployees
 };

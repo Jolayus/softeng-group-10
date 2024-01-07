@@ -8,7 +8,12 @@ import {
   httpCreateEmployee,
   httpUpdateEmployee,
   httpArchiveEmployee,
-  httpDeleteBatch
+  httpDeleteBatch,
+  httpDeletePayrollEmployees,
+  httpDeleteSalaries,
+  httpDeleteDeductions,
+  httpDeleteExternalSalaries,
+  httpDeleteExternalDeductions
 } from '../requests/requests';
 
 export default {
@@ -66,8 +71,17 @@ export default {
       await httpDeleteBatch(id);
 
       // REMOVE payrollEmployee row with the provided employeeId
-      // REMOVE salary/deduction row with the provided employeeId
-      // REMOVE externalSalary/externalDeduction row with the provided employeeId
+      await httpDeletePayrollEmployees(id);
+
+      if (archivedEmployee.type === 'Internal') {
+        // REMOVE salary/deduction row with the provided employeeId
+        await httpDeleteSalaries(id);
+        await httpDeleteDeductions(id);
+      } else if (archivedEmployee.type === 'External') {
+        // REMOVE externalSalary/externalDeduction row with the provided employeeId
+        await httpDeleteExternalSalaries(id);
+        await httpDeleteExternalDeductions(id);
+      }
     },
     async addNewEmployee() {
       const options = { day: 'numeric', month: 'short', year: '2-digit' };
