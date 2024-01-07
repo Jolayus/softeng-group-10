@@ -60,6 +60,15 @@ export default {
     archiveEmployee(id) {
       httpArchiveEmployee(id).then((archivedEmployee) => {
         this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
+
+        console.log(archivedEmployee);
+
+        // REMOVE BATCH row with the provided employeeId
+
+
+        // REMOVE payrollEmployee row with the provided employeeId
+        // REMOVE salary/deduction row with the provided employeeId
+        // REMOVE externalSalary/externalDeduction row with the provided employeeId
       });
     },
     async addNewEmployee() {

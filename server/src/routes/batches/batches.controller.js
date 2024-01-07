@@ -1,6 +1,10 @@
 const db = require('../../../database/db');
 
-const { getAllBatches, addNewBatch } = require('../../models/batches.model');
+const {
+  getAllBatches,
+  addNewBatch,
+  removeBatchByEmployeeId
+} = require('../../models/batches.model');
 
 function httpGetAllBatches(req, res) {
   return res.status(200).json(getAllBatches());
@@ -70,8 +74,33 @@ function httpGetNextId(req, res) {
   });
 }
 
+function httpDeleteBatch(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql = 'DELETE FROM batch WHERE batch.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res
+        .status(400)
+        .json({ error: 'Cannot delete batch with the given employeeId' });
+      return;
+    }
+
+    res.status(200).json({
+      message: `Successfully delete the batch row with the employeeId: ${employeeId}`
+    });
+    removeBatchByEmployeeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllBatches,
   httpPostNewBatch,
-  httpGetNextId
+  httpGetNextId,
+  httpDeleteBatch
 };

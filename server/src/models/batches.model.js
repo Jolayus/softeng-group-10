@@ -25,8 +25,14 @@ function addNewBatch(newBatch) {
   return batches.push(newBatch);
 }
 
+function removeBatchByEmployeeId(employeeId) {
+  const idx = batches.findIndex((batch) => (batch.employeeId = employeeId));
+  batches.splice(idx, 1);
+}
+
 module.exports = {
   loadBatches,
   getAllBatches,
-  addNewBatch
+  addNewBatch,
+  removeBatchByEmployeeId
 };
