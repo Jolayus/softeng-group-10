@@ -7,7 +7,8 @@ import Modal from '../components/Modal.vue';
 import {
   httpCreateEmployee,
   httpUpdateEmployee,
-  httpArchiveEmployee
+  httpArchiveEmployee,
+  httpDeleteBatch
 } from '../requests/requests';
 
 export default {
@@ -57,19 +58,16 @@ export default {
       }
       return false;
     },
-    archiveEmployee(id) {
-      httpArchiveEmployee(id).then((archivedEmployee) => {
-        this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
+    async archiveEmployee(id) {
+      const archivedEmployee = await httpArchiveEmployee(id);
+      this.$store.dispatch('employees/archiveEmployee', archivedEmployee.id);
 
-        console.log(archivedEmployee);
+      // REMOVE BATCH row with the provided employeeId
+      await httpDeleteBatch(id);
 
-        // REMOVE BATCH row with the provided employeeId
-
-
-        // REMOVE payrollEmployee row with the provided employeeId
-        // REMOVE salary/deduction row with the provided employeeId
-        // REMOVE externalSalary/externalDeduction row with the provided employeeId
-      });
+      // REMOVE payrollEmployee row with the provided employeeId
+      // REMOVE salary/deduction row with the provided employeeId
+      // REMOVE externalSalary/externalDeduction row with the provided employeeId
     },
     async addNewEmployee() {
       const options = { day: 'numeric', month: 'short', year: '2-digit' };

@@ -263,6 +263,18 @@ async function httpPostNewBatch(newBatch) {
   return await response.json();
 }
 
+async function httpDeleteBatch(employeeId) {
+  const response = await fetch(`${API_URL}/batches`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeId })
+  });
+
+  return await response.json();
+}
+
 // SALARIES
 async function httpGetAllSalaries() {
   const response = await fetch(`${API_URL}/salaries`);
@@ -433,6 +445,7 @@ export {
   httpGetAllBatches,
   httpGetNextId,
   httpPostNewBatch,
+  httpDeleteBatch,
   httpGetAllSalaries,
   httpPostNewSalary,
   httpUpdateSalary,
