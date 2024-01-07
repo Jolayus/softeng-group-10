@@ -1,6 +1,11 @@
 const db = require('../../../database/db');
 
-const { getAllSalaries, addNewSalary, editSalary } = require('../../models/salaries.model');
+const {
+  getAllSalaries,
+  addNewSalary,
+  editSalary,
+  removeSalaryByEmployeeId
+} = require('../../models/salaries.model');
 
 function httpGetAllSalaries(req, res) {
   return res.status(200).json(getAllSalaries());
@@ -84,7 +89,7 @@ function httpEditSalary(req, res) {
     total
   } = req.body;
 
-  console.log(req.body)
+  console.log(req.body);
   const updatedSalary = editSalary(req.body);
 
   const sql = `UPDATE salary SET basicSalary=?, allowanceSalary=?, dailyRate=?, dailyAllowance=?, daysOfWork=?, semiBasicSalary=?, semiAllowanceSalary=?, serviceFee=?, overtimePay=?, others=?, total=? WHERE salary.id=?`;
@@ -113,8 +118,35 @@ function httpEditSalary(req, res) {
   return res.status(200).json(updatedSalary);
 }
 
+function httpDeleteSalaries(req, res) {
+  const { employeeId } = req.body;
+
+  if (employeeId < 0 || employeeId === undefined || employeeId === null) {
+    res.status(400).json({ error: 'Invalid employeeId' });
+    return;
+  }
+
+  const sql = 'DELETE FROM salary WHERE salary.employeeId = ?';
+  db.run(sql, [employeeId], (err) => {
+    if (err) {
+      res
+        .status(500)
+        .json({ error: 'Cannot delete salary with the given employeeId' });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({
+        message: `Successfully deleted the salaries with the employeeId: ${employeeId}`
+      });
+    removeSalaryByEmployeeId(employeeId);
+  });
+}
+
 module.exports = {
   httpGetAllSalaries,
   httpPostNewSalary,
-  httpEditSalary
+  httpEditSalary,
+  httpDeleteSalaries
 };

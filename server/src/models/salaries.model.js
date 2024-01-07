@@ -1,6 +1,6 @@
 const db = require('../../database/db');
 
-const salaries = [];
+let salaries = [];
 
 function loadSalaries() {
   return new Promise((resolve, reject) => {
@@ -63,9 +63,17 @@ function editSalary(newDetails) {
   return updatedSalary;
 }
 
+function removeSalaryByEmployeeId(employeeId) {
+  const filteredSalaries = salaries.filter(
+    (salary) => salary.employeeId !== employeeId
+  );
+  salaries = filteredSalaries;
+}
+
 module.exports = {
   loadSalaries,
   getAllSalaries,
   addNewSalary,
-  editSalary
+  editSalary,
+  removeSalaryByEmployeeId
 };
