@@ -55,23 +55,23 @@ function httpPostNewBatch(req, res) {
     });
 }
 
-function httpGetNextId(req, res) {
-  const sql = 'SELECT MAX(id) + 1 AS nextID FROM batch';
-  db.get(sql, (err, row) => {
-    if (err) {
-      res.status(500).json({ error: 'Cannot get the nextId' });
-      return;
-    }
+async function httpGetNextId(req, res) {
+  const nextID = await getNextId();
+  res.status(200).json({ nextID });
+}
 
-    const nextID = row ? row.nextID : null;
-
-    if (nextID === null) {
-      res.status(500).json({ error: 'Cannot get the nextId' });
-      return;
-    }
-
-    res.status(200).json({ nextID });
+async function getNextId() {
+  const promise = new Promise((resolve, reject) => {
+    const tableName = 'batch';
+    const sql =
+      'SELECT (seq + 1) AS nextID FROM sqlite_sequence WHERE sqlite_sequence.name = ?';
+    db.get(sql, [tableName], (err, rows) => {
+      const { nextID } = rows;
+      resolve(nextID);
+    });
   });
+
+  return await promise;
 }
 
 function httpDeleteBatch(req, res) {
