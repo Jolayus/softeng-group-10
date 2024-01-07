@@ -29,6 +29,11 @@ export default {
       updatedDeduction.total = total;
 
       employee.deduction = updatedDeduction;
+    },
+    removeDeductions(state, employeeId) {
+      state.deductions = state.deductions.filter(
+        (deduction) => deduction.employeeId !== employeeId
+      );
     }
   },
   actions: {
@@ -45,6 +50,9 @@ export default {
       );
 
       context.commit('editDeduction', { newDetails, employee });
+    },
+    removeDeductions(context, employeeId) {
+      context.commit('removeDeductions', employeeId);
     }
   },
   getters: {
@@ -65,8 +73,10 @@ export default {
     },
     getExternalDeductionByEmployeeId(state) {
       return function (employeeId) {
-        return state.deductions.find((deduction) => deduction.employeeId === employeeId);
-      }
+        return state.deductions.find(
+          (deduction) => deduction.employeeId === employeeId
+        );
+      };
     }
   }
 };

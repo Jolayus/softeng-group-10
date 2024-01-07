@@ -69,18 +69,26 @@ export default {
 
       // REMOVE BATCH row with the provided employeeId
       await httpDeleteBatch(id);
+      this.$store.dispatch('batches/removeBatch', id);
 
       // REMOVE payrollEmployee row with the provided employeeId
       await httpDeletePayrollEmployees(id);
+      this.$store.dispatch('payrollEmployees/removePayrollEmployee', id);
 
       if (archivedEmployee.type === 'Internal') {
         // REMOVE salary/deduction row with the provided employeeId
         await httpDeleteSalaries(id);
+        this.$store.dispatch('salaries/removeSalaries', id);
+
         await httpDeleteDeductions(id);
+        this.$store.dispatch('deductions/removeDeductions', id)
       } else if (archivedEmployee.type === 'External') {
         // REMOVE externalSalary/externalDeduction row with the provided employeeId
         await httpDeleteExternalSalaries(id);
+        this.$store.dispatch('externalSalaries/removeSalaries', id);
+
         await httpDeleteExternalDeductions(id);
+        this.$store.dispatch('externalDeductions/removeDeductions', id);
       }
     },
     async addNewEmployee() {

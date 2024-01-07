@@ -13,6 +13,11 @@ export default {
     },
     addPayrollEmployee(state, newPayrollEmployee) {
       state.payrollEmployees.push(newPayrollEmployee);
+    },
+    removePayrollEmployee(state, employeeId) {
+      state.payrollEmployees = state.payrollEmployees.filter(
+        (payrollEmployee) => payrollEmployee.employeeId !== employeeId
+      );
     }
   },
   actions: {
@@ -38,12 +43,12 @@ export default {
             (deduction) => deduction.id === deductionId
           );
         } else {
-          salary = context.rootGetters[
-            'externalSalaries/salaries'
-          ].find((externalSalary) => externalSalary.id === salaryId);
-          deduction = context.rootGetters[
-            'externalDeductions/deductions'
-          ].find((externalDeduction) => externalDeduction.id === deductionId);
+          salary = context.rootGetters['externalSalaries/salaries'].find(
+            (externalSalary) => externalSalary.id === salaryId
+          );
+          deduction = context.rootGetters['externalDeductions/deductions'].find(
+            (externalDeduction) => externalDeduction.id === deductionId
+          );
         }
 
         copy.salary = salary;
@@ -62,6 +67,9 @@ export default {
       copy.batchCodeId = batchCodeId;
 
       context.commit('addPayrollEmployee', copy);
+    },
+    removePayrollEmployee(context, employeeId) {
+      context.commit('removePayrollEmployee', employeeId);
     }
   },
   getters: {
