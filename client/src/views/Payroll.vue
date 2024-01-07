@@ -214,10 +214,9 @@ export default {
         this.storeCreateBatch(batch);
         this.currentBatch = batch;
 
-        this.$store.dispatch('batches/loadNextId')
-          .then(() => {
-            this.createBatchCode = this.nextBatchId;
-          })
+        this.$store.dispatch('batches/loadNextId').then(() => {
+          this.createBatchCode = this.nextBatchId;
+        });
 
         const targetEmployee = this.selectedEmployee;
         if (this.isEmployeeInternal(targetEmployee)) {
@@ -515,7 +514,7 @@ export default {
 
       salaryRows = [
         salaryRows[0].map((tableData, index) => {
-          if (index === 0) {
+          if (index === 0 || index === 5) {
             return tableData;
           }
           return `₱ ${tableData.toLocaleString(undefined, options)}`;

@@ -48,6 +48,14 @@ export default {
         orientation: 'landscape'
       });
 
+      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
+      const currentDate = new Date()
+        .toLocaleDateString('en-GB', dateOptions)
+        .replace(/\s/g, '-');
+
+      doc.text('List of Archived Clients', 15, 15);
+      doc.text(`Date: ${currentDate}`, 15, 20);
+
       const columns = [
         [
           'Company Name',
@@ -83,13 +91,8 @@ export default {
       autoTable(doc, {
         head: columns,
         body: rows,
-        startY: 20
+        startY: 30
       });
-
-      const dateOptions = { day: 'numeric', month: 'short', year: '2-digit' };
-      const currentDate = new Date()
-        .toLocaleDateString('en-GB', dateOptions)
-        .replace(/\s/g, '-');
 
       doc.save(`archivedClients ${currentDate}.pdf`);
     }
